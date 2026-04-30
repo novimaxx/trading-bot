@@ -1,0 +1,909 @@
+// © Tovarisch_ — IT v3
+// Улучшения v3: алерты structure_lh / structure_hl (слом структуры)
+
+//@version=5
+indicator(title="Indikator ot Tovarishcha v3", shorttitle="IT v3", overlay=true, max_labels_count=500, max_lines_count=500, max_boxes_count=500, max_bars_back=3000)
+
+// ═══════════════════════════════════════════════════════════
+// ГРУППЫ НАСТРОЕК
+// ═══════════════════════════════════════════════════════════
+grpSM     = "SM Уровни"
+grpSig    = "Сигналы"
+grpFilter = "Фильтры"
+grpLiq    = "Liquidity Detection"
+
+// ─── SM Уровни ───────────────────────────────────────────
+input_draw        = input.string("Lines", "Drawing", options=["Waves","Lines"], group=grpSM)
+show_waves        = input.bool(true, "Показывать волны (MA1–MA5) всегда", group=grpSM)
+input_perc_line_1 = input.float(27.2020, "SM1 % выше базы (SELL 100%)", group=grpSM)
+input_perc_line_2 = input.float(12.7845, "SM2 % выше базы (SELL 50%)",  group=grpSM)
+input_perc_line_4 = input.float(9.1156,  "SM4 % ниже базы (BUY 50%)",   group=grpSM)
+input_perc_line_5 = input.float(19.0250, "SM5 % ниже базы (BUY 100%)",  group=grpSM)
+lenght = 12
+
+// ─── Оранжевая SMA ───────────────────────────────────────
+showSMA   = input.bool(true, "Показывать SM (оранжевая)", group="SMA")
+smaLength = input.int(50,    "SM Length",                  group="SMA")
+
+// ─── Фильтры ─────────────────────────────────────────────
+useTrendFilter = input.bool(true, "Фильтр тренда (buy только выше оранжевой)", group=grpFilter)
+useVolFilter   = input.bool(true, "Фильтр объёма",    group=grpFilter)
+volLen         = input.int(20,    "Период SMA объёма", group=grpFilter, minval=1)
+useRSI         = input.bool(true, "RSI фильтр",        group=grpFilter)
+rsiLen         = input.int(14,    "RSI период",         group=grpFilter, minval=1)
+rsiBuyLvl      = input.int(35,    "RSI перепродан <",   group=grpFilter)
+rsiSellLvl     = input.int(65,    "RSI перекуплен >",   group=grpFilter)
+
+// ─── Сигналы ─────────────────────────────────────────────
+showBuy25    = input.bool(true,  "Показывать BUY 25%",   group=grpSig)
+showBuy50    = input.bool(true,  "Показывать BUY 50%",   group=grpSig)
+showBuy100   = input.bool(true,  "Показывать BUY 100%",  group=grpSig)
+showClose50  = input.bool(true,  "Показывать SELL 50%",  group=grpSig)
+showClose100 = input.bool(true,  "Показывать SELL 100%", group=grpSig)
+colorBuy25   = input.color(color.new(#1ef50e, 0), "Цвет BUY 25%",   group=grpSig)
+colorBuy50   = input.color(color.new(#24e37a, 0), "Цвет BUY 50%",   group=grpSig)
+colorBuy100  = input.color(color.new(#11a611, 0), "Цвет BUY 100%",  group=grpSig)
+colorClose50 = input.color(color.new(#f23645, 0), "Цвет SELL 50%",  group=grpSig)
+colorClose100= input.color(color.new(#ab2222, 0), "Цвет SELL 100%", group=grpSig)
+
+// ═══════════════════════════════════════════════════════════
+// ВЫЧИСЛЕНИЯ — УРОВНИ
+// ═══════════════════════════════════════════════════════════
+sma_today     = request.security(syminfo.tickerid, "D", ta.sma(close, lenght),    lookahead=barmerge.lookahead_off)
+sma_yesterday = request.security(syminfo.tickerid, "D", ta.sma(close[1], lenght), lookahead=barmerge.lookahead_off)
+time_today    = request.security(syminfo.tickerid, "D", time, lookahead=barmerge.lookahead_off)
+time_yesterday= request.security(syminfo.tickerid, "D", time[1], lookahead=barmerge.lookahead_off)
+time_diff     = time_today - time_yesterday
+progress      = (time - time_yesterday) / time_diff
+sma_interp    = sma_yesterday + (sma_today - sma_yesterday) * progress
+
+line_1 = sma_interp * (1 + input_perc_line_1 / 100)
+line_2 = sma_interp * (1 + input_perc_line_2 / 100)
+line_3 = sma_interp
+line_4 = sma_interp * (1 - input_perc_line_4 / 100)
+line_5 = sma_interp * (1 - input_perc_line_5 / 100)
+
+sma = ta.sma(close, smaLength)
+
+// ═══════════════════════════════════════════════════════════
+// ВЫЧИСЛЕНИЯ — ФИЛЬТРЫ
+// ═══════════════════════════════════════════════════════════
+rsiVal        = ta.rsi(close, rsiLen)
+volSMA        = ta.sma(volume, volLen)
+volConfirmed  = volume > volSMA
+trendUp       = close > sma
+rsiOversold   = rsiVal < rsiBuyLvl
+rsiOverbought = rsiVal > rsiSellLvl
+
+// ═══════════════════════════════════════════════════════════
+// ПАТТЕРНЫ СВЕЧЕЙ
+// ═══════════════════════════════════════════════════════════
+bodySize  = math.abs(close - open)
+fullRange = high - low
+bodyRatio = fullRange > 0 ? bodySize / fullRange : 0.0
+
+isHammer       = close > open and (open - low)  > bodySize * 2.0 and (high - close) < bodySize * 0.5
+isShootingStar = open > close and (high - open) > bodySize * 2.0 and (close - low)  < bodySize * 0.5
+isBullEngulf   = close > open and close[1] < open[1] and close > open[1] and open < close[1]
+isBearEngulf   = close < open and close[1] > open[1] and close < open[1] and open > close[1]
+isPinBull      = (open - low)  > (high - close) * 2.5 and bodyRatio < 0.4
+isPinBear      = (high - open) > (close - low)  * 2.5 and bodyRatio < 0.4
+
+bullPattern = isHammer or isBullEngulf or isPinBull
+bearPattern = isShootingStar or isBearEngulf or isPinBear
+
+bullPatName = isHammer ? "🔨 Молот" : isBullEngulf ? "🟢 Поглощение" : "📌 Пин-бар"
+bearPatName = isShootingStar ? "⭐ Shooting Star" : isBearEngulf ? "🔴 Поглощение" : "📌 Пин-бар"
+
+// ═══════════════════════════════════════════════════════════
+// БЛИЖАЙШИЙ УРОВЕНЬ
+// ═══════════════════════════════════════════════════════════
+d1 = math.abs(close - line_1)
+d2 = math.abs(close - line_2)
+d3 = math.abs(close - line_3)
+d4 = math.abs(close - line_4)
+d5 = math.abs(close - line_5)
+minD       = math.min(d1, math.min(d2, math.min(d3, math.min(d4, d5))))
+nearestIdx = d1 == minD ? 0 : d2 == minD ? 1 : d3 == minD ? 2 : d4 == minD ? 3 : 4
+
+pct(lvl) =>
+    str.tostring((lvl - close) / close * 100, "+#.#;-#.#") + "%"
+
+nc(idx, base) =>
+    nearestIdx == idx ? color.yellow : base
+
+// ═══════════════════════════════════════════════════════════
+// ВРЕМЯ НА УРОВНЕ
+// ═══════════════════════════════════════════════════════════
+tol = 0.005
+var int barsOnSM3 = 0
+var int barsOnSM4 = 0
+var int barsOnSM5 = 0
+barsOnSM3 := math.abs(close - line_3) / line_3 < tol ? barsOnSM3 + 1 : 0
+barsOnSM4 := math.abs(close - line_4) / line_4 < tol ? barsOnSM4 + 1 : 0
+barsOnSM5 := math.abs(close - line_5) / line_5 < tol ? barsOnSM5 + 1 : 0
+
+// ═══════════════════════════════════════════════════════════
+// КРОССЫ
+// ═══════════════════════════════════════════════════════════
+crossBuy25  = ta.crossunder(close, line_3)
+crossBuy50  = ta.crossunder(low,   line_4)
+crossBuy100 = ta.crossunder(low,   line_5)
+crossSell50 = ta.crossover(high,   line_2)
+crossSell100= ta.crossover(high,   line_1)
+
+smaUp   = ta.crossover(close,  sma)
+smaDown = ta.crossunder(close, sma)
+
+buy25sig  = crossBuy25  and (useTrendFilter ? trendUp : true)
+buy50sig  = crossBuy50  and (useTrendFilter ? trendUp : true)
+buy100sig = crossBuy100 and (useTrendFilter ? trendUp : true)
+
+buy25str  = buy25sig  and (useVolFilter ? volConfirmed : true) and (useRSI ? rsiOversold  : true)
+buy50str  = buy50sig  and (useVolFilter ? volConfirmed : true) and (useRSI ? rsiOversold  : true)
+buy100str = buy100sig and (useVolFilter ? volConfirmed : true) and (useRSI ? rsiOversold  : true)
+sell50str = crossSell50  and (useVolFilter ? volConfirmed : true) and (useRSI ? rsiOverbought : true)
+sell100str= crossSell100 and (useVolFilter ? volConfirmed : true) and (useRSI ? rsiOverbought : true)
+
+// ═══════════════════════════════════════════════════════════
+// PLOTS
+// ═══════════════════════════════════════════════════════════
+plot((input_draw == "Waves" or show_waves) ? line_1 : na, linewidth=2, color=color.red,   title="MA1")
+plot((input_draw == "Waves" or show_waves) ? line_2 : na, linewidth=1, color=#FF7373,     title="MA2")
+plot((input_draw == "Waves" or show_waves) ? line_3 : na, linewidth=1, color=color.white, title="MA3")
+plot((input_draw == "Waves" or show_waves) ? line_4 : na, linewidth=1, color=#76CD76,     title="MA4")
+plot((input_draw == "Waves" or show_waves) ? line_5 : na, linewidth=2, color=color.green, title="MA5")
+plot(showSMA ? sma : na, title="SM", color=color.orange, linewidth=2)
+
+// ═══════════════════════════════════════════════════════════
+// МЕТКИ УРОВНЕЙ
+// ═══════════════════════════════════════════════════════════
+var label lbl1 = label.new(na, na, style=label.style_label_left, xloc=xloc.bar_index)
+label.set_x(lbl1, bar_index + 3)
+label.set_y(lbl1, line_1)
+label.set_text(lbl1, (nearestIdx==0?"⭐ ":"") + str.tostring(line_1,"#.##") + "  " + pct(line_1))
+label.set_color(lbl1, nc(0, color.red))
+label.set_textcolor(lbl1, color.white)
+
+var label lbl2 = label.new(na, na, style=label.style_label_left, xloc=xloc.bar_index)
+label.set_x(lbl2, bar_index + 3)
+label.set_y(lbl2, line_2)
+label.set_text(lbl2, (nearestIdx==1?"⭐ ":"") + str.tostring(line_2,"#.##") + "  " + pct(line_2))
+label.set_color(lbl2, nc(1, #EF9292))
+label.set_textcolor(lbl2, color.white)
+
+var label lbl3 = label.new(na, na, style=label.style_label_left, xloc=xloc.bar_index)
+label.set_x(lbl3, bar_index + 3)
+label.set_y(lbl3, line_3)
+label.set_text(lbl3, (nearestIdx==2?"⭐ ":"") + str.tostring(line_3,"#.##") + "  " + pct(line_3))
+label.set_color(lbl3, nc(2, color.white))
+label.set_textcolor(lbl3, color.black)
+
+var label lbl4 = label.new(na, na, style=label.style_label_left, xloc=xloc.bar_index)
+label.set_x(lbl4, bar_index + 3)
+label.set_y(lbl4, line_4)
+label.set_text(lbl4, (nearestIdx==3?"⭐ ":"") + str.tostring(line_4,"#.##") + "  " + pct(line_4))
+label.set_color(lbl4, nc(3, color.green))
+label.set_textcolor(lbl4, color.white)
+
+var label lbl5 = label.new(na, na, style=label.style_label_left, xloc=xloc.bar_index)
+label.set_x(lbl5, bar_index + 3)
+label.set_y(lbl5, line_5)
+label.set_text(lbl5, (nearestIdx==4?"⭐ ":"") + str.tostring(line_5,"#.##") + "  " + pct(line_5))
+label.set_color(lbl5, nc(4, #116211))
+label.set_textcolor(lbl5, color.white)
+
+// ═══════════════════════════════════════════════════════════
+// ЛИНИИ УРОВНЕЙ
+// ═══════════════════════════════════════════════════════════
+barsPerDay = timeframe.in_seconds() > 0 ? math.round(86400 / timeframe.in_seconds()) : 1
+lineLen    = math.max(barsPerDay, 2)
+
+if input_draw == "Lines"
+    var line ll1 = line.new(na,na,na,na)
+    line.set_x1(ll1, bar_index - lineLen)
+    line.set_x2(ll1, bar_index)
+    line.set_y1(ll1, line_1)
+    line.set_y2(ll1, line_1)
+    line.set_color(ll1, nc(0, color.red))
+    line.set_width(ll1, nearestIdx==0 ? 5 : 3)
+
+    var line ll2 = line.new(na,na,na,na)
+    line.set_x1(ll2, bar_index - lineLen)
+    line.set_x2(ll2, bar_index)
+    line.set_y1(ll2, line_2)
+    line.set_y2(ll2, line_2)
+    line.set_color(ll2, nc(1, #EF9292))
+    line.set_width(ll2, nearestIdx==1 ? 4 : 2)
+
+    var line ll3 = line.new(na,na,na,na)
+    line.set_x1(ll3, bar_index - lineLen)
+    line.set_x2(ll3, bar_index)
+    line.set_y1(ll3, line_3)
+    line.set_y2(ll3, line_3)
+    line.set_color(ll3, nc(2, color.white))
+    line.set_width(ll3, nearestIdx==2 ? 4 : 1)
+
+    var line ll4 = line.new(na,na,na,na)
+    line.set_x1(ll4, bar_index - lineLen)
+    line.set_x2(ll4, bar_index)
+    line.set_y1(ll4, line_4)
+    line.set_y2(ll4, line_4)
+    line.set_color(ll4, nc(3, color.green))
+    line.set_width(ll4, nearestIdx==3 ? 4 : 2)
+
+    var line ll5 = line.new(na,na,na,na)
+    line.set_x1(ll5, bar_index - lineLen)
+    line.set_x2(ll5, bar_index)
+    line.set_y1(ll5, line_5)
+    line.set_y2(ll5, line_5)
+    line.set_color(ll5, nc(4, #116211))
+    line.set_width(ll5, nearestIdx==4 ? 5 : 3)
+
+// ═══════════════════════════════════════════════════════════
+// СИГНАЛЬНЫЕ МЕТКИ НА ГРАФИКЕ
+// ═══════════════════════════════════════════════════════════
+start = timestamp(2021, 1, 1, 0, 0)
+getDay(ts) => dayofmonth(ts) + month(ts) * 100 + year(ts) * 10000
+thisDay = getDay(time)
+
+var int lastBuy25Day  = na
+var int lastBuy50Day  = na
+var int lastBuy100Day = na
+var int lastSell50Day = na
+var int lastSell100Day= na
+
+if showBuy25 and time >= start and buy25sig
+    if na(lastBuy25Day) or thisDay != lastBuy25Day
+        lbl = buy25str ? "🔥 BUY 25%" : bullPattern ? "📌 BUY 25%" : "BUY 25%"
+        label.new(bar_index, low, lbl, color=colorBuy25, textcolor=colorBuy25,
+         style=label.style_arrowup, yloc=yloc.belowbar, size=buy25str ? size.large : size.normal)
+        lastBuy25Day := thisDay
+
+if showBuy50 and time >= start and buy50sig
+    if na(lastBuy50Day) or thisDay != lastBuy50Day
+        lbl = buy50str ? "🔥 BUY 50%" : bullPattern ? "📌 BUY 50%" : "BUY 50%"
+        label.new(bar_index, low, lbl, color=colorBuy50, textcolor=colorBuy50,
+         style=label.style_arrowup, yloc=yloc.belowbar, size=buy50str ? size.large : size.normal)
+        lastBuy50Day := thisDay
+
+if showBuy100 and time >= start and buy100sig
+    if na(lastBuy100Day) or thisDay != lastBuy100Day
+        lbl = buy100str ? "🔥 BUY 100%" : bullPattern ? "📌 BUY 100%" : "BUY 100%"
+        label.new(bar_index, low, lbl, color=colorBuy100, textcolor=colorBuy100,
+         style=label.style_arrowup, yloc=yloc.belowbar, size=buy100str ? size.large : size.normal)
+        lastBuy100Day := thisDay
+
+if showClose50 and time >= start and crossSell50
+    if na(lastSell50Day) or thisDay != lastSell50Day
+        lbl = sell50str ? "🔥 SELL 50%" : bearPattern ? "📌 SELL 50%" : "SELL 50%"
+        label.new(bar_index, high, lbl, color=colorClose50, textcolor=colorClose50,
+         style=label.style_arrowdown, yloc=yloc.abovebar, size=sell50str ? size.large : size.normal)
+        lastSell50Day := thisDay
+
+if showClose100 and time >= start and crossSell100
+    if na(lastSell100Day) or thisDay != lastSell100Day
+        lbl = sell100str ? "🔥 SELL 100%" : bearPattern ? "📌 SELL 100%" : "SELL 100%"
+        label.new(bar_index, high, lbl, color=colorClose100, textcolor=colorClose100,
+         style=label.style_arrowdown, yloc=yloc.abovebar, size=sell100str ? size.large : size.normal)
+        lastSell100Day := thisDay
+
+// ═══════════════════════════════════════════════════════════
+// ТАБЛИЦА
+// ═══════════════════════════════════════════════════════════
+cBg      = color.rgb(13, 17, 23, 0)
+cHdr     = color.rgb(22, 27, 36, 0)
+cSub     = color.rgb(30, 36, 48, 0)
+cSep     = color.rgb(38, 44, 58, 0)
+cMuted   = color.rgb(100, 108, 128, 0)
+cWhite   = color.rgb(220, 225, 235, 0)
+cSM1     = color.rgb(150, 28, 28, 0)
+cSM2     = color.rgb(120, 50, 50, 0)
+cSM3     = color.rgb(42, 48, 62, 0)
+cSM4     = color.rgb(25, 90, 45, 0)
+cSM5     = color.rgb(15, 65, 30, 0)
+cNear    = color.rgb(180, 145, 0, 0)
+cGreen   = color.rgb(30, 180, 80, 0)
+cRed     = color.rgb(220, 60, 60, 0)
+
+var table myTable = table.new(position.top_right, 4, 11,
+ frame_color=color.rgb(50, 58, 75, 0), frame_width=2,
+ bgcolor=cBg, border_color=color.rgb(35, 42, 56, 0), border_width=1)
+
+trendTxt = trendUp ? "▲  UP" : "▼  DN"
+trendCol = trendUp ? cGreen : cRed
+rsiNum   = str.tostring(rsiVal, "#")
+rsiCol   = rsiOversold ? cGreen : rsiOverbought ? cRed : cMuted
+table.cell(myTable, 0, 0, syminfo.basecurrency + "/" + syminfo.currency,
+ text_color=cWhite, bgcolor=cBg, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 1, 0, str.tostring(close, "#,###.##"),
+ text_color=color.white, bgcolor=cBg, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 2, 0, trendTxt,
+ text_color=trendCol, bgcolor=cBg, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 3, 0, "RSI " + rsiNum,
+ text_color=rsiCol, bgcolor=cBg, text_halign=text.align_center, text_size=size.small)
+
+table.cell(myTable, 0, 1, "УРОВЕНЬ", text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 1, 1, "ЦЕНА",    text_color=cMuted, bgcolor=cHdr, text_halign=text.align_right,  text_size=size.small)
+table.cell(myTable, 2, 1, "СИГНАЛ",  text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 3, 1, "ДО ЦЕЛ.", text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.small)
+
+n1 = nearestIdx == 0
+b1 = n1 ? cNear : cSM1
+table.cell(myTable, 0, 2, n1 ? "◆ SM1" : "  SM1", text_color=color.white, bgcolor=b1, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 1, 2, str.tostring(line_1, "#,###.#"), text_color=color.white, bgcolor=b1, text_halign=text.align_right, text_size=size.small)
+table.cell(myTable, 2, 2, "SELL 100%", text_color=color.white, bgcolor=b1, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 3, 2, pct(line_1), text_color=color.white, bgcolor=b1, text_halign=text.align_center, text_size=size.small)
+
+n2 = nearestIdx == 1
+b2 = n2 ? cNear : cSM2
+table.cell(myTable, 0, 3, n2 ? "◆ SM2" : "  SM2", text_color=color.white, bgcolor=b2, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 1, 3, str.tostring(line_2, "#,###.#"), text_color=color.white, bgcolor=b2, text_halign=text.align_right, text_size=size.small)
+table.cell(myTable, 2, 3, "SELL 50%", text_color=color.white, bgcolor=b2, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 3, 3, pct(line_2), text_color=color.white, bgcolor=b2, text_halign=text.align_center, text_size=size.small)
+
+n3  = nearestIdx == 2
+b3  = n3 ? cNear : cSM3
+tc3 = n3 ? color.black : cWhite
+table.cell(myTable, 0, 4, n3 ? "◆ SM3" : "  SM3", text_color=tc3, bgcolor=b3, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 1, 4, str.tostring(line_3, "#,###.#"), text_color=tc3, bgcolor=b3, text_halign=text.align_right, text_size=size.small)
+table.cell(myTable, 2, 4, "BUY 25%", text_color=tc3, bgcolor=b3, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 3, 4, pct(line_3), text_color=tc3, bgcolor=b3, text_halign=text.align_center, text_size=size.small)
+
+n4 = nearestIdx == 3
+b4 = n4 ? cNear : cSM4
+table.cell(myTable, 0, 5, n4 ? "◆ SM4" : "  SM4", text_color=color.white, bgcolor=b4, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 1, 5, str.tostring(line_4, "#,###.#"), text_color=color.white, bgcolor=b4, text_halign=text.align_right, text_size=size.small)
+table.cell(myTable, 2, 5, "BUY 50%", text_color=color.white, bgcolor=b4, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 3, 5, pct(line_4), text_color=color.white, bgcolor=b4, text_halign=text.align_center, text_size=size.small)
+
+n5 = nearestIdx == 4
+b5 = n5 ? cNear : cSM5
+table.cell(myTable, 0, 6, n5 ? "◆ SM5" : "  SM5", text_color=color.white, bgcolor=b5, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 1, 6, str.tostring(line_5, "#,###.#"), text_color=color.white, bgcolor=b5, text_halign=text.align_right, text_size=size.small)
+table.cell(myTable, 2, 6, "BUY 100%", text_color=color.white, bgcolor=b5, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 3, 6, pct(line_5), text_color=color.white, bgcolor=b5, text_halign=text.align_center, text_size=size.small)
+
+table.cell(myTable, 0, 7, "", bgcolor=cSep, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 1, 7, "", bgcolor=cSep, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 2, 7, "", bgcolor=cSep, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 3, 7, "", bgcolor=cSep, text_halign=text.align_center, text_size=size.tiny)
+
+rsiStatTxt = rsiOversold ? "OVERSOLD" : rsiOverbought ? "OVERBOUGHT" : "NEUTRAL"
+rsiStatC   = rsiOversold ? color.new(cGreen, 55) : rsiOverbought ? color.new(cRed, 55) : cSub
+volStatC   = volConfirmed ? color.new(cGreen, 55) : cSub
+table.cell(myTable, 0, 8, "RSI", text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 1, 8, rsiStatTxt, text_color=cWhite, bgcolor=rsiStatC, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 2, 8, "VOL", text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 3, 8, volConfirmed ? "OK" : "LOW", text_color=volConfirmed ? cGreen : cMuted, bgcolor=volStatC, text_halign=text.align_center, text_size=size.tiny)
+
+patC      = bullPattern ? color.new(cGreen, 55) : bearPattern ? color.new(cRed, 55) : cSub
+patTxt    = bullPattern ? bullPatName : bearPattern ? bearPatName : "нет паттерна"
+barsOnStr = barsOnSM5 > 0 ? "SM5: " + str.tostring(barsOnSM5) + "b" :
+ barsOnSM4 > 0 ? "SM4: " + str.tostring(barsOnSM4) + "b" :
+ barsOnSM3 > 0 ? "SM3: " + str.tostring(barsOnSM3) + "b" : "—"
+barsOnC   = barsOnSM5 >= 3 or barsOnSM4 >= 3 or barsOnSM3 >= 3 ? color.new(color.blue, 50) : cSub
+table.cell(myTable, 0, 9, "PAT", text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 1, 9, patTxt, text_color=cWhite, bgcolor=patC, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 2, 9, "LVL", text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 3, 9, barsOnStr, text_color=cWhite, bgcolor=barsOnC, text_halign=text.align_center, text_size=size.tiny)
+
+strongBuyNow  = buy100str or buy50str or buy25str
+strongSellNow = sell100str or sell50str
+sigTxt = strongBuyNow ? "🔥  STRONG BUY" : strongSellNow ? "🔥  STRONG SELL" : "нет сигнала"
+sigC   = strongBuyNow ? color.new(cGreen, 35) : strongSellNow ? color.new(cRed, 35) : cSub
+table.cell(myTable, 0, 10, "SIG", text_color=cMuted, bgcolor=cHdr, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 1, 10, sigTxt, text_color=color.white, bgcolor=sigC, text_halign=text.align_center, text_size=size.small)
+table.cell(myTable, 2, 10, "", bgcolor=sigC, text_halign=text.align_center, text_size=size.tiny)
+table.cell(myTable, 3, 10, "", bgcolor=sigC, text_halign=text.align_center, text_size=size.tiny)
+
+
+// ═══════════════════════════════════════════════════════════
+// СТРУКТУРА РЫНКА — HH / LH / HL / LL
+// ═══════════════════════════════════════════════════════════
+grpPivot     = "Структура рынка (HH/LH/HL/LL)"
+showPivots   = input.bool(true,  "Показывать структуру",        group=grpPivot)
+showZigzag   = input.bool(true,  "Зигзаг",                      group=grpPivot)
+showPivotLvl = input.bool(true,  "Горизонтальные уровни",       group=grpPivot)
+pivotLen     = input.int(5,      "Период пивота", minval=2,      group=grpPivot)
+pivotLvlLen  = input.int(40,     "Длина уровня (баров)",        group=grpPivot)
+colorHH      = input.color(color.new(#00e676, 0),  "Цвет HH",   group=grpPivot)
+colorLH      = input.color(color.new(#ff5252, 0),  "Цвет LH",   group=grpPivot)
+colorHL      = input.color(color.new(#69f0ae, 0),  "Цвет HL",   group=grpPivot)
+colorLL      = input.color(color.new(#ff1744, 0),  "Цвет LL",   group=grpPivot)
+colorZZ      = input.color(color.new(#aaaacc, 40), "Цвет зигзага", group=grpPivot)
+
+pivHigh = ta.pivothigh(high, pivotLen, pivotLen)
+pivLow  = ta.pivotlow(low,   pivotLen, pivotLen)
+
+var float prevSwingHigh = na
+var float prevSwingLow  = na
+var float lastConfirmedHigh = na
+var float lastConfirmedLow  = na
+var int   lastHighBar       = na
+var int   lastLowBar        = na
+var float zzLastPrice       = na
+var int   zzLastBar         = na
+
+// Для алертов слома структуры: запоминаем тип предыдущего пивота
+var bool prevHighWasHH = false
+var bool prevLowWasLL  = false
+var bool structureLH   = false  // LH после HH → слом бычьей структуры
+var bool structureHL   = false  // HL после LL → слом медвежьей структуры
+
+// ── Хаи ──────────────────────────────────────────────────
+if not na(pivHigh)
+    isHH = na(prevSwingHigh) or pivHigh > prevSwingHigh
+    lbl  = isHH ? "HH" : "LH"
+    col  = isHH ? colorHH : colorLH
+    lvlC = isHH ? color.new(colorHH, 55) : color.new(colorLH, 55)
+
+    // Фиксируем слом: LH пришёл после HH
+    structureLH := not isHH and prevHighWasHH
+    prevHighWasHH := isHH
+
+    if showPivots
+        label.new(bar_index[pivotLen], pivHigh, lbl,
+         style=label.style_label_down,
+         color=col, textcolor=color.white, size=size.small)
+
+    if showPivotLvl
+        line.new(bar_index[pivotLen], pivHigh,
+         bar_index[pivotLen] + pivotLvlLen, pivHigh,
+         color=lvlC, width=1, style=line.style_dotted)
+
+    if showZigzag and not na(zzLastPrice)
+        line.new(zzLastBar, zzLastPrice,
+         bar_index[pivotLen], pivHigh,
+         color=colorZZ, width=2)
+
+    prevSwingHigh       := pivHigh
+    lastConfirmedHigh   := pivHigh
+    lastHighBar         := bar_index[pivotLen]
+    zzLastPrice         := pivHigh
+    zzLastBar           := bar_index[pivotLen]
+
+// ── Лои ──────────────────────────────────────────────────
+if not na(pivLow)
+    isHL = na(prevSwingLow) or pivLow > prevSwingLow
+    lbl  = isHL ? "HL" : "LL"
+    col  = isHL ? colorHL : colorLL
+    lvlC = isHL ? color.new(colorHL, 55) : color.new(colorLL, 55)
+
+    // Фиксируем разворот: HL пришёл после LL
+    structureHL := isHL and prevLowWasLL
+    prevLowWasLL := not isHL
+
+    if showPivots
+        label.new(bar_index[pivotLen], pivLow, lbl,
+         style=label.style_label_up,
+         color=col, textcolor=color.black, size=size.small)
+
+    if showPivotLvl
+        line.new(bar_index[pivotLen], pivLow,
+         bar_index[pivotLen] + pivotLvlLen, pivLow,
+         color=lvlC, width=1, style=line.style_dotted)
+
+    if showZigzag and not na(zzLastPrice)
+        line.new(zzLastBar, zzLastPrice,
+         bar_index[pivotLen], pivLow,
+         color=colorZZ, width=2)
+
+    prevSwingLow        := pivLow
+    lastConfirmedLow    := pivLow
+    lastLowBar          := bar_index[pivotLen]
+    zzLastPrice         := pivLow
+    zzLastBar           := bar_index[pivotLen]
+
+
+// ═══════════════════════════════════════════════════════════
+// ДВОЙНОЕ ФИБОНАЧЧИ
+// ═══════════════════════════════════════════════════════════
+grpFib      = "Зоны Фибоначчи"
+showFibBull = input.bool(true,  "Зелёное Фибо (коррекция от HH вниз)",  group=grpFib)
+showFibBear = input.bool(true,  "Красное Фибо (отскок от LL вверх)",    group=grpFib)
+showFib236  = input.bool(false, "Уровень 0.236",                         group=grpFib)
+showFib382  = input.bool(true,  "Уровень 0.382",                         group=grpFib)
+showFib500  = input.bool(true,  "Уровень 0.5",                           group=grpFib)
+showFib618  = input.bool(true,  "Уровень 0.618 ★",                       group=grpFib)
+showFib786  = input.bool(false, "Уровень 0.786",                         group=grpFib)
+fibBullC    = input.color(color.new(#4caf50, 78), "Цвет зелёного Фибо", group=grpFib)
+fibBearC    = input.color(color.new(#f23645, 78), "Цвет красного Фибо", group=grpFib)
+
+var int   fibState = 0
+var float fibLL1   = na
+var float fibHH    = na
+var float fibLL2   = na
+
+if not na(pivLow)
+    if fibState == 0 or fibState == 3
+        fibLL1  := pivLow
+        fibHH   := na
+        fibLL2  := na
+        fibState := 1
+    else if fibState == 2
+        fibLL2  := pivLow
+        fibState := 3
+
+if not na(pivHigh)
+    if fibState == 1
+        fibHH   := pivHigh
+        fibLL2  := na
+        fibState := 2
+    else if fibState == 3
+        fibLL1  := fibLL2
+        fibHH   := pivHigh
+        fibLL2  := na
+        fibState := 2
+
+rangeUp = fibState >= 2 and not na(fibLL1) and not na(fibHH) ? fibHH - fibLL1 : na
+rangeDn = fibState == 3 and not na(fibHH)  and not na(fibLL2) ? fibHH - fibLL2 : na
+
+g236 = not na(rangeUp) ? fibHH - rangeUp * 0.236 : na
+g382 = not na(rangeUp) ? fibHH - rangeUp * 0.382 : na
+g500 = not na(rangeUp) ? fibHH - rangeUp * 0.500 : na
+g618 = not na(rangeUp) ? fibHH - rangeUp * 0.618 : na
+g786 = not na(rangeUp) ? fibHH - rangeUp * 0.786 : na
+
+r236 = not na(rangeDn) ? fibLL2 + rangeDn * 0.236 : na
+r382 = not na(rangeDn) ? fibLL2 + rangeDn * 0.382 : na
+r500 = not na(rangeDn) ? fibLL2 + rangeDn * 0.500 : na
+r618 = not na(rangeDn) ? fibLL2 + rangeDn * 0.618 : na
+r786 = not na(rangeDn) ? fibLL2 + rangeDn * 0.786 : na
+
+drawFibBox(y1, y2, col) =>
+    box.new(bar_index - 3, math.min(y1, y2), bar_index + 50, math.max(y1, y2),
+     bgcolor=col, border_color=color.new(col, 25), border_width=1)
+
+drawFibLine(y, col, txt) =>
+    line.new(bar_index - 3, y, bar_index + 50, y,
+     color=col, width=1, style=line.style_dashed)
+    label.new(bar_index + 52, y, txt,
+     style=label.style_label_left,
+     color=color.new(col, 50),
+     textcolor=color.white, size=size.tiny)
+
+if barstate.islast
+    if showFibBull and not na(rangeUp)
+        gLC = color.new(#4caf50, 20)
+        if showFib382 and showFib500
+            drawFibBox(g382, g500, fibBullC)
+        if showFib500 and showFib618
+            drawFibBox(g500, g618, fibBullC)
+        if showFib236
+            drawFibLine(g236, gLC, "0.236 v")
+        if showFib382
+            drawFibLine(g382, gLC, "0.382 v")
+        if showFib500
+            drawFibLine(g500, gLC, "0.5   v")
+        if showFib618
+            drawFibLine(g618, gLC, "0.618 v ★")
+        if showFib786
+            drawFibLine(g786, gLC, "0.786 v")
+
+    if showFibBear and not na(rangeDn)
+        rLC = color.new(#f23645, 20)
+        if showFib382 and showFib500
+            drawFibBox(r382, r500, fibBearC)
+        if showFib500 and showFib618
+            drawFibBox(r500, r618, fibBearC)
+        if showFib236
+            drawFibLine(r236, rLC, "0.236 ^")
+        if showFib382
+            drawFibLine(r382, rLC, "0.382 ^")
+        if showFib500
+            drawFibLine(r500, rLC, "0.5   ^")
+        if showFib618
+            drawFibLine(r618, rLC, "0.618 ^ ★")
+        if showFib786
+            drawFibLine(r786, rLC, "0.786 ^")
+
+// ═══════════════════════════════════════════════════════════
+// АЛЕРТЫ
+// ═══════════════════════════════════════════════════════════
+
+alertcondition(crossBuy25,
+ title   = "BUY 25% (SM3)",
+ message = '{"signal":"buy25","level":"SM3","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(crossBuy50,
+ title   = "BUY 50% (SM4)",
+ message = '{"signal":"buy50","level":"SM4","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(crossBuy100,
+ title   = "BUY 100% (SM5)",
+ message = '{"signal":"buy100","level":"SM5","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(crossSell50,
+ title   = "SELL 50% (SM2)",
+ message = '{"signal":"sell50","level":"SM2","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(crossSell100,
+ title   = "SELL 100% (SM1)",
+ message = '{"signal":"sell100","level":"SM1","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(buy100str,
+ title   = "🔥 СИЛЬНЫЙ BUY 100% (SM5)",
+ message = '{"signal":"strong_buy100","level":"SM5","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(buy50str,
+ title   = "🔥 СИЛЬНЫЙ BUY 50% (SM4)",
+ message = '{"signal":"strong_buy50","level":"SM4","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(sell100str,
+ title   = "🔥 СИЛЬНЫЙ SELL 100% (SM1)",
+ message = '{"signal":"strong_sell100","level":"SM1","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(smaUp,
+ title   = "📈 Тренд вверх (выше SMA)",
+ message = '{"signal":"trend_up","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(smaDown,
+ title   = "📉 Тренд вниз (ниже SMA)",
+ message = '{"signal":"trend_down","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(barsOnSM5 == 5,
+ title   = "🔒 Удержание SM5 (5 баров)",
+ message = '{"signal":"holding_sm5","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","bars":"5","time":"{{timenow}}"}')
+
+alertcondition(barsOnSM4 == 5,
+ title   = "🔒 Удержание SM4 (5 баров)",
+ message = '{"signal":"holding_sm4","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","bars":"5","time":"{{timenow}}"}')
+
+// ── Структура рынка (НОВОЕ в v3) ──────────────────────────
+alertcondition(structureLH,
+ title   = "⚠️ Слом структуры LH",
+ message = '{"signal":"structure_lh","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+alertcondition(structureHL,
+ title   = "⚠️ Разворот HL",
+ message = '{"signal":"structure_hl","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+
+
+// ═══════════════════════════════════════════════════════════
+// ЗОНЫ ЛИКВИДНОСТИ
+// ═══════════════════════════════════════════════════════════
+liqLen = input.int(7, title='Detection Length', minval=3, maxval=13, inline='LIQ', group=grpLiq)
+liqMar = 10 / input.float(6.9, 'Margin', minval=4, maxval=9, step=0.1, inline='LIQ', group=grpLiq)
+
+liqBuy = input.bool(true, 'Buyside Liquidity Zones, Margin', inline='Buyside', group=grpLiq)
+marBuy = input.float(2.3, '', minval=1.5, maxval=10, step=.1, inline='Buyside', group=grpLiq)
+cLIQ_B = input.color(color.new(#4caf50, 0), '', inline='Buyside', group=grpLiq)
+
+liqSel = input.bool(true, 'Sellside Liquidity Zones, Margin', inline='Sellside', group=grpLiq)
+marSel = input.float(2.3, '', minval=1.5, maxval=10, step=.1, inline='Sellside', group=grpLiq)
+cLIQ_S = input.color(color.new(#f23645, 0), '', inline='Sellside', group=grpLiq)
+
+lqVoid = input.bool(false, 'Liquidity Voids, Bullish', inline='void', group=grpLiq)
+cLQV_B = input.color(color.new(#4caf50, 0), '', inline='void', group=grpLiq)
+cLQV_S = input.color(color.new(#f23645, 0), 'Bearish', inline='void', group=grpLiq)
+lqText = input.bool(false, 'Label', inline='void', group=grpLiq)
+
+mode   = input.string('Present', title='Mode', options=['Present','Historical'], inline='MOD', group=grpLiq)
+visLiq = input.int(3, '    # Visible Levels', minval=1, maxval=50, inline='MOD', group=grpLiq)
+
+maxSize = 50
+atr     = ta.atr(10)
+atr200  = ta.atr(200)
+per     = mode == 'Present' ? last_bar_index - bar_index <= 500 : true
+
+type ZZ
+    int   [] d
+    int   [] x
+    float [] y
+type bar
+    float o = open
+    float h = high
+    float l = low
+    float c = close
+    int   i = bar_index
+type liq
+    box   bx
+    box   bxz
+    box   bxt
+    bool  brZ
+    bool  brL
+    line  ln
+    line  lne
+
+var ZZ aZZ = ZZ.new(
+ array.new<int>  (maxSize,  0),
+ array.new<int>  (maxSize,  0),
+ array.new<float>(maxSize, na))
+bar b = bar.new()
+var liq[] b_liq_B = array.new<liq>(1, liq.new(box(na),box(na),box(na),false,false,line(na),line(na)))
+var liq[] b_liq_S = array.new<liq>(1, liq.new(box(na),box(na),box(na),false,false,line(na),line(na)))
+var b_liq_V = array.new_box()
+var int dir = na, var int x1 = na, var float y1 = na, var int x2 = na, var float y2 = na
+
+method in_out(ZZ aZZ, int _d, int _x, float _y) =>
+    aZZ.d.unshift(_d), aZZ.x.unshift(_x), aZZ.y.unshift(_y), aZZ.d.pop(), aZZ.x.pop(), aZZ.y.pop()
+
+max_bars_back(time, 1000)
+
+x2 := b.i - 1
+ph = ta.pivothigh(liqLen, 1)
+pl = ta.pivotlow(liqLen, 1)
+
+if ph
+    dir := aZZ.d.get(0)
+    x1  := aZZ.x.get(0)
+    y1  := aZZ.y.get(0)
+    y2  := nz(b.h[1])
+    if dir < 1
+        aZZ.in_out(1, x2, y2)
+    else
+        if dir == 1 and ph > y1
+            aZZ.x.set(0, x2), aZZ.y.set(0, y2)
+    if per
+        count = 0
+        st_P  = 0.
+        st_B  = 0
+        minP  = 0.
+        maxP  = 10e6
+        for i = 0 to maxSize - 1
+            if aZZ.d.get(i) == 1
+                if aZZ.y.get(i) > ph + (atr / liqMar)
+                    break
+                else
+                    if aZZ.y.get(i) > ph - (atr / liqMar) and aZZ.y.get(i) < ph + (atr / liqMar)
+                        count += 1
+                        st_B := aZZ.x.get(i)
+                        st_P := aZZ.y.get(i)
+                        if aZZ.y.get(i) > minP
+                            minP := aZZ.y.get(i)
+                        if aZZ.y.get(i) < maxP
+                            maxP := aZZ.y.get(i)
+        if count > 2
+            getB = b_liq_B.get(0)
+            if st_B == getB.bx.get_left()
+                getB.bx.set_top(math.avg(minP, maxP) + (atr / liqMar))
+                getB.bx.set_rightbottom(b.i + 10, math.avg(minP, maxP) - (atr / liqMar))
+            else
+                b_liq_B.unshift(
+                 liq.new(
+                   box.new(st_B, math.avg(minP, maxP) + (atr / liqMar), b.i + 10, math.avg(minP, maxP) - (atr / liqMar), bgcolor=color.new(cLIQ_B, 88), border_color=color.new(cLIQ_B, 40)),
+                   box.new(na, na, na, na, bgcolor=color(na), border_color=color(na)),
+                   box.new(st_B, st_P, b.i + 10, st_P, text='Buyside liquidity', text_size=size.tiny, text_halign=text.align_left, text_valign=text.align_bottom, text_color=color.new(cLIQ_B, 0), bgcolor=color.new(cLIQ_B, 80), border_color=color(na)),
+                   false,
+                   false,
+                   line.new(st_B   , st_P, b.i - 1, st_P, color=color.new(cLIQ_B, 0), width=2),
+                   line.new(b.i - 1, st_P, na     , st_P, color=color.new(cLIQ_B, 0), style=line.style_dotted, width=2)))
+                alert('buyside liquidity level detected/updated for ' + syminfo.ticker)
+            if b_liq_B.size() > visLiq
+                getLast = b_liq_B.pop()
+                getLast.bx.delete(), getLast.bxz.delete(), getLast.bxt.delete()
+                getLast.ln.delete(), getLast.lne.delete()
+
+if pl
+    dir := aZZ.d.get(0)
+    x1  := aZZ.x.get(0)
+    y1  := aZZ.y.get(0)
+    y2  := nz(b.l[1])
+    if dir > -1
+        aZZ.in_out(-1, x2, y2)
+    else
+        if dir == -1 and pl < y1
+            aZZ.x.set(0, x2), aZZ.y.set(0, y2)
+    if per
+        count = 0
+        st_P  = 0.
+        st_B  = 0
+        minP  = 0.
+        maxP  = 10e6
+        for i = 0 to maxSize - 1
+            if aZZ.d.get(i) == -1
+                if aZZ.y.get(i) < pl - (atr / liqMar)
+                    break
+                else
+                    if aZZ.y.get(i) > pl - (atr / liqMar) and aZZ.y.get(i) < pl + (atr / liqMar)
+                        count += 1
+                        st_B := aZZ.x.get(i)
+                        st_P := aZZ.y.get(i)
+                        if aZZ.y.get(i) > minP
+                            minP := aZZ.y.get(i)
+                        if aZZ.y.get(i) < maxP
+                            maxP := aZZ.y.get(i)
+        if count > 2
+            getB = b_liq_S.get(0)
+            if st_B == getB.bx.get_left()
+                getB.bx.set_top(math.avg(minP, maxP) + (atr / liqMar))
+                getB.bx.set_rightbottom(b.i + 10, math.avg(minP, maxP) - (atr / liqMar))
+            else
+                b_liq_S.unshift(
+                 liq.new(
+                   box.new(st_B, math.avg(minP, maxP) + (atr / liqMar), b.i + 10, math.avg(minP, maxP) - (atr / liqMar), bgcolor=color.new(cLIQ_S, 88), border_color=color.new(cLIQ_S, 40)),
+                   box.new(na, na, na, na, bgcolor=color(na), border_color=color(na)),
+                   box.new(st_B, st_P, b.i + 10, st_P, text='Sellside liquidity', text_size=size.tiny, text_halign=text.align_left, text_valign=text.align_top, text_color=color.new(cLIQ_S, 0), bgcolor=color.new(cLIQ_S, 80), border_color=color(na)),
+                   false,
+                   false,
+                   line.new(st_B   , st_P, b.i - 1, st_P, color=color.new(cLIQ_S, 0), width=2),
+                   line.new(b.i - 1, st_P, na     , st_P, color=color.new(cLIQ_S, 0), style=line.style_dotted, width=2)))
+                alert('sellside liquidity level detected/updated for ' + syminfo.ticker)
+            if b_liq_S.size() > visLiq
+                getLast = b_liq_S.pop()
+                getLast.bx.delete(), getLast.bxz.delete(), getLast.bxt.delete()
+                getLast.ln.delete(), getLast.lne.delete()
+
+for i = 0 to b_liq_B.size() - 1
+    x = b_liq_B.get(i)
+    if not x.brL
+        x.lne.set_x2(b.i)
+        if b.h > x.bx.get_top()
+            x.brL := true
+            x.brZ := true
+            alert('buyside liquidity level breached for ' + syminfo.ticker)
+            x.bxz.set_lefttop(b.i - 1, math.min(x.ln.get_y1() + marBuy * (atr), b.h))
+            x.bxz.set_rightbottom(b.i + 1, x.ln.get_y1())
+            x.bxz.set_bgcolor(color.new(cLIQ_B, liqBuy ? 73 : 100))
+    else if x.brZ
+        if b.l > x.ln.get_y1() - marBuy * (atr) and b.h < x.ln.get_y1() + marBuy * (atr)
+            x.bxz.set_right(b.i + 1)
+            x.bxz.set_top(math.max(b.h, x.bxz.get_top()))
+            if liqBuy
+                x.lne.set_x2(b.i + 1)
+        else
+            x.brZ := false
+
+for i = 0 to b_liq_S.size() - 1
+    x = b_liq_S.get(i)
+    if not x.brL
+        x.lne.set_x2(b.i)
+        if b.l < x.bx.get_bottom()
+            x.brL := true
+            x.brZ := true
+            alert('sellside liquidity level breached for ' + syminfo.ticker)
+            x.bxz.set_lefttop(b.i - 1, x.ln.get_y1())
+            x.bxz.set_rightbottom(b.i + 1, math.max(x.ln.get_y1() - marSel * (atr), b.l))
+            x.bxz.set_bgcolor(color.new(cLIQ_S, liqSel ? 73 : 100))
+    else if x.brZ
+        if b.l > x.ln.get_y1() - marSel * (atr) and b.h < x.ln.get_y1() + marSel * (atr)
+            x.bxz.set_rightbottom(b.i + 1, math.min(b.l, x.bxz.get_bottom()))
+            if liqSel
+                x.lne.set_x2(b.i + 1)
+        else
+            x.brZ := false
+
+if lqVoid and per
+    bull = b.l - b.h[2] > atr200 and b.l > b.h[2] and b.c[1] > b.h[2]
+    bear = b.l[2] - b.h > atr200 and b.h < b.l[2] and b.c[1] < b.l[2]
+    if bull
+        l = 13
+        if bull[1]
+            st = math.abs(b.l - b.l[1]) / l
+            for i = 0 to l - 1
+                array.push(b_liq_V, box.new(b.i - 2, b.l[1] + i * st, b.i, b.l[1] + (i + 1) * st, border_color=na, bgcolor=color.new(cLQV_B, 90)))
+        else
+            st = math.abs(b.l - b.h[2]) / l
+            for i = 0 to l - 1
+                if lqText and i == 0
+                    array.push(b_liq_V, box.new(b.i - 2, b.h[2] + i * st, b.i, b.h[2] + (i + 1) * st, text='Liquidity Void   ', text_size=size.tiny, text_halign=text.align_right, text_valign=text.align_bottom, text_color=na, border_color=na, bgcolor=color.new(cLQV_B, 90)))
+                else
+                    array.push(b_liq_V, box.new(b.i - 2, b.h[2] + i * st, b.i, b.h[2] + (i + 1) * st, border_color=na, bgcolor=color.new(cLQV_B, 90)))
+    if bear
+        l = 13
+        if bear[1]
+            st = math.abs(b.h[1] - b.h) / l
+            for i = 0 to l - 1
+                array.push(b_liq_V, box.new(b.i - 2, b.h + i * st, b.i, b.h + (i + 1) * st, border_color=na, bgcolor=color.new(cLQV_S, 90)))
+        else
+            st = math.abs(b.l[2] - b.h) / l
+            for i = 0 to l - 1
+                if lqText and i == l - 1
+                    array.push(b_liq_V, box.new(b.i - 2, b.h + i * st, b.i, b.h + (i + 1) * st, text='Liquidity Void   ', text_size=size.tiny, text_halign=text.align_right, text_valign=text.align_top, text_color=na, border_color=na, bgcolor=color.new(cLQV_S, 90)))
+                else
+                    array.push(b_liq_V, box.new(b.i - 2, b.h + i * st, b.i, b.h + (i + 1) * st, border_color=na, bgcolor=color.new(cLQV_S, 90)))
+
+if b_liq_V.size() > 0
+    qt = b_liq_V.size()
+    for bn = qt - 1 to 0
+        if bn < b_liq_V.size()
+            cb  = b_liq_V.get(bn)
+            ba  = math.avg(cb.get_bottom(), cb.get_top())
+            if math.sign(b.c[1] - ba) != math.sign(b.c - ba) or math.sign(b.c[1] - ba) != math.sign(b.l - ba) or math.sign(b.c[1] - ba) != math.sign(b.h - ba)
+                b_liq_V.remove(bn)
+            else
+                cb.set_right(b.i + 1)
+                if b.i - cb.get_left() > 21
+                    cb.set_text_color(color.new(color.gray, 25))
+// end
