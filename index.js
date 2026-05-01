@@ -86,7 +86,9 @@ function fmtPrice(p) {
 }
 
 function fmtTime(t) {
-  const ts = t ? (String(t).length > 12 ? parseInt(t) : parseInt(t) * 1000) : Date.now()
+  const n = parseInt(t)
+  const ts = (!t || !n || n < 1000000000) ? Date.now()
+    : (String(t).length > 12 ? n : n * 1000)
   return new Date(ts).toLocaleString('ru-RU', {
     timeZone: 'Europe/Prague',
     day:'2-digit', month:'2-digit', year:'numeric',
