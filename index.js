@@ -133,6 +133,20 @@ function buildMsg(data) {
   const isPivot  = signal === 'pivot_hh' || signal === 'pivot_ll'
   const isLiq    = signal.startsWith('liq_')
 
+  const rsi       = data.rsi
+  const rsiStatus = data.rsi_status
+  const vol       = data.vol
+  const trend     = data.trend
+  const smLevel   = data.sm_level
+
+  const rsiEmoji = rsiStatus === 'OVERSOLD' ? '🟢' : rsiStatus === 'OVERBOUGHT' ? '🔴' : '⚪️'
+  const volEmoji = vol === 'OK' ? '✅' : '📉'
+  const trendEmoji = trend === 'UP' ? '📈' : trend === 'DOWN' ? '📉' : ''
+
+  const pct = smLevel && data.price
+    ? ((parseFloat(smLevel) - parseFloat(data.price)) / parseFloat(data.price) * 100).toFixed(1)
+    : null
+
   const lines = []
   lines.push(`${meta.emoji} *${meta.title}*`)
   lines.push(``)
@@ -140,24 +154,33 @@ function buildMsg(data) {
   lines.push(``)
   lines.push(`💰 Цена:    \`${price}\``)
 
-  if (isBuy || isSell) {
-    lines.push(`📍 Уровень: \`${meta.level}\``)
+  if (smLevel && !isPivot && !isLiq) {
+    const pctStr = pct ? ` (${pct > 0 ? '+' : ''}${pct}%)` : ''
+    lines.push(`📍 Уровень: \`${fmtPrice(smLevel)}\`${pctStr}`)
+  }
+
+  if (rsi && !isPivot && !isLiq) {
+    lines.push(`📊 RSI:     \`${rsi}\`  ${rsiEmoji} _${rsiStatus || ''}_`)
+  }
+
+  if (vol && !isPivot && !isLiq) {
+    lines.push(`📦 Объём:   ${volEmoji} \`${vol}\``)
+  }
+
+  if (trend && !isPivot && !isLiq && !isTrend) {
+    lines.push(`${trendEmoji} Тренд:   \`${trend}\``)
   }
 
   if (isStrong) {
     lines.push(``)
-    lines.push(`✅ Объём подтверждён`)
-    lines.push(`✅ RSI в зоне`)
-    lines.push(`✅ Тренд совпадает`)
-    lines.push(``)
-    lines.push(`⚡️ _Все три фильтра совпали_`)
+    lines.push(`⚡️ _Все три фильтра совпали — сильный сигнал_`)
   }
 
   if (isTrend) {
     lines.push(``)
     const txt = signal === 'trend_up'
-      ? '📊 Закрытие *выше* SMA50 → бычий тренд'
-      : '📊 Закрытие *ниже* SMA50 → медвежий тренд'
+      ? '📊 Цена закрылась *выше* SMA50 → бычий тренд'
+      : '📊 Цена закрылась *ниже* SMA50 → медвежий тренд'
     lines.push(txt)
   }
 
@@ -271,10 +294,16 @@ app.get('/test/:signal?', async (req, res) => {
   const signal = req.params.signal || 'buy100'
   const data = {
     signal,
-    ticker:   'BTCUSDT',
-    price:    '76125.50',
-    interval: '1D',
-    time:     String(Date.now()),
+    ticker:     'BTCUSDT',
+    price:      '76125.50',
+    sm_level:   '70095.00',
+    rsi:        '38',
+    rsi_status: 'OVERSOLD',
+    vol:        'LOW',
+    trend:      'UP',
+    interval:   '1D',
+    time:       String(Date.now()),
+    f382: '73800', f500: '72100', f618: '70400',
   }
   const msg = buildMsg(data)
   if (!msg) return res.json({ error: 'unknown signal' })

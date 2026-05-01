@@ -625,62 +625,62 @@ if barstate.islast
 // АЛЕРТЫ
 // ═══════════════════════════════════════════════════════════
 
-alertcondition(crossBuy25,
- title   = "BUY 25% (SM3)",
- message = '{"signal":"buy25","level":"SM3","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+_tk  = syminfo.ticker
+_tf  = timeframe.period
+_p   = str.tostring(close,   "#.##")
+_r   = str.tostring(rsiVal,  "#")
+_rst = rsiOversold ? "OVERSOLD" : rsiOverbought ? "OVERBOUGHT" : "NEUTRAL"
+_v   = volConfirmed ? "OK" : "LOW"
+_tr  = trendUp ? "UP" : "DOWN"
+_t   = str.tostring(timenow)
+_s1  = str.tostring(line_1, "#.##")
+_s2  = str.tostring(line_2, "#.##")
+_s3  = str.tostring(line_3, "#.##")
+_s4  = str.tostring(line_4, "#.##")
+_s5  = str.tostring(line_5, "#.##")
 
-alertcondition(crossBuy50,
- title   = "BUY 50% (SM4)",
- message = '{"signal":"buy50","level":"SM4","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if crossBuy25
+    alert('{"signal":"buy25","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s3+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(crossBuy100,
- title   = "BUY 100% (SM5)",
- message = '{"signal":"buy100","level":"SM5","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if crossBuy50
+    alert('{"signal":"buy50","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s4+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(crossSell50,
- title   = "SELL 50% (SM2)",
- message = '{"signal":"sell50","level":"SM2","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if crossBuy100
+    alert('{"signal":"buy100","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s5+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(crossSell100,
- title   = "SELL 100% (SM1)",
- message = '{"signal":"sell100","level":"SM1","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if crossSell50
+    alert('{"signal":"sell50","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s2+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(buy100str,
- title   = "🔥 СИЛЬНЫЙ BUY 100% (SM5)",
- message = '{"signal":"strong_buy100","level":"SM5","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if crossSell100
+    alert('{"signal":"sell100","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s1+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(buy50str,
- title   = "🔥 СИЛЬНЫЙ BUY 50% (SM4)",
- message = '{"signal":"strong_buy50","level":"SM4","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if buy100str
+    alert('{"signal":"strong_buy100","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s5+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(sell100str,
- title   = "🔥 СИЛЬНЫЙ SELL 100% (SM1)",
- message = '{"signal":"strong_sell100","level":"SM1","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if buy50str
+    alert('{"signal":"strong_buy50","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s4+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(smaUp,
- title   = "📈 Тренд вверх (выше SMA)",
- message = '{"signal":"trend_up","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if sell100str
+    alert('{"signal":"strong_sell100","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","sm_level":"'+_s1+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(smaDown,
- title   = "📉 Тренд вниз (ниже SMA)",
- message = '{"signal":"trend_down","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if smaUp
+    alert('{"signal":"trend_up","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"UP","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(barsOnSM5 == 5,
- title   = "🔒 Удержание SM5 (5 баров)",
- message = '{"signal":"holding_sm5","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","bars":"5","time":"{{timenow}}"}')
+if smaDown
+    alert('{"signal":"trend_down","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"DOWN","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(barsOnSM4 == 5,
- title   = "🔒 Удержание SM4 (5 баров)",
- message = '{"signal":"holding_sm4","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","bars":"5","time":"{{timenow}}"}')
+if barsOnSM5 == 5
+    alert('{"signal":"holding_sm5","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","bars":"5","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-// ── Структура рынка (НОВОЕ в v3) ──────────────────────────
-alertcondition(structureLH,
- title   = "⚠️ Слом структуры LH",
- message = '{"signal":"structure_lh","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+if barsOnSM4 == 5
+    alert('{"signal":"holding_sm4","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","bars":"4","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
-alertcondition(structureHL,
- title   = "⚠️ Разворот HL",
- message = '{"signal":"structure_hl","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}')
+// ── Структура рынка ────────────────────────────────────────
+if structureLH
+    alert('{"signal":"structure_lh","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
+
+if structureHL
+    alert('{"signal":"structure_hl","ticker":"'+_tk+'","interval":"'+_tf+'","price":"'+_p+'","rsi":"'+_r+'","rsi_status":"'+_rst+'","vol":"'+_v+'","trend":"'+_tr+'","time":"'+_t+'"}', alert.freq_once_per_bar_close)
 
 
 // ═══════════════════════════════════════════════════════════
