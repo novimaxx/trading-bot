@@ -430,6 +430,10 @@ var bool prevHighWasHH = false
 var bool prevLowWasLL  = false
 var bool structureLH   = false  // LH после HH → слом бычьей структуры
 var bool structureHL   = false  // HL после LL → слом медвежьей структуры
+var bool newHH         = false  // для alert с фибо
+var bool newLL         = false  // для alert с фибо
+var float hhPrice      = na
+var float llPrice      = na
 
 // ── Хаи ──────────────────────────────────────────────────
 if not na(pivHigh)
@@ -441,10 +445,8 @@ if not na(pivHigh)
     // Фиксируем слом: LH пришёл после HH
     structureLH := not isHH and prevHighWasHH
     prevHighWasHH := isHH
-
-    // Alert HH с уровнями коррекции Фибо
-    if isHH and not na(g382) and not na(g500) and not na(g618)
-        alert('{"signal":"pivot_hh","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","price":"' + str.tostring(pivHigh, "#.##") + '","f382":"' + str.tostring(g382, "#.##") + '","f500":"' + str.tostring(g500, "#.##") + '","f618":"' + str.tostring(g618, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
+    newHH := isHH
+    hhPrice := pivHigh
 
     if showPivots
         label.new(bar_index[pivotLen], pivHigh, lbl,
@@ -477,10 +479,8 @@ if not na(pivLow)
     // Фиксируем разворот: HL пришёл после LL
     structureHL := isHL and prevLowWasLL
     prevLowWasLL := not isHL
-
-    // Alert LL с уровнями отскока Фибо
-    if not isHL and not na(r382) and not na(r500) and not na(r618)
-        alert('{"signal":"pivot_ll","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","price":"' + str.tostring(pivLow, "#.##") + '","f382":"' + str.tostring(r382, "#.##") + '","f500":"' + str.tostring(r500, "#.##") + '","f618":"' + str.tostring(r618, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
+    newLL := not isHL
+    llPrice := pivLow
 
     if showPivots
         label.new(bar_index[pivotLen], pivLow, lbl,
@@ -546,6 +546,21 @@ if not na(pivHigh)
 
 rangeUp = fibState >= 2 and not na(fibLL1) and not na(fibHH) ? fibHH - fibLL1 : na
 rangeDn = fibState == 3 and not na(fibHH)  and not na(fibLL2) ? fibHH - fibLL2 : na
+
+// Pivot alerts с фибо — вызываем здесь, после расчёта rangeUp/rangeDn
+if newHH and not na(rangeUp)
+    g382v = fibHH - rangeUp * 0.382
+    g500v = fibHH - rangeUp * 0.500
+    g618v = fibHH - rangeUp * 0.618
+    alert('{"signal":"pivot_hh","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","price":"' + str.tostring(hhPrice, "#.##") + '","f382":"' + str.tostring(g382v, "#.##") + '","f500":"' + str.tostring(g500v, "#.##") + '","f618":"' + str.tostring(g618v, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
+    newHH := false
+
+if newLL and not na(rangeDn)
+    r382v = fibLL2 + rangeDn * 0.382
+    r500v = fibLL2 + rangeDn * 0.500
+    r618v = fibLL2 + rangeDn * 0.618
+    alert('{"signal":"pivot_ll","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","price":"' + str.tostring(llPrice, "#.##") + '","f382":"' + str.tostring(r382v, "#.##") + '","f500":"' + str.tostring(r500v, "#.##") + '","f618":"' + str.tostring(r618v, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
+    newLL := false
 
 g236 = not na(rangeUp) ? fibHH - rangeUp * 0.236 : na
 g382 = not na(rangeUp) ? fibHH - rangeUp * 0.382 : na
