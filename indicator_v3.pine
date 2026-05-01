@@ -442,6 +442,10 @@ if not na(pivHigh)
     structureLH := not isHH and prevHighWasHH
     prevHighWasHH := isHH
 
+    // Alert HH с уровнями коррекции Фибо
+    if isHH and not na(g382) and not na(g500) and not na(g618)
+        alert('{"signal":"pivot_hh","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","price":"' + str.tostring(pivHigh, "#.##") + '","f382":"' + str.tostring(g382, "#.##") + '","f500":"' + str.tostring(g500, "#.##") + '","f618":"' + str.tostring(g618, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
+
     if showPivots
         label.new(bar_index[pivotLen], pivHigh, lbl,
          style=label.style_label_down,
@@ -473,6 +477,10 @@ if not na(pivLow)
     // Фиксируем разворот: HL пришёл после LL
     structureHL := isHL and prevLowWasLL
     prevLowWasLL := not isHL
+
+    // Alert LL с уровнями отскока Фибо
+    if not isHL and not na(r382) and not na(r500) and not na(r618)
+        alert('{"signal":"pivot_ll","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","price":"' + str.tostring(pivLow, "#.##") + '","f382":"' + str.tostring(r382, "#.##") + '","f500":"' + str.tostring(r500, "#.##") + '","f618":"' + str.tostring(r618, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
 
     if showPivots
         label.new(bar_index[pivotLen], pivLow, lbl,
