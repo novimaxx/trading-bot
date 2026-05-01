@@ -792,7 +792,7 @@ if ph
                    false,
                    line.new(st_B   , st_P, b.i - 1, st_P, color=color.new(cLIQ_B, 0), width=2),
                    line.new(b.i - 1, st_P, na     , st_P, color=color.new(cLIQ_B, 0), style=line.style_dotted, width=2)))
-                alert('buyside liquidity level detected/updated for ' + syminfo.ticker)
+                alert('{"signal":"liq_buy_found","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","level":"' + str.tostring(st_P, "#.##") + '","price":"' + str.tostring(st_P, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
             if b_liq_B.size() > visLiq
                 getLast = b_liq_B.pop()
                 getLast.bx.delete(), getLast.bxz.delete(), getLast.bxt.delete()
@@ -842,7 +842,7 @@ if pl
                    false,
                    line.new(st_B   , st_P, b.i - 1, st_P, color=color.new(cLIQ_S, 0), width=2),
                    line.new(b.i - 1, st_P, na     , st_P, color=color.new(cLIQ_S, 0), style=line.style_dotted, width=2)))
-                alert('sellside liquidity level detected/updated for ' + syminfo.ticker)
+                alert('{"signal":"liq_sell_found","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","level":"' + str.tostring(st_P, "#.##") + '","price":"' + str.tostring(st_P, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
             if b_liq_S.size() > visLiq
                 getLast = b_liq_S.pop()
                 getLast.bx.delete(), getLast.bxz.delete(), getLast.bxt.delete()
@@ -855,7 +855,7 @@ for i = 0 to b_liq_B.size() - 1
         if b.h > x.bx.get_top()
             x.brL := true
             x.brZ := true
-            alert('buyside liquidity level breached for ' + syminfo.ticker)
+            alert('{"signal":"liq_buy_breach","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","level":"' + str.tostring(x.ln.get_y1(), "#.##") + '","price":"' + str.tostring(close, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
             x.bxz.set_lefttop(b.i - 1, math.min(x.ln.get_y1() + marBuy * (atr), b.h))
             x.bxz.set_rightbottom(b.i + 1, x.ln.get_y1())
             x.bxz.set_bgcolor(color.new(cLIQ_B, liqBuy ? 73 : 100))
@@ -875,7 +875,7 @@ for i = 0 to b_liq_S.size() - 1
         if b.l < x.bx.get_bottom()
             x.brL := true
             x.brZ := true
-            alert('sellside liquidity level breached for ' + syminfo.ticker)
+            alert('{"signal":"liq_sell_breach","ticker":"' + syminfo.ticker + '","interval":"' + timeframe.period + '","level":"' + str.tostring(x.ln.get_y1(), "#.##") + '","price":"' + str.tostring(close, "#.##") + '","time":"' + str.tostring(timenow) + '"}', alert.freq_once_per_bar)
             x.bxz.set_lefttop(b.i - 1, x.ln.get_y1())
             x.bxz.set_rightbottom(b.i + 1, math.max(x.ln.get_y1() - marSel * (atr), b.l))
             x.bxz.set_bgcolor(color.new(cLIQ_S, liqSel ? 73 : 100))

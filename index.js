@@ -38,8 +38,12 @@ const CFG = {
     holding_sm5:    process.env.SIGNAL_HOLD       !== 'false',
     structure_lh:   process.env.SIGNAL_STRUCTURE  !== 'false',
     structure_hl:   process.env.SIGNAL_STRUCTURE  !== 'false',
-    pivot_hh:       process.env.SIGNAL_PIVOT      !== 'false',
-    pivot_ll:       process.env.SIGNAL_PIVOT      !== 'false',
+    pivot_hh:         process.env.SIGNAL_PIVOT      !== 'false',
+    pivot_ll:         process.env.SIGNAL_PIVOT      !== 'false',
+    liq_buy_found:    process.env.SIGNAL_LIQ        !== 'false',
+    liq_sell_found:   process.env.SIGNAL_LIQ        !== 'false',
+    liq_buy_breach:   process.env.SIGNAL_LIQ        !== 'false',
+    liq_sell_breach:  process.env.SIGNAL_LIQ        !== 'false',
   }
 }
 
@@ -59,8 +63,12 @@ const META = {
   holding_sm5:    { emoji: '🔒', title: 'Удержание SM5',   level: 'SM5' },
   structure_lh:   { emoji: '⚠️', title: 'Слом структуры',  level: 'LH'  },
   structure_hl:   { emoji: '⚠️', title: 'Разворот',        level: 'HL'  },
-  pivot_hh:       { emoji: '📈', title: 'HH — локальный хай', level: 'HH', onlyTF: '1D' },
-  pivot_ll:       { emoji: '📉', title: 'LL — локальный лой', level: 'LL', onlyTF: '1D' },
+  pivot_hh:       { emoji: '📈', title: 'HH — локальный хай',        level: 'HH', onlyTF: '1D' },
+  pivot_ll:       { emoji: '📉', title: 'LL — локальный лой',        level: 'LL', onlyTF: '1D' },
+  liq_buy_found:  { emoji: '🟢', title: 'Buyside ликвидность НАЙДЕНА'  },
+  liq_sell_found: { emoji: '🔴', title: 'Sellside ликвидность НАЙДЕНА' },
+  liq_buy_breach: { emoji: '⚡️', title: 'Buyside ликвидность ПРОБИТА'  },
+  liq_sell_breach:{ emoji: '⚡️', title: 'Sellside ликвидность ПРОБИТА' },
 }
 
 const TF_LABEL = {
@@ -123,6 +131,7 @@ function buildMsg(data) {
   const isHold   = signal.includes('holding')
   const isStruct = signal.includes('structure')
   const isPivot  = signal === 'pivot_hh' || signal === 'pivot_ll'
+  const isLiq    = signal.startsWith('liq_')
 
   const lines = []
   lines.push(`${meta.emoji} *${meta.title}*`)
@@ -164,6 +173,22 @@ function buildMsg(data) {
       ? '📉 LH после HH — *бычья структура сломана*'
       : '📈 HL после LL — *медвежья структура сломана*'
     lines.push(txt)
+  }
+
+  if (isLiq) {
+    const isBreach = signal.includes('breach')
+    const isBuyside = signal.includes('buy')
+    lines.push(`📍 Уровень: \`${fmtPrice(data.level || data.price)}\``)
+    lines.push(``)
+    if (isBreach) {
+      lines.push(isBuyside
+        ? '🎯 Стопы выбиты — возможный разворот вниз'
+        : '🎯 Стопы выбиты — возможный разворот вверх')
+    } else {
+      lines.push(isBuyside
+        ? '💡 Скопление покупок выше этой зоны'
+        : '💡 Скопление продаж ниже этой зоны')
+    }
   }
 
   if (isPivot && data.f382 && data.f500 && data.f618) {
