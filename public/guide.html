@@ -381,6 +381,29 @@
     </div>
   </div>
 
+  <!-- ДЛЯ КОГО -->
+  <div class="section">
+    <div class="sec-label">Аудитория</div>
+    <div class="sec-title">Для кого подходит?</div>
+    <div class="for-grid">
+      <div class="for-card">
+        <span class="for-icon">🎯</span>
+        <div class="for-title">Трейдеры любого уровня</div>
+        <div class="for-desc">Новичкам — понятные уровни и сигналы. Опытным — глубокая аналитика структуры и ликвидности.</div>
+      </div>
+      <div class="for-card">
+        <span class="for-icon">😤</span>
+        <div class="for-title">Устали от шума</div>
+        <div class="for-desc">Только самые важные сигналы. Никакого мусора — только уровни, которые действительно работают.</div>
+      </div>
+      <div class="for-card">
+        <span class="for-icon">📱</span>
+        <div class="for-title">Торговля в движении</div>
+        <div class="for-desc">Не нужно сидеть у монитора. Сигнал придёт в Telegram — успеешь среагировать где бы ты ни был.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- УРОВНИ -->
   <div class="section">
     <div class="sec-label">Уровни системы</div>
@@ -677,42 +700,6 @@
     </div>
   </div>
 
-  <!-- ТАБЛИЦА ВСЕХ СИГНАЛОВ -->
-  <div class="section">
-    <div class="sec-label">Справочник</div>
-    <div class="sec-title">Все сигналы системы</div>
-    <table class="sig-table">
-      <thead>
-        <tr>
-          <th>Сигнал</th>
-          <th>Уровень</th>
-          <th>Таймфреймы</th>
-          <th>Описание</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">BUY 100%</strong></td><td><span class="mono" style="color:var(--green2)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Максимальный вход в позицию</td></tr>
-        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">BUY 50%</strong></td><td><span class="mono" style="color:var(--green)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Хорошая зона для входа</td></tr>
-        <tr><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">BUY 25%</strong></td><td><span class="mono" style="color:var(--yellow)">SM3</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Осторожный вход, только дневной таймфрейм</td></tr>
-        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">SELL 50%</strong></td><td><span class="mono" style="color:var(--orange)">SM2</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Фиксация части прибыли</td></tr>
-        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">SELL 100%</strong></td><td><span class="mono" style="color:var(--red)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Полный выход из позиции</td></tr>
-        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 100%</strong></td><td><span class="mono" style="color:var(--yellow)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM5 + объём + RSI + тренд</td></tr>
-        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 50%</strong></td><td><span class="mono" style="color:var(--yellow)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM4 + объём + RSI + тренд</td></tr>
-        <tr style="background:rgba(255,87,34,.03)"><td><span class="dot" style="background:var(--fire)"></span><strong style="color:var(--fire)">STRONG SELL 100%</strong></td><td><span class="mono" style="color:var(--fire)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM1 + объём + RSI + тренд</td></tr>
-        <tr><td><span class="dot" style="background:var(--cyan)"></span><strong style="color:var(--cyan)">Тренд вверх</strong></td><td><span class="mono" style="color:var(--cyan)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие выше оранжевой SMA</td></tr>
-        <tr><td><span class="dot" style="background:var(--pink)"></span><strong style="color:var(--pink)">Тренд вниз</strong></td><td><span class="mono" style="color:var(--pink)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие ниже оранжевой SMA</td></tr>
-        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">Слом структуры</strong></td><td><span class="mono" style="color:var(--orange)">LH</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">LH после HH — бычья структура сломана</td></tr>
-        <tr><td><span class="dot" style="background:#cddc39"></span><strong style="color:#cddc39">Разворот</strong></td><td><span class="mono" style="color:#cddc39">HL</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">HL после LL — медвежья структура сломана</td></tr>
-        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">Buyside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона покупок обнаружена</td></tr>
-        <tr><td><span class="dot" style="background:#ff5252"></span><strong style="color:#ff5252">Buyside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вниз?</td></tr>
-        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Sellside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона продаж обнаружена</td></tr>
-        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Sellside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вверх?</td></tr>
-        <tr style="background:rgba(102,255,136,.03)"><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Пивот HH + Фибо</strong></td><td><span class="mono" style="color:var(--green2)">HH</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый максимум + уровни коррекции Фибо</td></tr>
-        <tr style="background:rgba(244,67,54,.03)"><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Пивот LL + Фибо</strong></td><td><span class="mono" style="color:var(--red)">LL</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый минимум + уровни отскока Фибо</td></tr>
-      </tbody>
-    </table>
-  </div>
-
   <!-- ТАРИФЫ -->
   <div class="section">
     <div class="sec-label">Подписка</div>
@@ -745,29 +732,6 @@
         </ul>
       </div>
 
-    </div>
-  </div>
-
-  <!-- ДЛЯ КОГО -->
-  <div class="section">
-    <div class="sec-label">Аудитория</div>
-    <div class="sec-title">Для кого подходит?</div>
-    <div class="for-grid">
-      <div class="for-card">
-        <span class="for-icon">🎯</span>
-        <div class="for-title">Трейдеры любого уровня</div>
-        <div class="for-desc">Новичкам — понятные уровни и сигналы. Опытным — глубокая аналитика структуры и ликвидности.</div>
-      </div>
-      <div class="for-card">
-        <span class="for-icon">😤</span>
-        <div class="for-title">Устали от шума</div>
-        <div class="for-desc">Только самые важные сигналы. Никакого мусора — только уровни, которые действительно работают.</div>
-      </div>
-      <div class="for-card">
-        <span class="for-icon">📱</span>
-        <div class="for-title">Торговля в движении</div>
-        <div class="for-desc">Не нужно сидеть у монитора. Сигнал придёт в Telegram — успеешь среагировать где бы ты ни был.</div>
-      </div>
     </div>
   </div>
 
@@ -812,6 +776,42 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ТАБЛИЦА ВСЕХ СИГНАЛОВ -->
+  <div class="section">
+    <div class="sec-label">Справочник</div>
+    <div class="sec-title">Все сигналы системы</div>
+    <table class="sig-table">
+      <thead>
+        <tr>
+          <th>Сигнал</th>
+          <th>Уровень</th>
+          <th>Таймфреймы</th>
+          <th>Описание</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">BUY 100%</strong></td><td><span class="mono" style="color:var(--green2)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Максимальный вход в позицию</td></tr>
+        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">BUY 50%</strong></td><td><span class="mono" style="color:var(--green)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Хорошая зона для входа</td></tr>
+        <tr><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">BUY 25%</strong></td><td><span class="mono" style="color:var(--yellow)">SM3</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Осторожный вход, только дневной таймфрейм</td></tr>
+        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">SELL 50%</strong></td><td><span class="mono" style="color:var(--orange)">SM2</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Фиксация части прибыли</td></tr>
+        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">SELL 100%</strong></td><td><span class="mono" style="color:var(--red)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Полный выход из позиции</td></tr>
+        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 100%</strong></td><td><span class="mono" style="color:var(--yellow)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM5 + объём + RSI + тренд</td></tr>
+        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 50%</strong></td><td><span class="mono" style="color:var(--yellow)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM4 + объём + RSI + тренд</td></tr>
+        <tr style="background:rgba(255,87,34,.03)"><td><span class="dot" style="background:var(--fire)"></span><strong style="color:var(--fire)">STRONG SELL 100%</strong></td><td><span class="mono" style="color:var(--fire)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM1 + объём + RSI + тренд</td></tr>
+        <tr><td><span class="dot" style="background:var(--cyan)"></span><strong style="color:var(--cyan)">Тренд вверх</strong></td><td><span class="mono" style="color:var(--cyan)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие выше оранжевой SMA</td></tr>
+        <tr><td><span class="dot" style="background:var(--pink)"></span><strong style="color:var(--pink)">Тренд вниз</strong></td><td><span class="mono" style="color:var(--pink)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие ниже оранжевой SMA</td></tr>
+        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">Слом структуры</strong></td><td><span class="mono" style="color:var(--orange)">LH</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">LH после HH — бычья структура сломана</td></tr>
+        <tr><td><span class="dot" style="background:#cddc39"></span><strong style="color:#cddc39">Разворот</strong></td><td><span class="mono" style="color:#cddc39">HL</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">HL после LL — медвежья структура сломана</td></tr>
+        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">Buyside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона покупок обнаружена</td></tr>
+        <tr><td><span class="dot" style="background:#ff5252"></span><strong style="color:#ff5252">Buyside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вниз?</td></tr>
+        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Sellside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона продаж обнаружена</td></tr>
+        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Sellside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вверх?</td></tr>
+        <tr style="background:rgba(102,255,136,.03)"><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Пивот HH + Фибо</strong></td><td><span class="mono" style="color:var(--green2)">HH</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый максимум + уровни коррекции Фибо</td></tr>
+        <tr style="background:rgba(244,67,54,.03)"><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Пивот LL + Фибо</strong></td><td><span class="mono" style="color:var(--red)">LL</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый минимум + уровни отскока Фибо</td></tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- ЦИТАТА -->
