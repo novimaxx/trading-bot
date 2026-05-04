@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Как установить IT v3 — Индикатор от Товарища</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:    #080812;
+    --card:  #10102a;
+    --card2: #14143a;
+    --b:     #1e1e3a;
+    --b2:    #2a2a5a;
+    --green: #4caf50;
+    --green2:#66ff88;
+    --cyan:  #00bcd4;
+    --orange:#ff9800;
+    --yellow:#ffc107;
+    --blue:  #2196f3;
+    --red:   #f44336;
+    --white: #f0f0ff;
+    --gray:  #5a5a8a;
+    --lg:    #b0b0cc;
+  }
+
+  body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
+  .page { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(160deg, #0d0d28, #151535, #0d0d28);
+    border: 1px solid var(--b2); border-radius: 24px;
+    padding: 48px 40px 36px; text-align: center; margin-bottom: 40px;
+  }
+  .hero-pill {
+    display: inline-block;
+    background: rgba(76,175,80,.1); border: 1px solid rgba(76,175,80,.3);
+    color: var(--green); font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 6px 18px; border-radius: 100px; margin-bottom: 20px;
+  }
+  .hero h1 { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-bottom: 8px; }
+  .hero-sub { font-size: 15px; color: var(--lg); margin-bottom: 6px; }
+  .hero-note { font-size: 13px; color: var(--gray); }
+
+  /* SECTION */
+  .sec-label {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 11px; font-weight: 800; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--gray); margin-bottom: 18px; margin-top: 40px;
+  }
+  .sec-label::after { content:''; flex:1; height:1px; background:var(--b); }
+  .sec-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .sec-desc { font-size: 14px; color: var(--lg); margin-bottom: 24px; }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 20px; position: relative; }
+  .step:not(:last-child)::after {
+    content: ''; position: absolute;
+    left: 21px; top: 44px; bottom: -8px; width: 2px;
+    background: linear-gradient(var(--b2), var(--b));
+  }
+  .step-num {
+    width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 900; background: var(--card2);
+    border: 1px solid var(--b2); position: relative; z-index: 1;
+  }
+  .step-body { padding-bottom: 32px; padding-top: 4px; flex: 1; }
+  .step-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .step-desc { font-size: 14px; color: var(--lg); margin-bottom: 10px; line-height: 1.6; }
+  .step-tip {
+    background: var(--card); border: 1px solid var(--b2); border-radius: 10px;
+    padding: 12px 16px; font-size: 13px; color: var(--lg); margin-top: 8px;
+  }
+  .step-tip strong { color: var(--white); }
+  .step-img {
+    background: var(--card2); border: 1px solid var(--b2); border-radius: 10px;
+    padding: 14px 18px; margin-top: 10px; font-size: 13px;
+    color: var(--gray); font-style: italic; text-align: center;
+  }
+  .code-block {
+    background: #0a0a1e; border: 1px solid var(--b2); border-radius: 10px;
+    padding: 12px 16px; margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: var(--cyan); word-break: break-all;
+  }
+
+  /* ALERT BOX */
+  .alert {
+    border-radius: 12px; padding: 16px 20px; margin: 16px 0;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .alert-text { font-size: 14px; line-height: 1.6; }
+  .alert.green { background: rgba(76,175,80,.08); border: 1px solid rgba(76,175,80,.2); }
+  .alert.yellow { background: rgba(255,193,7,.08); border: 1px solid rgba(255,193,7,.2); color: var(--lg); }
+  .alert.blue { background: rgba(33,150,243,.08); border: 1px solid rgba(33,150,243,.2); }
+
+  /* PILL TAG */
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 14px; border-radius: 100px; font-size: 12px; font-weight: 700;
+    margin: 4px 4px 4px 0;
+  }
+
+  /* KEYBOARD */
+  .keyboard { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-width: 320px; }
+  .kb-row { display: flex; gap: 6px; }
+  .kb-btn {
+    flex: 1; padding: 10px 14px; background: var(--card2);
+    border: 1px solid var(--b2); border-radius: 10px;
+    font-size: 13px; color: var(--white); text-align: center; font-weight: 500;
+  }
+  .kb-btn.active { background: rgba(76,175,80,.15); border-color: rgba(76,175,80,.4); color: var(--green); }
+
+  /* TG PREVIEW */
+  .tg-preview {
+    background: #0e0e24; border: 1px solid var(--b2); border-left: 3px solid var(--green2);
+    border-radius: 12px; padding: 16px 18px; margin-top: 10px; max-width: 320px;
+  }
+  .tg-preview-title { font-size: 15px; font-weight: 800; color: var(--green2); margin-bottom: 4px; }
+  .tg-preview-coin { font-size: 12px; color: var(--lg); margin-bottom: 10px; }
+  .tg-preview-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+  .tg-preview-lbl { color: var(--gray); }
+  .tg-preview-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .tg-preview-time { font-size: 11px; color: var(--gray); margin-top: 8px; }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; gap: 10px; }
+  .faq-item { background: var(--card); border: 1px solid var(--b); border-radius: 12px; padding: 16px 20px; }
+  .faq-q { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .faq-a { font-size: 13px; color: var(--lg); }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 32px 0 0; border-top: 1px solid var(--b); font-size: 12px; color: var(--gray); }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--cyan); font-size: 13px; text-decoration: none;
+    margin-bottom: 24px; opacity: .8;
+  }
+  .back-link:hover { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="index.html" class="back-link">← Назад к описанию индикатора</a>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-pill">Инструкция по установке</div>
+    <h1>Установка IT v3</h1>
+    <div class="hero-sub">Пошаговый гайд — от нуля до первого сигнала</div>
+    <div class="hero-note">Займёт 5–10 минут</div>
+  </div>
+
+  <!-- ЧАСТЬ 1: ИНДИКАТОР -->
+  <div class="sec-label">Часть 1</div>
+  <div class="sec-title">Устанавливаем индикатор на TradingView</div>
+  <div class="sec-desc">Нужен аккаунт на TradingView — бесплатный подходит.</div>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num" style="color:var(--cyan)">1</div>
+      <div class="step-body">
+        <div class="step-title">Открой TradingView и перейди к графику</div>
+        <div class="step-desc">Зайди на <strong>tradingview.com</strong>, выбери любой график — например BTCUSDT на дневном таймфрейме (1D).</div>
+        <div class="step-tip">💡 Индикатор работает на <strong>любом активе</strong>: крипта, акции, форекс, фьючерсы.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--blue)">2</div>
+      <div class="step-body">
+        <div class="step-title">Нажми "Индикаторы" в верхней панели</div>
+        <div class="step-desc">Кнопка находится в верхней части графика. Откроется поиск по индикаторам.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--orange)">3</div>
+      <div class="step-body">
+        <div class="step-title">Найди "IT v3" или перейди по ссылке</div>
+        <div class="step-desc">В поиске введи <strong>IT v3</strong> или <strong>Индикатор от Товарища</strong>. Либо используй прямую ссылку:</div>
+        <div class="code-block">https://ru.tradingview.com/script/YhFND4cy-indikator-ot-tovarishcha/</div>
+        <div class="step-tip">Нажми <strong>Добавить на активный график</strong> — индикатор появится на графике.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--green)">4</div>
+      <div class="step-body">
+        <div class="step-title">Индикатор на графике — проверь что всё отображается</div>
+        <div class="step-desc">На графике должны появиться:</div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--red); flex-shrink:0"></span>
+            <span><strong style="color:var(--red)">SM1 / SM2</strong> — красные уровни продаж</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--yellow); flex-shrink:0"></span>
+            <span><strong style="color:var(--yellow)">SM3</strong> — жёлтая базовая линия</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0"></span>
+            <span><strong style="color:var(--green)">SM4 / SM5</strong> — зелёные уровни покупок</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
+            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--orange); flex-shrink:0"></span>
+            <span><strong style="color:var(--orange)">Оранжевая SMA</strong> — глобальный тренд</span>
+          </div>
+        </div>
+        <div class="step-tip" style="margin-top:12px">📊 В правом верхнем углу графика — таблица с текущими ценами всех уровней и сигналом.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ЧАСТЬ 2: АЛЕРТЫ (ТОЛЬКО PRO) -->
+  <div class="sec-label" style="margin-top:48px">Часть 2 — PRO</div>
+  <div class="sec-title">Настраиваем сигналы в Telegram</div>
+  <div class="sec-desc">Этот раздел только для подписчиков <strong style="color:var(--yellow)">PRO</strong>. Сигналы будут приходить автоматически — не нужно следить за графиком.</div>
+
+  <div class="alert yellow">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">Для настройки алертов нужен аккаунт TradingView с поддержкой webhook-уведомлений (план <strong>Essential</strong> и выше, или бесплатный — для базовых алертов).</div>
+  </div>
+
+  <div class="steps" style="margin-top:24px">
+
+    <div class="step">
+      <div class="step-num" style="color:var(--yellow)">1</div>
+      <div class="step-body">
+        <div class="step-title">Открой график с IT v3 на нужной монете и таймфрейме</div>
+        <div class="step-desc">Поддерживаемые монеты: <strong>BTCUSDT</strong>, <strong>ETHUSDT</strong>, <strong>SOLUSDT</strong><br>Таймфреймы: <strong>1D</strong>, <strong>4H</strong>, <strong>1H</strong></div>
+        <div class="step-tip">📌 Алерты нужно создавать отдельно для каждой монеты и каждого таймфрейма.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--yellow)">2</div>
+      <div class="step-body">
+        <div class="step-title">Создай алерт — нажми кнопку "Alert" или Alt+A</div>
+        <div class="step-desc">Откроется диалог создания алерта.</div>
+        <div class="step-tip">
+          В поле <strong>Condition</strong> выбери <strong>IT v3</strong>, затем нужный сигнал из списка:<br><br>
+          • BUY 25% (SM3) · BUY 50% (SM4) · BUY 100% (SM5)<br>
+          • SELL 50% (SM2) · SELL 100% (SM1)<br>
+          • STRONG BUY/SELL · Тренд вверх/вниз<br>
+          • Слом структуры · Разворот HL<br>
+          • Any alert() function call — для пивотов и ликвидности
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--yellow)">3</div>
+      <div class="step-body">
+        <div class="step-title">Заполни поле Message</div>
+        <div class="step-desc">Для каждого сигнала своё сообщение. Пример для BUY 100%:</div>
+        <div class="code-block">{"signal":"buy100","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}</div>
+        <div class="step-tip" style="margin-top:8px">Для <strong>Any alert() function call</strong> поле Message оставь пустым — скрипт сам формирует сообщение с Фибо и ликвидностью.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--yellow)">4</div>
+      <div class="step-body">
+        <div class="step-title">Настрой Webhook URL в разделе Notifications</div>
+        <div class="step-desc">Нажми на стрелку рядом с Notifications, включи Webhook URL и вставь:</div>
+        <div class="code-block">https://trading-bot-production-7d20.up.railway.app/webhook</div>
+        <div class="step-tip">✅ Больше ничего менять не нужно — Webhook URL один для всех алертов.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--yellow)">5</div>
+      <div class="step-body">
+        <div class="step-title">Установи частоту срабатывания</div>
+        <div class="step-desc">В поле <strong>Fire</strong> выбери <strong>Once Per Bar Close</strong> — алерт будет срабатывать один раз при закрытии свечи.</div>
+        <div class="step-tip">⚠️ Если выбрать "Only Once" — алерт сработает один раз и остановится навсегда.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num" style="color:var(--green)">6</div>
+      <div class="step-body">
+        <div class="step-title">Нажми Create — готово!</div>
+        <div class="step-desc">Повтори для каждого сигнала, монеты и таймфрейма. Как только условие выполнится — придёт сообщение в Telegram.</div>
+        <div class="tg-preview">
+          <div class="tg-preview-title">🟢 BUY 100%</div>
+          <div class="tg-preview-coin">₿ BTC · 1 День</div>
+          <div class="tg-preview-row"><span class="tg-preview-lbl">💰 Цена</span><span class="tg-preview-val" style="color:var(--white)">77 335</span></div>
+          <div class="tg-preview-row"><span class="tg-preview-lbl">📍 Уровень</span><span class="tg-preview-val" style="color:var(--green2)">SM5</span></div>
+          <div class="tg-preview-time">🕐 04.05.2026, 09:00</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ЧАСТЬ 3: КАК ЧИТАТЬ -->
+  <div class="sec-label" style="margin-top:48px">Часть 3</div>
+  <div class="sec-title">Как читать сигналы</div>
+  <div class="sec-desc">Главное правило — смотри на тренд, потом на уровень.</div>
+
+  <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:32px">
+    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+      <div style="font-size:15px; font-weight:700; color:var(--cyan); margin-bottom:8px">📈 Тренд вверх + BUY сигнал = сильный вход</div>
+      <div style="font-size:13px; color:var(--lg)">Когда цена выше оранжевой SMA и пришёл BUY 50%/100% — это оптимальный момент для покупки. Тренд подтверждает направление.</div>
+    </div>
+    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+      <div style="font-size:15px; font-weight:700; color:var(--yellow); margin-bottom:8px">🔥 STRONG сигнал = действуй уверенно</div>
+      <div style="font-size:13px; color:var(--lg)">STRONG BUY/SELL — три независимых фильтра (объём, RSI, тренд) одновременно подтвердили сигнал. Самые надёжные моменты.</div>
+    </div>
+    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+      <div style="font-size:15px; font-weight:700; color:var(--orange); margin-bottom:8px">⚠️ Слом структуры = осторожность</div>
+      <div style="font-size:13px; color:var(--lg)">Сигнал предупреждает — тренд может смениться. Не сигнал к немедленному действию, но повод пересмотреть позицию.</div>
+    </div>
+    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+      <div style="font-size:15px; font-weight:700; color:var(--green2); margin-bottom:8px">📐 Пивот + Фибо = зоны для входа</div>
+      <div style="font-size:13px; color:var(--lg)">После нового максимума (HH) жди коррекцию к уровням 0.382–0.618 — там часто лучшие точки для покупки. Уровни приходят прямо в сообщении.</div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="sec-label">Частые вопросы</div>
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q">Сколько алертов нужно создать?</div>
+      <div class="faq-a">Для трёх монет (BTC, ETH, SOL) на трёх таймфреймах (1D, 4H, 1H) — около 90 алертов. Это делается один раз.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Алерт сработал один раз и остановился</div>
+      <div class="faq-a">При создании алерта в поле Fire нужно выбрать "Once Per Bar Close", а не "Only Once".</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Сигнал пришёл но время показывает 01.01.1970</div>
+      <div class="faq-a">Это редкий баг TradingView с полем timenow — сервер автоматически подставит текущее время. На содержание сигнала не влияет.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Можно добавить другие монеты?</div>
+      <div class="faq-a">Да, индикатор работает на любом активе. Просто добавь его на нужный график и создай алерты по той же схеме.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Где написать если что-то не работает?</div>
+      <div class="faq-a">Напиши в бот кнопку 🆘 Поддержка — разберёмся вместе.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer" style="margin-top:48px">
+    IT v3 — Индикатор от Товарища<br>
+    <a href="index.html" style="color:var(--cyan); text-decoration:none">← Вернуться к описанию индикатора</a>
+  </div>
+
+</div>
+</body>
+</html>

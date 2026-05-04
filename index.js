@@ -4,14 +4,32 @@
 
 require('dotenv').config()
 const express = require('express')
-const path = require('path')
+const path    = require('path')
+const { Pool } = require('pg')
 const app = express()
 app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')))
 
-const BOT_TOKEN = process.env.BOT_TOKEN
-const CHAT_ID   = process.env.CHAT_ID
-const PORT      = process.env.PORT || 3000
+// BOT_TOKEN       — токен сигнального бота (отправляет DM)
+// INDICATOR_BOT_TOKEN — токен основного бота (если нужен отдельный)
+// CHAT_ID         — fallback: один чат (канал/пользователь), если база не подключена
+// DATABASE_URL    — PostgreSQL (Digital Ocean), чтобы слать только PRO-подписчикам
+const BOT_TOKEN   = process.env.INDICATOR_BOT_TOKEN || process.env.BOT_TOKEN
+const CHAT_ID     = process.env.CHAT_ID
+const PORT        = process.env.PORT || 3000
+
+// ─── PostgreSQL ───────────────────────────────────────────
+let pool = null
+if (process.env.DATABASE_URL) {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false },
+  })
+  pool.on('error', (err) => console.error('PG error:', err.message))
+  console.log('🗄  PostgreSQL подключён — режим PRO-подписчиков')
+} else {
+  console.log('⚠️  DATABASE_URL не задан — сигналы идут в CHAT_ID (fallback)')
+}
 
 // ─── Настройки ────────────────────────────────────────────
 const CFG = {
@@ -232,15 +250,51 @@ function buildMsg(data) {
 }
 
 // ─── Telegram ─────────────────────────────────────────────
-async function sendTg(text) {
+async function sendTgTo(chatId, text) {
   const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'Markdown' })
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
   })
   const j = await r.json()
-  if (!j.ok) console.error('TG error:', j.description)
+  if (!j.ok) console.error(`TG error → ${chatId}:`, j.description)
   return j
+}
+
+// Получить PRO-подписчиков из БД
+async function getProSubscribers() {
+  if (!pool) return []
+  try {
+    const { rows } = await pool.query(`
+      SELECT id FROM users
+      WHERE subscribed = TRUE
+        AND subscription_until IS NOT NULL
+        AND subscription_until > NOW()
+        AND subscription_plan = 'PRO'
+    `)
+    return rows.map(r => r.id)
+  } catch (err) {
+    console.error('DB error (getProSubscribers):', err.message)
+    return []
+  }
+}
+
+// Главная функция отправки — PRO-подписчики или CHAT_ID fallback
+async function sendSignal(text) {
+  if (pool) {
+    const ids = await getProSubscribers()
+    console.log(`📤 Отправляем сигнал ${ids.length} PRO-подписчикам`)
+    if (ids.length === 0) return
+
+    // Пауза между отправками чтобы не словить 429 от Telegram
+    for (const id of ids) {
+      await sendTgTo(id, text)
+      await new Promise(res => setTimeout(res, 50))
+    }
+  } else {
+    // Fallback — отправить в CHAT_ID (канал или один пользователь)
+    await sendTgTo(CHAT_ID, text)
+  }
 }
 
 // ─── Webhook ──────────────────────────────────────────────
@@ -272,7 +326,7 @@ app.post('/webhook', async (req, res) => {
     const msg = buildMsg(data)
     if (!msg) return res.sendStatus(400)
 
-    await sendTg(msg)
+    await sendSignal(msg)
     res.sendStatus(200)
 
   } catch (err) {
@@ -309,7 +363,7 @@ app.get('/test/:signal?', async (req, res) => {
   }
   const msg = buildMsg(data)
   if (!msg) return res.json({ error: 'unknown signal' })
-  await sendTg(msg)
+  await sendSignal(msg)
   res.json({ sent: true, preview: msg })
 })
 
