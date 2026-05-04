@@ -224,87 +224,75 @@
 
   </div>
 
-  <!-- ЧАСТЬ 2: АЛЕРТЫ (ТОЛЬКО PRO) -->
-  <div class="sec-label" style="margin-top:48px">Часть 2 — PRO</div>
-  <div class="sec-title">Настраиваем сигналы в Telegram</div>
-  <div class="sec-desc">Этот раздел только для подписчиков <strong style="color:var(--yellow)">PRO</strong>. Сигналы будут приходить автоматически — не нужно следить за графиком.</div>
+  <!-- ТАРИФЫ -->
+  <div class="sec-label" style="margin-top:48px">Подписка</div>
+  <div class="sec-title">Тарифы</div>
+  <div class="sec-desc">Выбери подходящий план — индикатор доступен в обоих.</div>
 
-  <div class="alert yellow">
-    <div class="alert-icon">⚠️</div>
-    <div class="alert-text">Для настройки алертов нужен аккаунт TradingView с поддержкой webhook-уведомлений (план <strong>Essential</strong> и выше, или бесплатный — для базовых алертов).</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:32px">
+
+    <div style="background:var(--card); border:1px solid var(--b2); border-radius:18px; padding:24px 22px">
+      <div style="font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--gray); margin-bottom:12px">STANDARD</div>
+      <div style="font-size:28px; font-weight:900; margin-bottom:4px">30 <span style="font-size:14px; color:var(--lg)">USDT/мес</span></div>
+      <div style="height:1px; background:var(--b); margin:16px 0"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--green)">✓</span><span>Доступ к индикатору IT v3</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--green)">✓</span><span>Пошаговая инструкция по установке</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--green)">✓</span><span>Несколько обзоров в неделю</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--green)">✓</span><span>Крипто-дайджест</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--green)">✓</span><span>Поддержка</span></div>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(160deg,#0d1428,#101830); border:1px solid rgba(33,150,243,.35); border-radius:18px; padding:24px 22px; position:relative; overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div>
+      <div style="font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:12px">PRO 💎</div>
+      <div style="font-size:28px; font-weight:900; margin-bottom:4px">50 <span style="font-size:14px; color:var(--lg)">USDT/мес</span></div>
+      <div style="height:1px; background:rgba(33,150,243,.15); margin:16px 0"></div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--cyan)">✓</span><span>Всё из Standard</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--cyan)">✓</span><span>4+ обзоров в неделю</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--cyan)">✓</span><span>Глубокая аналитика по рынкам</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--cyan)">✓</span><span>Обучающие материалы</span></div>
+        <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--yellow); font-weight:700">🔔</span><span style="color:var(--white); font-weight:600">Telegram-сигналы автоматически</span></div>
+      </div>
+    </div>
+
   </div>
 
-  <div class="steps" style="margin-top:24px">
+  <!-- ЧАСТЬ 2: PRO СИГНАЛЫ -->
+  <div class="sec-label" style="margin-top:8px">Часть 2 — только PRO</div>
+  <div class="sec-title">Сигналы в Telegram 🔔</div>
+  <div class="sec-desc">Подписчики <strong style="color:var(--yellow)">PRO</strong> получают сигналы автоматически — никакой настройки не нужно.</div>
 
-    <div class="step">
-      <div class="step-num" style="color:var(--yellow)">1</div>
-      <div class="step-body">
-        <div class="step-title">Открой график с IT v3 на нужной монете и таймфрейме</div>
-        <div class="step-desc">Поддерживаемые монеты: <strong>BTCUSDT</strong>, <strong>ETHUSDT</strong>, <strong>SOLUSDT</strong><br>Таймфреймы: <strong>1D</strong>, <strong>4H</strong>, <strong>1H</strong></div>
-        <div class="step-tip">📌 Алерты нужно создавать отдельно для каждой монеты и каждого таймфрейма.</div>
-      </div>
+  <div class="alert green" style="margin-bottom:20px">
+    <div class="alert-icon">✅</div>
+    <div class="alert-text"><strong>Ничего настраивать не нужно.</strong> Как только подписка PRO активирована — сигналы начинают приходить в бот сами. Система работает 24/7.</div>
+  </div>
+
+  <div style="background:var(--card); border:1px solid var(--b2); border-radius:16px; padding:24px; margin-bottom:20px">
+    <div style="font-size:13px; color:var(--gray); font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:16px">Что приходит автоматически</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+      <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--green); margin-top:1px">🟢</span><span>BUY 50% / BUY 100% по уровням SM</span></div>
+      <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--red); margin-top:1px">🔴</span><span>SELL 50% / SELL 100% по уровням SM</span></div>
+      <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="margin-top:1px">🔥</span><span>STRONG BUY / SELL — тройной фильтр</span></div>
+      <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--cyan); margin-top:1px">📈</span><span>Смена тренда по SMA50</span></div>
+      <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--orange); margin-top:1px">⚠️</span><span>Слом структуры LH / HL</span></div>
+      <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--green2); margin-top:1px">📐</span><span>Пивоты HH/LL + уровни Фибоначчи</span></div>
+      <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--cyan); margin-top:1px">⚡</span><span>Ликвидность BSL/SSL найдена / пробита</span></div>
     </div>
-
-    <div class="step">
-      <div class="step-num" style="color:var(--yellow)">2</div>
-      <div class="step-body">
-        <div class="step-title">Создай алерт — нажми кнопку "Alert" или Alt+A</div>
-        <div class="step-desc">Откроется диалог создания алерта.</div>
-        <div class="step-tip">
-          В поле <strong>Condition</strong> выбери <strong>IT v3</strong>, затем нужный сигнал из списка:<br><br>
-          • BUY 25% (SM3) · BUY 50% (SM4) · BUY 100% (SM5)<br>
-          • SELL 50% (SM2) · SELL 100% (SM1)<br>
-          • STRONG BUY/SELL · Тренд вверх/вниз<br>
-          • Слом структуры · Разворот HL<br>
-          • Any alert() function call — для пивотов и ликвидности
-        </div>
-      </div>
+    <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--b); font-size:13px; color:var(--lg)">
+      📍 Монеты: <strong style="color:var(--white)">BTC · ETH · SOL</strong> &nbsp;·&nbsp; Таймфреймы: <strong style="color:var(--white)">1D · 4H · 1H</strong>
     </div>
+  </div>
 
-    <div class="step">
-      <div class="step-num" style="color:var(--yellow)">3</div>
-      <div class="step-body">
-        <div class="step-title">Заполни поле Message</div>
-        <div class="step-desc">Для каждого сигнала своё сообщение. Пример для BUY 100%:</div>
-        <div class="code-block">{"signal":"buy100","ticker":"{{ticker}}","interval":"{{interval}}","price":"{{close}}","time":"{{timenow}}"}</div>
-        <div class="step-tip" style="margin-top:8px">Для <strong>Any alert() function call</strong> поле Message оставь пустым — скрипт сам формирует сообщение с Фибо и ликвидностью.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num" style="color:var(--yellow)">4</div>
-      <div class="step-body">
-        <div class="step-title">Настрой Webhook URL в разделе Notifications</div>
-        <div class="step-desc">Нажми на стрелку рядом с Notifications, включи Webhook URL и вставь:</div>
-        <div class="code-block">https://trading-bot-production-7d20.up.railway.app/webhook</div>
-        <div class="step-tip">✅ Больше ничего менять не нужно — Webhook URL один для всех алертов.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num" style="color:var(--yellow)">5</div>
-      <div class="step-body">
-        <div class="step-title">Установи частоту срабатывания</div>
-        <div class="step-desc">В поле <strong>Fire</strong> выбери <strong>Once Per Bar Close</strong> — алерт будет срабатывать один раз при закрытии свечи.</div>
-        <div class="step-tip">⚠️ Если выбрать "Only Once" — алерт сработает один раз и остановится навсегда.</div>
-      </div>
-    </div>
-
-    <div class="step">
-      <div class="step-num" style="color:var(--green)">6</div>
-      <div class="step-body">
-        <div class="step-title">Нажми Create — готово!</div>
-        <div class="step-desc">Повтори для каждого сигнала, монеты и таймфрейма. Как только условие выполнится — придёт сообщение в Telegram.</div>
-        <div class="tg-preview">
-          <div class="tg-preview-title">🟢 BUY 100%</div>
-          <div class="tg-preview-coin">₿ BTC · 1 День</div>
-          <div class="tg-preview-row"><span class="tg-preview-lbl">💰 Цена</span><span class="tg-preview-val" style="color:var(--white)">77 335</span></div>
-          <div class="tg-preview-row"><span class="tg-preview-lbl">📍 Уровень</span><span class="tg-preview-val" style="color:var(--green2)">SM5</span></div>
-          <div class="tg-preview-time">🕐 04.05.2026, 09:00</div>
-        </div>
-      </div>
-    </div>
-
+  <div class="tg-preview" style="max-width:100%; margin-bottom:8px">
+    <div class="tg-preview-title">🟢 BUY 100%</div>
+    <div class="tg-preview-coin">₿ BTC · 1 День</div>
+    <div class="tg-preview-row"><span class="tg-preview-lbl">💰 Цена</span><span class="tg-preview-val" style="color:var(--white)">77 335</span></div>
+    <div class="tg-preview-row"><span class="tg-preview-lbl">📍 Уровень</span><span class="tg-preview-val" style="color:var(--green2)">SM5 · −19%</span></div>
+    <div class="tg-preview-row"><span class="tg-preview-lbl">📊 RSI</span><span class="tg-preview-val" style="color:var(--green)">32 · OVERSOLD</span></div>
+    <div class="tg-preview-time">🕐 04.05.2026, 09:00</div>
   </div>
 
   <!-- ЧАСТЬ 3: КАК ЧИТАТЬ -->
@@ -335,24 +323,24 @@
   <div class="sec-label">Частые вопросы</div>
   <div class="faq">
     <div class="faq-item">
-      <div class="faq-q">Сколько алертов нужно создать?</div>
-      <div class="faq-a">Для трёх монет (BTC, ETH, SOL) на трёх таймфреймах (1D, 4H, 1H) — около 90 алертов. Это делается один раз.</div>
+      <div class="faq-q">Нужно ли что-то настраивать для получения сигналов?</div>
+      <div class="faq-a">Нет. PRO подписчики получают сигналы автоматически — просто активируй подписку и начни пользоваться ботом.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q">Алерт сработал один раз и остановился</div>
-      <div class="faq-a">При создании алерта в поле Fire нужно выбрать "Once Per Bar Close", а не "Only Once".</div>
+      <div class="faq-q">Чем STANDARD отличается от PRO?</div>
+      <div class="faq-a">В Standard — доступ к индикатору, обзоры и дайджест. В PRO — всё то же самое плюс автоматические Telegram-сигналы по BTC, ETH и SOL в реальном времени.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q">Сигнал пришёл но время показывает 01.01.1970</div>
-      <div class="faq-a">Это редкий баг TradingView с полем timenow — сервер автоматически подставит текущее время. На содержание сигнала не влияет.</div>
+      <div class="faq-q">На каких монетах и таймфреймах работают сигналы?</div>
+      <div class="faq-a">BTC, ETH, SOL на таймфреймах 1D, 4H и 1H. Сигналы приходят сразу после закрытия свечи.</div>
     </div>
     <div class="faq-item">
-      <div class="faq-q">Можно добавить другие монеты?</div>
-      <div class="faq-a">Да, индикатор работает на любом активе. Просто добавь его на нужный график и создай алерты по той же схеме.</div>
+      <div class="faq-q">Индикатор работает только на крипте?</div>
+      <div class="faq-a">Нет, IT v3 работает на любом активе TradingView — акции, форекс, фьючерсы. Сигналы в боте — для BTC, ETH, SOL.</div>
     </div>
     <div class="faq-item">
       <div class="faq-q">Где написать если что-то не работает?</div>
-      <div class="faq-a">Напиши в бот кнопку 🆘 Поддержка — разберёмся вместе.</div>
+      <div class="faq-a">Напиши в бот — кнопка 🆘 Поддержка. Разберёмся вместе.</div>
     </div>
   </div>
 
