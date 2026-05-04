@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT v3 — Индикатор от Товарища</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:       #080812;
+    --bg2:      #0f0f1e;
+    --card:     #10102a;
+    --card2:    #14143a;
+    --border:   #1e1e3a;
+    --border2:  #2a2a5a;
+    --green:    #4caf50;
+    --green2:   #66ff88;
+    --red:      #f44336;
+    --orange:   #ff9800;
+    --yellow:   #ffc107;
+    --blue:     #2196f3;
+    --purple:   #9c27b0;
+    --cyan:     #00bcd4;
+    --white:    #f0f0ff;
+    --gray:     #5a5a8a;
+    --lg:       #b0b0cc;
+    --pink:     #e91e63;
+    --fire:     #ff5722;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
+
+  .page { max-width: 880px; margin: 0 auto; padding: 56px 28px 80px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: linear-gradient(160deg, #0d0d28 0%, #151535 40%, #0d0d28 100%);
+    border: 1px solid var(--border2);
+    border-radius: 28px;
+    padding: 64px 48px 48px;
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 200px;
+    background: radial-gradient(ellipse, rgba(0,188,212,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,188,212,0.08);
+    border: 1px solid rgba(0,188,212,0.25);
+    color: var(--cyan);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 7px 20px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 80px;
+    font-weight: 900;
+    letter-spacing: -4px;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 30%, #8888bb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .hero-v { font-size: 24px; color: var(--cyan); font-weight: 700; margin-bottom: 16px; }
+  .hero-tagline { font-size: 16px; color: var(--lg); margin-bottom: 8px; font-weight: 500; }
+  .hero-sub { font-size: 13px; color: var(--gray); margin-bottom: 36px; }
+
+  .hero-coins {
+    display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;
+  }
+  .coin {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 22px; border-radius: 100px; border: 1px solid;
+    font-size: 14px; font-weight: 700;
+  }
+  .coin.btc { border-color: rgba(76,175,80,.4); color: var(--green); background: rgba(76,175,80,.06); }
+  .coin.eth { border-color: rgba(33,150,243,.4); color: var(--blue); background: rgba(33,150,243,.06); }
+  .coin.sol { border-color: rgba(156,39,176,.4); color: var(--purple); background: rgba(156,39,176,.06); }
+
+  .hero-tfs { display: flex; justify-content: center; gap: 8px; }
+  .tf { padding: 5px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); border-radius: 8px; font-size: 13px; color: var(--lg); }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 56px; }
+  .sec-label {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 11px; font-weight: 800; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--gray); margin-bottom: 20px;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .sec-title { font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 8px; line-height: 1.2; }
+  .sec-desc { font-size: 15px; color: var(--lg); margin-bottom: 24px; }
+
+  /* ─── ARCH ─── */
+  .arch {
+    display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr;
+    align-items: center; gap: 0;
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 20px; padding: 32px;
+  }
+  .arch-step { text-align: center; padding: 0 12px; }
+  .arch-ico {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; margin: 0 auto 12px;
+  }
+  .arch-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .arch-note { font-size: 12px; color: var(--gray); line-height: 1.4; }
+  .arch-arr { text-align: center; color: var(--border2); font-size: 22px; }
+
+  /* ─── LEVELS ─── */
+  .levels { display: flex; flex-direction: column; gap: 8px; }
+  .lv {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 20px; border-radius: 12px;
+    border: 1px solid; background: rgba(255,255,255,0.015);
+    transition: background .2s;
+  }
+  .lv:hover { background: rgba(255,255,255,0.03); }
+  .lv-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .lv-sm { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; min-width: 36px; }
+  .lv-sig { font-size: 13px; font-weight: 800; min-width: 110px; }
+  .lv-pct { font-size: 12px; color: var(--gray); min-width: 60px; font-family: 'JetBrains Mono', monospace; }
+  .lv-desc { font-size: 13px; color: var(--lg); }
+
+  /* ─── 2-COL GRID ─── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* ─── FEATURE CARD ─── */
+  .fcard {
+    background: var(--card); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 22px 22px 18px; position: relative; overflow: hidden;
+  }
+  .fcard-accent {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0;
+  }
+  .fcard-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+  .fcard-title { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+  .fcard-text { font-size: 13px; color: var(--lg); line-height: 1.6; }
+  .fcard ul { margin-top: 10px; padding-left: 0; list-style: none; }
+  .fcard li { font-size: 13px; color: var(--lg); padding: 4px 0; display: flex; gap: 8px; }
+  .fcard li::before { content: '—'; color: var(--gray); flex-shrink: 0; }
+
+  /* ─── STRONG BLOCK ─── */
+  .strong-block {
+    background: linear-gradient(135deg, rgba(255,193,7,.05) 0%, rgba(255,87,34,.05) 100%);
+    border: 1px solid rgba(255,193,7,.2);
+    border-radius: 20px; padding: 28px 32px;
+  }
+  .strong-head {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
+  }
+  .strong-icon {
+    width: 48px; height: 48px; background: rgba(255,193,7,.12);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+  }
+  .strong-title { font-size: 20px; font-weight: 800; color: var(--yellow); }
+  .strong-sub { font-size: 13px; color: var(--gray); }
+  .filters-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-pill {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 18px; border-radius: 100px;
+    background: rgba(76,175,80,.1); border: 1px solid rgba(76,175,80,.25);
+    font-size: 13px; font-weight: 600; color: var(--green);
+  }
+  .strong-note {
+    background: rgba(255,193,7,.08); border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: var(--yellow); font-weight: 500;
+  }
+
+  /* ─── STRUCTURE ─── */
+  .struct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .struct-card {
+    padding: 18px 20px; border-radius: 14px; border: 1px solid;
+    background: rgba(255,255,255,0.015);
+  }
+  .struct-hh { border-color: rgba(76,175,80,.3); }
+  .struct-ll { border-color: rgba(244,67,54,.3); }
+  .struct-lh { border-color: rgba(255,152,0,.3); }
+  .struct-hl { border-color: rgba(205,220,57,.3); }
+  .struct-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px; font-weight: 700; margin-bottom: 8px;
+  }
+  .struct-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .struct-desc { font-size: 12.5px; color: var(--gray); line-height: 1.5; }
+  .struct-alert {
+    margin-top: 10px; padding: 7px 12px; border-radius: 7px;
+    font-size: 12px; font-weight: 600;
+  }
+
+  /* ─── LIQ ─── */
+  .liq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .liq-card {
+    padding: 20px; border-radius: 14px; border: 1px solid;
+    background: rgba(255,255,255,0.015);
+  }
+  .liq-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .liq-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .liq-title { font-size: 14px; font-weight: 800; }
+  .liq-desc { font-size: 13px; color: var(--lg); margin-bottom: 8px; }
+  .liq-meaning { font-size: 12px; color: var(--gray); line-height: 1.5; }
+
+  /* ─── BOT BLOCK ─── */
+  .bot-block {
+    background: linear-gradient(135deg, #0a1428 0%, #101428 100%);
+    border: 1px solid rgba(33,150,243,.25); border-radius: 20px; padding: 32px;
+  }
+  .bot-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+  .bot-icon {
+    width: 52px; height: 52px; background: rgba(33,150,243,.1);
+    border: 1px solid rgba(33,150,243,.3);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px;
+  }
+  .bot-title { font-size: 20px; font-weight: 800; color: var(--blue); }
+  .bot-sub { font-size: 13px; color: var(--gray); }
+
+  /* ─── TG MESSAGES ─── */
+  .tg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .tg {
+    border-radius: 16px; padding: 18px 20px;
+    background: #0e0e24; border: 1px solid var(--border2);
+    border-left: 3px solid;
+  }
+  .tg-type { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; opacity: .65; }
+  .tg-title { font-size: 17px; font-weight: 800; margin-bottom: 5px; }
+  .tg-coin { font-size: 13px; color: var(--lg); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .tg-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+  .tg-lbl { color: var(--gray); }
+  .tg-val { font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .tg-box {
+    margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+    background: rgba(255,255,255,.03); font-size: 12.5px;
+  }
+  .tg-box-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+  .tg-fibo { margin-top: 10px; padding: 12px 14px; border-radius: 8px; background: rgba(255,255,255,.03); }
+  .tg-fibo-title { font-size: 11px; font-weight: 700; color: var(--gray); letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
+  .tg-fibo-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 4px 0; }
+  .tg-time { margin-top: 12px; font-size: 11px; color: var(--gray); }
+
+  /* ─── TABLE ─── */
+  .sig-table { width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden; }
+  .sig-table th {
+    background: var(--card2); padding: 13px 16px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--gray); text-align: left;
+    border-bottom: 1px solid var(--border2);
+  }
+  .sig-table td {
+    padding: 12px 16px; font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  .sig-table tr:last-child td { border-bottom: none; }
+  .sig-table tr:hover td { background: rgba(255,255,255,.015); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 12px; border-radius: 100px; font-size: 12px; font-weight: 700;
+  }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* ─── FOR WHOM ─── */
+  .for-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .for-card {
+    padding: 22px; border-radius: 16px;
+    background: var(--card); border: 1px solid var(--border2);
+    text-align: center;
+  }
+  .for-icon { font-size: 32px; margin-bottom: 12px; display: block; }
+  .for-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
+  .for-desc { font-size: 12.5px; color: var(--gray); line-height: 1.5; }
+
+  /* ─── HOW TO ─── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 20px; position: relative; }
+  .step:not(:last-child)::before {
+    content: ''; position: absolute;
+    left: 19px; top: 40px; bottom: -12px; width: 2px;
+    background: var(--border);
+  }
+  .step-num {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; background: var(--card2); border: 1px solid var(--border2);
+  }
+  .step-body { padding-bottom: 28px; }
+  .step-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .step-desc { font-size: 13px; color: var(--gray); }
+
+  /* ─── QUOTE ─── */
+  .quote {
+    background: var(--card); border-left: 4px solid var(--cyan);
+    border-radius: 0 16px 16px 0; padding: 24px 28px;
+    font-size: 17px; font-style: italic; color: var(--lg);
+    margin: 32px 0; line-height: 1.7;
+  }
+  .quote cite { display: block; font-size: 12px; font-style: normal; color: var(--gray); margin-top: 10px; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center; padding: 32px 0 0;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--gray); line-height: 1.8;
+  }
+
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-pill">📊 Обновлено · Версия 3</div>
+    <h1>IT v3</h1>
+    <div class="hero-v">Индикатор от Товарища</div>
+    <div class="hero-tagline">Универсальный инструмент для анализа рынка на TradingView</div>
+    <div class="hero-sub">Уровни · Структура · Ликвидность · Автоматические сигналы в Telegram</div>
+    <div class="hero-coins">
+      <div class="coin btc">₿ Bitcoin</div>
+      <div class="coin eth">Ξ Ethereum</div>
+      <div class="coin sol">◎ Solana</div>
+    </div>
+    <div class="hero-tfs">
+      <div class="tf">1D — День</div>
+      <div class="tf">4H — 4 Часа</div>
+      <div class="tf">1H — 1 Час</div>
+    </div>
+  </div>
+
+  <!-- ЧТО ЭТО -->
+  <div class="section">
+    <div class="sec-label">О индикаторе</div>
+    <div class="sec-title">Что это за инструмент?</div>
+    <div class="sec-desc">IT v3 — это профессиональный индикатор для TradingView, который автоматически рассчитывает ключевые уровни, отслеживает структуру рынка и отправляет сигналы прямо в Telegram. Никакого шума — только то, что действительно важно.</div>
+
+    <div class="grid3">
+      <div class="fcard">
+        <div class="fcard-accent" style="background: linear-gradient(90deg, var(--green), var(--cyan))"></div>
+        <span class="fcard-icon">📐</span>
+        <div class="fcard-title" style="color:var(--green)">Автоуровни SM</div>
+        <div class="fcard-text">5 линий, которые автоматически подстраиваются под любой актив и таймфрейм. Всегда актуальны.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background: linear-gradient(90deg, var(--blue), var(--purple))"></div>
+        <span class="fcard-icon">🔔</span>
+        <div class="fcard-title" style="color:var(--blue)">Telegram-бот</div>
+        <div class="fcard-text">Сигналы приходят в мессенджер автоматически — не нужно следить за графиком 24/7.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background: linear-gradient(90deg, var(--orange), var(--red))"></div>
+        <span class="fcard-icon">🧠</span>
+        <div class="fcard-title" style="color:var(--orange)">Структура рынка</div>
+        <div class="fcard-text">Отслеживает HH, LL, LH, HL — автоматически определяет тренд и моменты слома.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- УРОВНИ -->
+  <div class="section">
+    <div class="sec-label">Уровни системы</div>
+    <div class="sec-title">Безопасные уровни SM</div>
+    <div class="sec-desc">Пять автоматически рассчитываемых линий, которые подстраиваются под любой актив. Основа всей системы.</div>
+    <div class="levels">
+      <div class="lv" style="border-color:rgba(244,67,54,.25)">
+        <div class="lv-dot" style="background:var(--red)"></div>
+        <div class="lv-sm" style="color:var(--red)">SM1</div>
+        <div class="lv-sig" style="color:var(--red)">SELL 100%</div>
+        <div class="lv-pct" style="color:var(--red)">+26%</div>
+        <div class="lv-desc">Верхняя зона — максимально дорого. Выходи полностью из позиции.</div>
+      </div>
+      <div class="lv" style="border-color:rgba(255,152,0,.25)">
+        <div class="lv-dot" style="background:var(--orange)"></div>
+        <div class="lv-sm" style="color:var(--orange)">SM2</div>
+        <div class="lv-sig" style="color:var(--orange)">SELL 50%</div>
+        <div class="lv-pct" style="color:var(--orange)">+14%</div>
+        <div class="lv-desc">Зона фиксации прибыли. Продай половину — позволь остатку расти дальше.</div>
+      </div>
+      <div class="lv" style="border-color:rgba(255,193,7,.25)">
+        <div class="lv-dot" style="background:var(--yellow)"></div>
+        <div class="lv-sm" style="color:var(--yellow)">SM3</div>
+        <div class="lv-sig" style="color:var(--yellow)">BUY 25%</div>
+        <div class="lv-pct" style="color:var(--gray)">текущая</div>
+        <div class="lv-desc">Базовая линия — текущая цена. Осторожный вход на 10–25% от позиции, только 1D.</div>
+      </div>
+      <div class="lv" style="border-color:rgba(76,175,80,.25)">
+        <div class="lv-dot" style="background:var(--green)"></div>
+        <div class="lv-sm" style="color:var(--green)">SM4</div>
+        <div class="lv-sig" style="color:var(--green)">BUY 50%</div>
+        <div class="lv-pct" style="color:var(--red)">−9%</div>
+        <div class="lv-desc">Хорошая зона покупки. Входи на 50% от планируемой позиции.</div>
+      </div>
+      <div class="lv" style="border-color:rgba(102,255,136,.25)">
+        <div class="lv-dot" style="background:var(--green2)"></div>
+        <div class="lv-sm" style="color:var(--green2)">SM5</div>
+        <div class="lv-sig" style="color:var(--green2)">BUY 100%</div>
+        <div class="lv-pct" style="color:var(--red)">−19%</div>
+        <div class="lv-desc">Отличная зона покупки — максимальный вход. Исторически самый выгодный уровень.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STRONG -->
+  <div class="section">
+    <div class="sec-label">Новое в v3</div>
+    <div class="sec-title">Сильные сигналы STRONG 🔥</div>
+    <div class="sec-desc">Обычный сигнал говорит что цена достигла уровня. STRONG говорит что рынок готов к движению — три независимых фильтра подтвердили это одновременно.</div>
+    <div class="strong-block">
+      <div class="strong-head">
+        <div class="strong-icon">🔥</div>
+        <div>
+          <div class="strong-title">STRONG — тройное подтверждение</div>
+          <div class="strong-sub">Самые надёжные сигналы во всей системе</div>
+        </div>
+      </div>
+      <div class="filters-row">
+        <div class="filter-pill">✓ Объём выше среднего</div>
+        <div class="filter-pill">✓ RSI в зоне</div>
+        <div class="filter-pill">✓ Тренд совпадает</div>
+      </div>
+      <div class="strong-note">⚡ Когда все три фильтра совпали — это сигнал к действию. Пропускать такие не стоит.</div>
+    </div>
+  </div>
+
+  <!-- ТРЕНД -->
+  <div class="section">
+    <div class="sec-label">Глобальный тренд</div>
+    <div class="sec-title">Оранжевая линия SMA50</div>
+    <div class="sec-desc">Главный ориентир для определения направления рынка. Закрытие свечи выше или ниже этой линии — сигнал о смене фазы.</div>
+    <div class="grid2">
+      <div class="fcard" style="border-color:rgba(0,188,212,.25)">
+        <div class="fcard-accent" style="background:var(--cyan)"></div>
+        <span class="fcard-icon">📈</span>
+        <div class="fcard-title" style="color:var(--cyan)">Тренд вверх</div>
+        <div class="fcard-text">Цена закрылась <strong>выше</strong> SMA50. Бычий рынок активен — предпочитаем покупки на уровнях SM4 и SM5.</div>
+      </div>
+      <div class="fcard" style="border-color:rgba(233,30,99,.25)">
+        <div class="fcard-accent" style="background:var(--pink)"></div>
+        <span class="fcard-icon">📉</span>
+        <div class="fcard-title" style="color:var(--pink)">Тренд вниз</div>
+        <div class="fcard-text">Цена закрылась <strong>ниже</strong> SMA50. Медвежий рынок — осторожно с покупками, ищем уровни SM1–SM2 для продаж.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- СТРУКТУРА -->
+  <div class="section">
+    <div class="sec-label">Новое в v3</div>
+    <div class="sec-title">Структура рынка</div>
+    <div class="sec-desc">Индикатор автоматически определяет пики и впадины на графике, отслеживает паттерны и сигнализирует о сломе тренда или развороте.</div>
+    <div class="struct-grid" style="margin-bottom:14px">
+      <div class="struct-card struct-hh">
+        <div class="struct-tag" style="color:var(--green)">HH <span style="font-size:14px">Higher High</span></div>
+        <div class="struct-name" style="color:var(--green)">Новый максимум</div>
+        <div class="struct-desc">Следующий пик выше предыдущего — рынок продолжает бычий тренд. Сигнал для удержания позиции.</div>
+      </div>
+      <div class="struct-card struct-ll">
+        <div class="struct-tag" style="color:var(--red)">LL <span style="font-size:14px">Lower Low</span></div>
+        <div class="struct-name" style="color:var(--red)">Новый минимум</div>
+        <div class="struct-desc">Следующая впадина ниже предыдущей — рынок продолжает медвежий тренд. Осторожно с покупками.</div>
+      </div>
+      <div class="struct-card struct-lh">
+        <div class="struct-tag" style="color:var(--orange)">LH <span style="font-size:14px">Lower High</span></div>
+        <div class="struct-name" style="color:var(--orange)">Слом структуры ⚠️</div>
+        <div class="struct-desc">Пик оказался ниже предыдущего — бычья структура сломана. Возможный разворот вниз.</div>
+        <div class="struct-alert" style="background:rgba(255,152,0,.08); color:var(--orange)">→ Приходит алерт в Telegram</div>
+      </div>
+      <div class="struct-card struct-hl">
+        <div class="struct-tag" style="color:#cddc39">HL <span style="font-size:14px">Higher Low</span></div>
+        <div class="struct-name" style="color:#cddc39">Разворот ⚠️</div>
+        <div class="struct-desc">Впадина оказалась выше предыдущей — медвежья структура сломана. Возможный разворот вверх.</div>
+        <div class="struct-alert" style="background:rgba(205,220,57,.08); color:#cddc39">→ Приходит алерт в Telegram</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПИВОТЫ + ФИБО -->
+  <div class="section">
+    <div class="sec-label">Новое в v3</div>
+    <div class="sec-title">Пивоты HH / LL + Фибоначчи</div>
+    <div class="sec-desc">При каждом новом локальном максимуме (HH) или минимуме (LL) на дневном таймфрейме индикатор автоматически рассчитывает уровни Фибоначчи — зоны, куда цена исторически возвращается после импульса.</div>
+    <div class="grid2">
+      <div class="fcard" style="border-color:rgba(102,255,136,.2)">
+        <div class="fcard-accent" style="background:var(--green2)"></div>
+        <span class="fcard-icon">📈</span>
+        <div class="fcard-title" style="color:var(--green2)">После HH — коррекция вниз</div>
+        <div class="fcard-text">Рынок обновил максимум. Индикатор считает уровни куда может откатиться цена перед следующим ростом.</div>
+        <ul>
+          <li>0.382 — мелкая коррекция</li>
+          <li>0.500 — средняя коррекция</li>
+          <li>0.618 — глубокая коррекция</li>
+        </ul>
+      </div>
+      <div class="fcard" style="border-color:rgba(244,67,54,.2)">
+        <div class="fcard-accent" style="background:var(--red)"></div>
+        <span class="fcard-icon">📉</span>
+        <div class="fcard-title" style="color:var(--red)">После LL — отскок вверх</div>
+        <div class="fcard-text">Рынок обновил минимум. Индикатор считает уровни куда может подняться цена перед следующим падением.</div>
+        <ul>
+          <li>0.382 — слабый отскок</li>
+          <li>0.500 — средний отскок</li>
+          <li>0.618 — сильный отскок</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЛИКВИДНОСТЬ -->
+  <div class="section">
+    <div class="sec-label">Ликвидность</div>
+    <div class="sec-title">Зоны ликвидности</div>
+    <div class="sec-desc">Визуализирует области где сосредоточены стопы и крупные объёмы. Теперь с автоматическими алертами — узнаешь не только о появлении зоны, но и о её пробое.</div>
+    <div class="liq-grid">
+      <div class="liq-card" style="border-color:rgba(76,175,80,.25)">
+        <div class="liq-head">
+          <div class="liq-dot" style="background:var(--green)"></div>
+          <div class="liq-title" style="color:var(--green)">Buyside НАЙДЕНА</div>
+        </div>
+        <div class="liq-desc">Обнаружена зона скопления покупок — стопы покупателей выше этой зоны.</div>
+        <div class="liq-meaning">Рынок может притянуться к этому уровню чтобы "собрать" стопы перед движением вниз.</div>
+      </div>
+      <div class="liq-card" style="border-color:rgba(255,82,82,.25)">
+        <div class="liq-head">
+          <div class="liq-dot" style="background:#ff5252"></div>
+          <div class="liq-title" style="color:#ff5252">Buyside ПРОБИТА</div>
+        </div>
+        <div class="liq-desc">Цена пробила зону покупок — стопы покупателей выбиты.</div>
+        <div class="liq-meaning">После сбора стопов возможен резкий разворот вниз. Сигнал для осторожности с лонгами.</div>
+      </div>
+      <div class="liq-card" style="border-color:rgba(244,67,54,.25)">
+        <div class="liq-head">
+          <div class="liq-dot" style="background:var(--red)"></div>
+          <div class="liq-title" style="color:var(--red)">Sellside НАЙДЕНА</div>
+        </div>
+        <div class="liq-desc">Обнаружена зона скопления продаж — стопы продавцов ниже этой зоны.</div>
+        <div class="liq-meaning">Рынок может притянуться к уровню чтобы "собрать" шорт-стопы перед движением вверх.</div>
+      </div>
+      <div class="liq-card" style="border-color:rgba(102,255,136,.25)">
+        <div class="liq-head">
+          <div class="liq-dot" style="background:var(--green2)"></div>
+          <div class="liq-title" style="color:var(--green2)">Sellside ПРОБИТА</div>
+        </div>
+        <div class="liq-desc">Цена пробила зону продаж — стопы продавцов выбиты.</div>
+        <div class="liq-meaning">После сбора шорт-стопов возможен резкий разворот вверх. Сигнал для поиска покупок.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELEGRAM БОТ -->
+  <div class="section">
+    <div class="sec-label">Автоматизация</div>
+    <div class="sec-title">Telegram-бот 🤖</div>
+    <div class="sec-desc">Главное новшество v3 — все сигналы автоматически приходят в Telegram. Не нужно смотреть на графики. Система работает 24/7 и отправляет уведомление в течение 1-2 секунд после срабатывания.</div>
+
+    <div class="bot-block" style="margin-bottom:24px">
+      <div class="bot-head">
+        <div class="bot-icon">⚙️</div>
+        <div>
+          <div class="bot-title">Как это работает</div>
+          <div class="bot-sub">TradingView → Railway → Telegram</div>
+        </div>
+      </div>
+      <div class="arch" style="background:transparent; border:none; padding:0">
+        <div class="arch-step">
+          <div class="arch-ico" style="background:rgba(0,188,212,.1); color:var(--cyan)">📊</div>
+          <div class="arch-name" style="color:var(--cyan)">TradingView</div>
+          <div class="arch-note">Индикатор IT v3 видит сигнал на закрытии свечи</div>
+        </div>
+        <div class="arch-arr">→</div>
+        <div class="arch-step">
+          <div class="arch-ico" style="background:rgba(255,152,0,.1); color:var(--orange)">⚡</div>
+          <div class="arch-name" style="color:var(--orange)">Railway</div>
+          <div class="arch-note">Сервер получает webhook и форматирует сообщение</div>
+        </div>
+        <div class="arch-arr">→</div>
+        <div class="arch-step">
+          <div class="arch-ico" style="background:rgba(76,175,80,.1); color:var(--green)">✈</div>
+          <div class="arch-name" style="color:var(--green)">Telegram</div>
+          <div class="arch-note">Красивое уведомление с ценой, уровнем и временем</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПРИМЕРЫ СООБЩЕНИЙ -->
+    <div class="tg-grid">
+      <div class="tg" style="border-left-color:var(--green2)">
+        <div class="tg-type" style="color:var(--green2)">Покупка</div>
+        <div class="tg-title" style="color:var(--green2)">🟢 BUY 100%</div>
+        <div class="tg-coin">₿ BTC · 1 День</div>
+        <div class="tg-row"><span class="tg-lbl">💰 Цена</span><span class="tg-val">77 335</span></div>
+        <div class="tg-row"><span class="tg-lbl">📍 Уровень</span><span class="tg-val" style="color:var(--green2)">SM5</span></div>
+        <div class="tg-time">🕐 01.05.2026, 11:35</div>
+      </div>
+
+      <div class="tg" style="border-left-color:var(--yellow)">
+        <div class="tg-type" style="color:var(--yellow)">Сильный сигнал</div>
+        <div class="tg-title" style="color:var(--yellow)">🔥 STRONG BUY 100%</div>
+        <div class="tg-coin">₿ BTC · 4 Часа</div>
+        <div class="tg-row"><span class="tg-lbl">💰 Цена</span><span class="tg-val">62 200</span></div>
+        <div class="tg-row"><span class="tg-lbl">📍 Уровень</span><span class="tg-val" style="color:var(--green2)">SM5</span></div>
+        <div class="tg-box">
+          <div class="tg-box-row"><span style="color:var(--green)">✅</span> Объём подтверждён</div>
+          <div class="tg-box-row"><span style="color:var(--green)">✅</span> RSI в зоне</div>
+          <div class="tg-box-row"><span style="color:var(--green)">✅</span> Тренд совпадает</div>
+        </div>
+        <div class="tg-box" style="background:rgba(255,193,7,.08); color:var(--yellow); font-weight:600; margin-top:6px">⚡ Все три фильтра совпали</div>
+        <div class="tg-time">🕐 01.05.2026, 09:00</div>
+      </div>
+
+      <div class="tg" style="border-left-color:var(--orange)">
+        <div class="tg-type" style="color:var(--orange)">Структура</div>
+        <div class="tg-title" style="color:var(--orange)">⚠️ Слом структуры</div>
+        <div class="tg-coin">₿ BTC · 1 День</div>
+        <div class="tg-row"><span class="tg-lbl">💰 Цена</span><span class="tg-val">77 268</span></div>
+        <div class="tg-box" style="color:var(--orange)">📉 LH после HH — <strong>бычья структура сломана</strong></div>
+        <div class="tg-time">🕐 01.05.2026, 18:00</div>
+      </div>
+
+      <div class="tg" style="border-left-color:var(--green2)">
+        <div class="tg-type" style="color:var(--green2)">Пивот + Фибо</div>
+        <div class="tg-title" style="color:var(--green2)">📈 HH — локальный хай</div>
+        <div class="tg-coin">₿ BTC · 1 День</div>
+        <div class="tg-row"><span class="tg-lbl">💰 Цена</span><span class="tg-val">88 500</span></div>
+        <div class="tg-fibo">
+          <div class="tg-fibo-title">📊 Фибо коррекция ↓</div>
+          <div class="tg-fibo-row"><span style="color:var(--gray)">0.382</span><span class="mono" style="color:var(--green2)">79 400</span></div>
+          <div class="tg-fibo-row"><span style="color:var(--gray)">0.500</span><span class="mono" style="color:var(--yellow)">75 000</span></div>
+          <div class="tg-fibo-row"><span style="color:var(--gray)">0.618</span><span class="mono" style="color:var(--red)">70 600</span></div>
+        </div>
+        <div class="tg-time">🕐 01.05.2026, 20:00</div>
+      </div>
+
+      <div class="tg" style="border-left-color:var(--green)">
+        <div class="tg-type" style="color:var(--cyan)">Ликвидность</div>
+        <div class="tg-title" style="color:var(--green)">🟢 Buyside НАЙДЕНА</div>
+        <div class="tg-coin">₿ BTC · 4 Часа</div>
+        <div class="tg-row"><span class="tg-lbl">💰 Цена</span><span class="tg-val">77 450</span></div>
+        <div class="tg-row"><span class="tg-lbl">📍 Уровень</span><span class="tg-val" style="color:var(--green)">77 450</span></div>
+        <div class="tg-box" style="color:var(--cyan)">💡 Скопление покупок выше этой зоны</div>
+        <div class="tg-time">🕐 01.05.2026, 12:00</div>
+      </div>
+
+      <div class="tg" style="border-left-color:#ff5252">
+        <div class="tg-type" style="color:var(--cyan)">Ликвидность</div>
+        <div class="tg-title" style="color:#ff5252">⚡ Buyside ПРОБИТА</div>
+        <div class="tg-coin">₿ BTC · 4 Часа</div>
+        <div class="tg-row"><span class="tg-lbl">💰 Цена</span><span class="tg-val">78 100</span></div>
+        <div class="tg-row"><span class="tg-lbl">📍 Уровень</span><span class="tg-val" style="color:#ff5252">77 450</span></div>
+        <div class="tg-box" style="color:#ff5252">🎯 Стопы выбиты — возможный разворот вниз</div>
+        <div class="tg-time">🕐 01.05.2026, 15:10</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ТАБЛИЦА ВСЕХ СИГНАЛОВ -->
+  <div class="section">
+    <div class="sec-label">Справочник</div>
+    <div class="sec-title">Все сигналы системы</div>
+    <table class="sig-table">
+      <thead>
+        <tr>
+          <th>Сигнал</th>
+          <th>Уровень</th>
+          <th>Таймфреймы</th>
+          <th>Описание</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">BUY 100%</strong></td><td><span class="mono" style="color:var(--green2)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Максимальный вход в позицию</td></tr>
+        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">BUY 50%</strong></td><td><span class="mono" style="color:var(--green)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Хорошая зона для входа</td></tr>
+        <tr><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">BUY 25%</strong></td><td><span class="mono" style="color:var(--yellow)">SM3</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Осторожный вход, только дневной таймфрейм</td></tr>
+        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">SELL 50%</strong></td><td><span class="mono" style="color:var(--orange)">SM2</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Фиксация части прибыли</td></tr>
+        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">SELL 100%</strong></td><td><span class="mono" style="color:var(--red)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Полный выход из позиции</td></tr>
+        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 100%</strong></td><td><span class="mono" style="color:var(--yellow)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM5 + объём + RSI + тренд</td></tr>
+        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 50%</strong></td><td><span class="mono" style="color:var(--yellow)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM4 + объём + RSI + тренд</td></tr>
+        <tr style="background:rgba(255,87,34,.03)"><td><span class="dot" style="background:var(--fire)"></span><strong style="color:var(--fire)">STRONG SELL 100%</strong></td><td><span class="mono" style="color:var(--fire)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM1 + объём + RSI + тренд</td></tr>
+        <tr><td><span class="dot" style="background:var(--cyan)"></span><strong style="color:var(--cyan)">Тренд вверх</strong></td><td><span class="mono" style="color:var(--cyan)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие выше оранжевой SMA</td></tr>
+        <tr><td><span class="dot" style="background:var(--pink)"></span><strong style="color:var(--pink)">Тренд вниз</strong></td><td><span class="mono" style="color:var(--pink)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие ниже оранжевой SMA</td></tr>
+        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">Слом структуры</strong></td><td><span class="mono" style="color:var(--orange)">LH</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">LH после HH — бычья структура сломана</td></tr>
+        <tr><td><span class="dot" style="background:#cddc39"></span><strong style="color:#cddc39">Разворот</strong></td><td><span class="mono" style="color:#cddc39">HL</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">HL после LL — медвежья структура сломана</td></tr>
+        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">Buyside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона покупок обнаружена</td></tr>
+        <tr><td><span class="dot" style="background:#ff5252"></span><strong style="color:#ff5252">Buyside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вниз?</td></tr>
+        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Sellside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона продаж обнаружена</td></tr>
+        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Sellside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вверх?</td></tr>
+        <tr style="background:rgba(102,255,136,.03)"><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Пивот HH + Фибо</strong></td><td><span class="mono" style="color:var(--green2)">HH</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый максимум + уровни коррекции Фибо</td></tr>
+        <tr style="background:rgba(244,67,54,.03)"><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Пивот LL + Фибо</strong></td><td><span class="mono" style="color:var(--red)">LL</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый минимум + уровни отскока Фибо</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ДЛЯ КОГО -->
+  <div class="section">
+    <div class="sec-label">Аудитория</div>
+    <div class="sec-title">Для кого подходит?</div>
+    <div class="for-grid">
+      <div class="for-card">
+        <span class="for-icon">🎯</span>
+        <div class="for-title">Трейдеры любого уровня</div>
+        <div class="for-desc">Новичкам — понятные уровни и сигналы. Опытным — глубокая аналитика структуры и ликвидности.</div>
+      </div>
+      <div class="for-card">
+        <span class="for-icon">😤</span>
+        <div class="for-title">Устали от шума</div>
+        <div class="for-desc">Только самые важные сигналы. Никакого мусора — только уровни, которые действительно работают.</div>
+      </div>
+      <div class="for-card">
+        <span class="for-icon">📱</span>
+        <div class="for-title">Торговля в движении</div>
+        <div class="for-desc">Не нужно сидеть у монитора. Сигнал придёт в Telegram — успеешь среагировать где бы ты ни был.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- КАК ПОЛЬЗОВАТЬСЯ -->
+  <div class="section">
+    <div class="sec-label">Инструкция</div>
+    <div class="sec-title">Как пользоваться</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="color:var(--cyan)">1</div>
+        <div class="step-body">
+          <div class="step-title">Установи индикатор на график TradingView</div>
+          <div class="step-desc">Добавь IT v3 на BTCUSDT, ETHUSDT или SOLUSDT. Индикатор сам рассчитает все уровни.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="color:var(--orange)">2</div>
+        <div class="step-body">
+          <div class="step-title">Смотри на оранжевую линию — это твой главный ориентир</div>
+          <div class="step-desc">Цена выше → бычий рынок, ищи покупки. Цена ниже → медвежий рынок, осторожно.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="color:var(--green)">3</div>
+        <div class="step-body">
+          <div class="step-title">Используй таблицу уровней на графике</div>
+          <div class="step-desc">В правом верхнем углу всегда видны актуальные цены SM1–SM5 и текущий сигнал.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="color:var(--blue)">4</div>
+        <div class="step-body">
+          <div class="step-title">Настрой алерты — получай сигналы в Telegram</div>
+          <div class="step-desc">Одноразовая настройка — и система работает 24/7. Ты получаешь уведомление с ценой и уровнем.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="color:var(--yellow)">5</div>
+        <div class="step-body">
+          <div class="step-title">Отслеживай зоны ликвидности и структуру</div>
+          <div class="step-desc">Зоны BSL/SSL подскажут где могут быть ловушки. Структура LH/HL предупредит о развороте раньше всех.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЦИТАТА -->
+  <div class="quote">
+    "Индикатор от Товарища" — который помогает принимать только обоснованные решения. Всё остальное — шум.
+    <cite>— IT v3, 2026</cite>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    IT v3 Trading Signal System<br>
+    TradingView · Railway · Telegram Bot API<br>
+    Bitcoin · Ethereum · Solana · 1D · 4H · 1H
+  </div>
+
+</div>
+</body>
+</html>
