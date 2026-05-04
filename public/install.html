@@ -199,26 +199,46 @@
       <div class="step-num" style="color:var(--green)">4</div>
       <div class="step-body">
         <div class="step-title">Индикатор на графике — проверь что всё отображается</div>
-        <div class="step-desc">На графике должны появиться:</div>
-        <div style="margin-top:10px; display:flex; flex-direction:column; gap:8px;">
-          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
-            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--red); flex-shrink:0"></span>
-            <span><strong style="color:var(--red)">SM1 / SM2</strong> — красные уровни продаж</span>
+        <div class="step-desc">На графике появятся уровни SM и таблица в правом верхнем углу:</div>
+
+        <div style="margin-top:12px; background:#0a0a1e; border:1px solid var(--b2); border-radius:12px; overflow:hidden; font-family:'JetBrains Mono',monospace; font-size:12px;">
+          <div style="background:#14143a; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--b2);">
+            <span style="font-weight:700; color:var(--white)">SOL/USDT</span>
+            <span style="color:var(--lg)">84.13</span>
+            <span style="color:var(--red); font-weight:700">▼ DN</span>
           </div>
-          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
-            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--yellow); flex-shrink:0"></span>
-            <span><strong style="color:var(--yellow)">SM3</strong> — жёлтая базовая линия</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:6px 14px 4px; gap:2px; border-bottom:1px solid var(--b2);">
+            <span style="color:var(--gray); font-size:11px">УРОВЕНЬ</span>
+            <span style="color:var(--gray); font-size:11px; text-align:right">ЦЕНА</span>
+            <span style="color:var(--gray); font-size:11px; text-align:right">СИГНАЛ</span>
+            <span style="color:var(--gray); font-size:11px; text-align:right">ДО ЦЕЛИ</span>
           </div>
-          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
-            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0"></span>
-            <span><strong style="color:var(--green)">SM4 / SM5</strong> — зелёные уровни покупок</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(244,67,54,.12);">
+            <span style="color:var(--red); font-weight:700">SM1</span><span style="text-align:right; color:var(--lg)">107.7</span><span style="text-align:right; color:var(--red)">SELL 100%</span><span style="text-align:right; color:var(--green)">+28.1%</span>
           </div>
-          <div style="display:flex; align-items:center; gap:10px; font-size:13px;">
-            <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--orange); flex-shrink:0"></span>
-            <span><strong style="color:var(--orange)">Оранжевая SMA</strong> — глобальный тренд</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(255,152,0,.08);">
+            <span style="color:var(--orange); font-weight:700">SM2</span><span style="text-align:right; color:var(--lg)">95.5</span><span style="text-align:right; color:var(--orange)">SELL 50%</span><span style="text-align:right; color:var(--green)">+13.6%</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(255,193,7,.1);">
+            <span style="color:var(--yellow); font-weight:700">◆ SM3</span><span style="text-align:right; color:var(--lg)">84.7</span><span style="text-align:right; color:var(--yellow)">BUY 25%</span><span style="text-align:right; color:var(--gray)">+0.7%</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(76,175,80,.1);">
+            <span style="color:var(--green); font-weight:700">SM4</span><span style="text-align:right; color:var(--lg)">77.0</span><span style="text-align:right; color:var(--green)">BUY 50%</span><span style="text-align:right; color:var(--red)">−8.5%</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(102,255,136,.08);">
+            <span style="color:var(--green2); font-weight:700">SM5</span><span style="text-align:right; color:var(--lg)">68.6</span><span style="text-align:right; color:var(--green2)">BUY 100%</span><span style="text-align:right; color:var(--red)">−18.5%</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:8px 14px; border-top:1px solid var(--b2); gap:4px;">
+            <span style="color:var(--gray); font-size:11px">RSI</span><span style="color:var(--lg); font-size:11px">NEUTRAL</span>
+            <span style="color:var(--gray); font-size:11px">VOL</span><span style="text-align:right; background:rgba(76,175,80,.2); color:var(--green); font-size:11px; padding:1px 6px; border-radius:4px; font-weight:700">OK</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:4px 14px 8px; gap:4px;">
+            <span style="color:var(--gray); font-size:11px">PAT</span><span style="color:var(--lg); font-size:11px">нет паттерна</span>
+            <span style="color:var(--gray); font-size:11px">SIG</span><span style="color:var(--lg); font-size:11px">нет сигнала</span>
           </div>
         </div>
-        <div class="step-tip" style="margin-top:12px">📊 В правом верхнем углу графика — таблица с текущими ценами всех уровней и сигналом.</div>
+
+        <div class="step-tip" style="margin-top:12px">💡 <strong>ДО ЦЕЛИ</strong> — % от текущей цены до уровня. <strong>RSI</strong> и <strong>VOL</strong> используются для STRONG-сигналов. <strong>SIG</strong> — текущий активный сигнал.</div>
       </div>
     </div>
 
