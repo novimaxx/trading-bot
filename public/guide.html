@@ -43,91 +43,101 @@
     background: var(--bg);
     border: 1px solid var(--line2);
     border-radius: 28px;
-    padding: 64px 48px 48px;
+    padding: 72px 48px 52px;
     text-align: center;
     margin-bottom: 48px;
     position: relative;
     overflow: hidden;
   }
+  /* Grid bg */
   .hero-grid {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background-image:
-      linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 20%, transparent 85%);
-    pointer-events: none;
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 30%, transparent 95%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 30%, transparent 95%);
+    opacity: .5; pointer-events: none; z-index: 1;
+  }
+  /* Candlestick chart bg */
+  .hero-chart {
+    position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  }
+  .hero-chart svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* Glow */
+  .hero-glow {
+    position: absolute;
+    width: 70%; height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,204,113,.22) 0%, transparent 65%);
+    left: 50%; bottom: -120px; transform: translateX(-50%);
+    filter: blur(50px);
+    pointer-events: none; z-index: 1;
   }
   /* Corner brackets */
-  .bk { position:absolute; width:16px; height:16px; border:1.5px solid var(--accent); }
-  .bk.tl { top:20px; left:20px; border-right:none; border-bottom:none; }
-  .bk.tr { top:20px; right:20px; border-left:none; border-bottom:none; }
-  .bk.bl { bottom:20px; left:20px; border-right:none; border-top:none; }
-  .bk.br { bottom:20px; right:20px; border-left:none; border-top:none; }
+  .bk { position:absolute; width:18px; height:18px; border:2px solid var(--accent); z-index: 6; }
+  .bk.tl { top:22px; left:22px; border-right:none; border-bottom:none; }
+  .bk.tr { top:22px; right:22px; border-left:none; border-bottom:none; }
+  .bk.bl { bottom:22px; left:22px; border-right:none; border-top:none; }
+  .bk.br { bottom:22px; right:22px; border-left:none; border-top:none; }
   /* Topbar */
   .hero-topbar {
-    position: absolute;
-    top: 20px; left: 50%; transform: translateX(-50%);
+    position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
     display: flex; align-items: center; gap: 10px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 600; letter-spacing: 2px;
-    color: var(--muted); white-space: nowrap;
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+    color: rgba(255,255,255,.55); white-space: nowrap; z-index: 6;
   }
+  .hero-topbar-live { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; letter-spacing: 2.8px; }
   .hero-topbar-dot {
-    width: 7px; height: 7px; border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
     background: var(--accent2);
-    box-shadow: 0 0 6px var(--accent2);
+    box-shadow: 0 0 0 3px rgba(255,61,127,.22);
     animation: pulse-dot 1.8s ease-in-out infinite;
   }
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .hero-topbar-v3 {
-    margin-left: auto; color: var(--muted);
-  }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
+  /* Kicker — brand style */
   .hero-kicker {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-    position: relative; z-index: 1;
+    font-size: 14px; font-weight: 700; letter-spacing: .28em;
+    text-transform: uppercase; color: var(--accent2);
+    margin-bottom: 20px;
+    display: inline-flex; align-items: center; gap: 14px;
+    position: relative; z-index: 5;
   }
+  .hero-kicker::before, .hero-kicker::after {
+    content: ''; width: 22px; height: 2px; background: var(--accent2);
+  }
+  /* Title */
   .hero h1 {
-    font-size: 72px;
-    font-weight: 900;
-    letter-spacing: -3px;
-    line-height: 1;
-    color: var(--white);
-    margin-bottom: 8px;
-    position: relative; z-index: 1;
+    font-size: 80px; font-weight: 900;
+    letter-spacing: -.04em; line-height: .95;
+    color: var(--white); margin-bottom: 24px;
+    position: relative; z-index: 5;
+    text-transform: uppercase;
   }
   .hero h1 .accent {
     background: linear-gradient(180deg, #6FFFB2 0%, #2ecc71 50%, #126638 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .hero-tagline { font-size: 16px; color: var(--lg); margin-bottom: 8px; font-weight: 500; position: relative; z-index: 1; }
-  .hero-sub { font-size: 13px; color: var(--muted); margin-bottom: 36px; position: relative; z-index: 1; }
-
+  .hero-tagline { font-size: 15px; color: var(--lg); margin-bottom: 6px; font-weight: 500; position: relative; z-index: 5; }
+  .hero-sub { font-size: 12px; color: var(--muted); margin-bottom: 32px; position: relative; z-index: 5; }
+  /* Coin pill — brand style */
   .hero-coins {
-    display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;
-    position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: 10px; margin-bottom: 16px;
+    position: relative; z-index: 5;
   }
   .coin-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 24px; border-radius: 100px;
-    border: 1px solid var(--line2);
-    font-size: 14px; font-weight: 800; color: var(--lg);
-    background: var(--card);
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 2px;
+    display: inline-flex; align-items: center;
+    padding: 9px 26px; border-radius: 8px;
+    border: 1.5px solid rgba(77,201,240,.5);
+    font-size: 14px; font-weight: 700; color: var(--cyan);
+    background: rgba(77,201,240,.08);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .18em;
   }
-
-  .hero-tfs { display: flex; justify-content: center; gap: 8px; position: relative; z-index: 1; }
+  /* Timeframes */
+  .hero-tfs { display: flex; justify-content: center; gap: 8px; position: relative; z-index: 5; }
   .tf {
     padding: 5px 16px; border-radius: 8px;
     font-size: 12px; font-weight: 700;
@@ -136,6 +146,18 @@
   .tf.tf-1d { background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.3); color: var(--accent); }
   .tf.tf-4h { background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.3); color: var(--orange); }
   .tf.tf-1h { background: rgba(77,201,240,.08); border: 1px solid rgba(77,201,240,.3); color: var(--cyan); }
+  /* Hero footer */
+  .hero-footer {
+    position: absolute; bottom: 28px; left: 40px; right: 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: .22em; text-transform: uppercase;
+    color: rgba(255,255,255,.3); z-index: 6;
+  }
+  .hero-footer-r { display: flex; align-items: center; gap: 8px; }
+  .hero-footer-r::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
 
   /* ─── SECTION ─── */
   .section { margin-bottom: 56px; }
@@ -374,16 +396,15 @@
 <div class="page">
 
   <!-- HERO -->
-  <div class="hero">
+  <div class="hero" id="hero">
     <div class="hero-grid"></div>
-    <div class="bk tl"></div>
-    <div class="bk tr"></div>
-    <div class="bk bl"></div>
-    <div class="bk br"></div>
+    <div class="hero-chart" id="heroChart"></div>
+    <div class="hero-glow"></div>
+    <div class="bk tl"></div><div class="bk tr"></div>
+    <div class="bk bl"></div><div class="bk br"></div>
     <div class="hero-topbar">
-      <div class="hero-topbar-dot"></div>
-      LIVE · PRO SIGNALS
-      <span class="hero-topbar-v3">v3</span>
+      <div class="hero-topbar-live"><div class="hero-topbar-dot"></div>LIVE · PRO SIGNALS</div>
+      <span>v3</span>
     </div>
     <div class="hero-kicker">Индикатор</div>
     <h1>от <span class="accent">Товарища</span></h1>
@@ -396,6 +417,10 @@
       <div class="tf tf-1d">1D — День</div>
       <div class="tf tf-4h">4H — 4 Часа</div>
       <div class="tf tf-1h">1H — 1 Час</div>
+    </div>
+    <div class="hero-footer">
+      <div>IT V3</div>
+      <div class="hero-footer-r">TRADINGVIEW</div>
     </div>
   </div>
 
@@ -877,5 +902,52 @@
   </div>
 
 </div>
+
+<script>
+(function(){
+  function priceData(n,seed){
+    var out=[];
+    for(var i=0;i<n;i++){
+      var trend=i*1.4, wave=Math.sin(i*.4+seed)*5+Math.sin(i*.18)*9;
+      var noise=(Math.sin(i*1.7+seed*3.1)*.5+Math.sin(i*.7+seed*2.3)*.5)*3.5;
+      var close=100+trend+wave+noise;
+      var open=i===0?close:out[i-1].close;
+      var high=Math.max(open,close)+Math.abs(Math.sin(i*1.3+seed))*3;
+      var low=Math.min(open,close)-Math.abs(Math.cos(i*1.1+seed))*3;
+      out.push({open:open,high:high,low:low,close:close});
+    }
+    return out;
+  }
+  var el=document.getElementById('heroChart');
+  if(!el)return;
+  var W=el.offsetWidth||800, H=el.offsetHeight||320;
+  var count=36, padX=40, padTop=80, padBot=100;
+  var innerW=W-padX*2, innerH=H-padTop-padBot;
+  var data=priceData(count,1);
+  var minP=Math.min.apply(null,data.map(function(d){return d.low;}));
+  var maxP=Math.max.apply(null,data.map(function(d){return d.high;}));
+  var range=maxP-minP;
+  var step=innerW/count;
+  var cw=step*.55;
+  function y(p){return padTop+innerH-((p-minP)/range)*innerH;}
+  function x(i){return padX+step*(i+.5);}
+  var candles='';
+  data.forEach(function(d,i){
+    var cx=x(i), up=d.close>=d.open;
+    var col=up?'var(--accent)':'var(--accent2)';
+    var bTop=y(Math.max(d.open,d.close)), bBot=y(Math.min(d.open,d.close));
+    var bH=Math.max(2,bBot-bTop);
+    candles+='<line x1="'+cx+'" y1="'+y(d.high)+'" x2="'+cx+'" y2="'+y(d.low)+'" stroke="'+col+'" stroke-width="1.5" opacity=".6"/>';
+    candles+='<rect x="'+(cx-cw/2)+'" y="'+bTop+'" width="'+cw+'" height="'+bH+'" fill="'+col+'" opacity=".65" rx="1"/>';
+  });
+  var trend='';
+  data.forEach(function(d,i){trend+=(i===0?'M':'L')+' '+x(i)+' '+y(d.close)+' ';});
+  var mask='linear-gradient(180deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.9) 15%,rgba(0,0,0,.25) 40%,rgba(0,0,0,.25) 60%,rgba(0,0,0,.9) 82%,rgba(0,0,0,.9) 100%)';
+  el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">'
+    +'<g style="mask:'+mask+'">'+ candles +'</g>'
+    +'<path d="'+trend+'" fill="none" stroke="var(--accent2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".7" filter="drop-shadow(0 0 6px rgba(255,61,127,.5))" style="mask:'+mask+'"/>'
+    +'</svg>';
+})();
+</script>
 </body>
 </html>
