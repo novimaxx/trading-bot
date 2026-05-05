@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Arial Black', Arial, sans-serif; }
+
+  /* ═══════════════════════════════════
+     WIDE FORMAT  1280 × 640
+  ══════════════════════════════════ */
+  .wide {
+    width: 1280px;
+    height: 640px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 0 80px;
+  }
+
+  /* ═══════════════════════════════════
+     SQUARE FORMAT  640 × 640
+  ══════════════════════════════════ */
+  .square {
+    width: 640px;
+    height: 640px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 56px;
+  }
+
+  /* ─── glow blobs (absolutely positioned pseudo-lights) ─── */
+  .glow-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  /* ─── shared chip ─── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    width: fit-content;
+    backdrop-filter: blur(6px);
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  /* ─── wide: left block ─── */
+  .left {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+  .wide .title-main {
+    font-size: 86px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 4px;
+  }
+  .wide .title-accent {
+    font-size: 86px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  .wide .subtitle {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+  }
+
+  /* ─── wide: right block ─── */
+  .right {
+    position: relative;
+    z-index: 2;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .ghost-v3 {
+    font-size: 220px;
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 2px;
+    opacity: 0.18;
+    letter-spacing: -4px;
+    margin-bottom: -10px;
+  }
+  .btc-line {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+  }
+  .tf-line {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* ─── square: layout ─── */
+  .square .title-main {
+    font-size: 62px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 4px;
+  }
+  .square .title-accent {
+    font-size: 62px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 28px;
+  }
+  .square .btc-line {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+  }
+  .square .ghost-v3 {
+    position: absolute;
+    right: 24px;
+    bottom: 10px;
+    font-size: 180px;
+    font-weight: 900;
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 2px;
+    opacity: 0.15;
+    letter-spacing: -4px;
+    z-index: 1;
+  }
+
+  .content { position: relative; z-index: 2; }
+
+  /* label */
+  .label {
+    position: absolute;
+    top: 14px;
+    left: 18px;
+    color: rgba(255,255,255,0.2);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    z-index: 10;
+  }
+
+  /* ═══ COLOR THEMES ═══ */
+
+  /* 1 — PINK + CYAN */
+  .c1-bg  { background: radial-gradient(ellipse at 25% 50%, #160b2e 0%, #09091a 55%, #030d15 100%); }
+  .c1-b1  { width:500px; height:500px; background:#7b1fa2; left:-100px; top:50px; }
+  .c1-b2  { width:400px; height:400px; background:#006064; right:0; bottom:-50px; }
+  .c1-acc { color: #ff2d78; }
+  .c1-btc { color: #00e5ff; }
+  .c1-chip{ background:rgba(0,229,255,.1); border:1px solid rgba(0,229,255,.3); color:#00e5ff; }
+  .c1-dot { background:#00e5ff; box-shadow:0 0 6px #00e5ff; }
+  .c1-gh  { -webkit-text-stroke-color: rgba(0,229,255,0.6); }
+
+  /* 2 — GREEN + AMBER */
+  .c2-bg  { background: radial-gradient(ellipse at 25% 50%, #071a0c 0%, #080d08 55%, #0d0900 100%); }
+  .c2-b1  { width:500px; height:500px; background:#1b5e20; left:-80px; top:60px; }
+  .c2-b2  { width:380px; height:380px; background:#e65100; right:20px; bottom:-30px; }
+  .c2-acc { color: #00e676; }
+  .c2-btc { color: #ffab40; }
+  .c2-chip{ background:rgba(255,171,64,.1); border:1px solid rgba(255,171,64,.3); color:#ffab40; }
+  .c2-dot { background:#ffab40; box-shadow:0 0 6px #ffab40; }
+  .c2-gh  { -webkit-text-stroke-color: rgba(0,230,118,0.5); }
+
+  /* 3 — YELLOW + PURPLE */
+  .c3-bg  { background: radial-gradient(ellipse at 25% 50%, #1a1400 0%, #0d0d0d 55%, #0d0013 100%); }
+  .c3-b1  { width:500px; height:500px; background:#5d4037; left:-80px; top:60px; }
+  .c3-b2  { width:400px; height:400px; background:#4a148c; right:0; bottom:-30px; }
+  .c3-acc { color: #ffd600; }
+  .c3-btc { color: #e040fb; }
+  .c3-chip{ background:rgba(224,64,251,.1); border:1px solid rgba(224,64,251,.3); color:#e040fb; }
+  .c3-dot { background:#ffd600; box-shadow:0 0 6px #ffd600; }
+  .c3-gh  { -webkit-text-stroke-color: rgba(255,214,0,0.5); }
+
+  /* 4 — ORANGE + BLUE */
+  .c4-bg  { background: radial-gradient(ellipse at 25% 50%, #1a0800 0%, #0d0a0d 55%, #000a1a 100%); }
+  .c4-b1  { width:500px; height:500px; background:#bf360c; left:-80px; top:60px; }
+  .c4-b2  { width:400px; height:400px; background:#0d47a1; right:0; bottom:-30px; }
+  .c4-acc { color: #ff7043; }
+  .c4-btc { color: #448aff; }
+  .c4-chip{ background:rgba(68,138,255,.1); border:1px solid rgba(68,138,255,.3); color:#448aff; }
+  .c4-dot { background:#ff7043; box-shadow:0 0 6px #ff7043; }
+  .c4-gh  { -webkit-text-stroke-color: rgba(255,112,67,0.5); }
+
+  /* 5 — RED + AQUA */
+  .c5-bg  { background: radial-gradient(ellipse at 25% 50%, #1a0008 0%, #0d0808 55%, #00100e 100%); }
+  .c5-b1  { width:500px; height:500px; background:#b71c1c; left:-80px; top:60px; }
+  .c5-b2  { width:400px; height:400px; background:#004d40; right:0; bottom:-30px; }
+  .c5-acc { color: #ff1744; }
+  .c5-btc { color: #1de9b6; }
+  .c5-chip{ background:rgba(29,233,182,.1); border:1px solid rgba(29,233,182,.3); color:#1de9b6; }
+  .c5-dot { background:#1de9b6; box-shadow:0 0 6px #1de9b6; }
+  .c5-gh  { -webkit-text-stroke-color: rgba(255,23,68,0.5); }
+
+  /* 6 — GOLD + VIOLET */
+  .c6-bg  { background: radial-gradient(ellipse at 25% 50%, #1a1200 0%, #0e0e0e 55%, #0c0020 100%); }
+  .c6-b1  { width:500px; height:500px; background:#795548; left:-80px; top:60px; }
+  .c6-b2  { width:400px; height:400px; background:#311b92; right:0; bottom:-30px; }
+  .c6-acc { color: #ffca28; }
+  .c6-btc { color: #b388ff; }
+  .c6-chip{ background:rgba(179,136,255,.1); border:1px solid rgba(179,136,255,.3); color:#b388ff; }
+  .c6-dot { background:#ffca28; box-shadow:0 0 6px #ffca28; }
+  .c6-gh  { -webkit-text-stroke-color: rgba(255,202,40,0.5); }
+
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════
+     WIDE FORMAT  1280 × 640
+════════════════════════════ -->
+
+<!-- W1: Pink + Cyan -->
+<div class="wide c1-bg" id="w1">
+  <div class="label">WIDE 1 · PINK + CYAN</div>
+  <div class="glow-blob c1-b1"></div>
+  <div class="glow-blob c1-b2"></div>
+  <div class="left">
+    <div class="chip c1-chip"><span class="dot c1-dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-main">Индикатор</div>
+    <div class="title-accent c1-acc">от Товарища</div>
+    <div class="subtitle">IT V3 · TRADINGVIEW</div>
+  </div>
+  <div class="right">
+    <div class="ghost-v3 c1-gh">v3</div>
+    <div class="btc-line c1-btc">BTC · ETH · SOL</div>
+    <div class="tf-line">1D / 4H / 1H</div>
+  </div>
+</div>
+
+<!-- W2: Green + Amber -->
+<div class="wide c2-bg" id="w2">
+  <div class="label">WIDE 2 · GREEN + AMBER</div>
+  <div class="glow-blob c2-b1"></div>
+  <div class="glow-blob c2-b2"></div>
+  <div class="left">
+    <div class="chip c2-chip"><span class="dot c2-dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-main">Индикатор</div>
+    <div class="title-accent c2-acc">от Товарища</div>
+    <div class="subtitle">IT V3 · TRADINGVIEW</div>
+  </div>
+  <div class="right">
+    <div class="ghost-v3 c2-gh">v3</div>
+    <div class="btc-line c2-btc">BTC · ETH · SOL</div>
+    <div class="tf-line">1D / 4H / 1H</div>
+  </div>
+</div>
+
+<!-- W3: Yellow + Purple -->
+<div class="wide c3-bg" id="w3">
+  <div class="label">WIDE 3 · YELLOW + PURPLE</div>
+  <div class="glow-blob c3-b1"></div>
+  <div class="glow-blob c3-b2"></div>
+  <div class="left">
+    <div class="chip c3-chip"><span class="dot c3-dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-main">Индикатор</div>
+    <div class="title-accent c3-acc">от Товарища</div>
+    <div class="subtitle">IT V3 · TRADINGVIEW</div>
+  </div>
+  <div class="right">
+    <div class="ghost-v3 c3-gh">v3</div>
+    <div class="btc-line c3-btc">BTC · ETH · SOL</div>
+    <div class="tf-line">1D / 4H / 1H</div>
+  </div>
+</div>
+
+<!-- W4: Orange + Blue -->
+<div class="wide c4-bg" id="w4">
+  <div class="label">WIDE 4 · ORANGE + BLUE</div>
+  <div class="glow-blob c4-b1"></div>
+  <div class="glow-blob c4-b2"></div>
+  <div class="left">
+    <div class="chip c4-chip"><span class="dot c4-dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-main">Индикатор</div>
+    <div class="title-accent c4-acc">от Товарища</div>
+    <div class="subtitle">IT V3 · TRADINGVIEW</div>
+  </div>
+  <div class="right">
+    <div class="ghost-v3 c4-gh">v3</div>
+    <div class="btc-line c4-btc">BTC · ETH · SOL</div>
+    <div class="tf-line">1D / 4H / 1H</div>
+  </div>
+</div>
+
+<!-- W5: Red + Aqua -->
+<div class="wide c5-bg" id="w5">
+  <div class="label">WIDE 5 · RED + AQUA</div>
+  <div class="glow-blob c5-b1"></div>
+  <div class="glow-blob c5-b2"></div>
+  <div class="left">
+    <div class="chip c5-chip"><span class="dot c5-dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-main">Индикатор</div>
+    <div class="title-accent c5-acc">от Товарища</div>
+    <div class="subtitle">IT V3 · TRADINGVIEW</div>
+  </div>
+  <div class="right">
+    <div class="ghost-v3 c5-gh">v3</div>
+    <div class="btc-line c5-btc">BTC · ETH · SOL</div>
+    <div class="tf-line">1D / 4H / 1H</div>
+  </div>
+</div>
+
+<!-- W6: Gold + Violet -->
+<div class="wide c6-bg" id="w6">
+  <div class="label">WIDE 6 · GOLD + VIOLET</div>
+  <div class="glow-blob c6-b1"></div>
+  <div class="glow-blob c6-b2"></div>
+  <div class="left">
+    <div class="chip c6-chip"><span class="dot c6-dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-main">Индикатор</div>
+    <div class="title-accent c6-acc">от Товарища</div>
+    <div class="subtitle">IT V3 · TRADINGVIEW</div>
+  </div>
+  <div class="right">
+    <div class="ghost-v3 c6-gh">v3</div>
+    <div class="btc-line c6-btc">BTC · ETH · SOL</div>
+    <div class="tf-line">1D / 4H / 1H</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     SQUARE FORMAT  640 × 640
+════════════════════════════ -->
+
+<div style="display:grid; grid-template-columns: repeat(3, 640px);">
+
+  <!-- S1 -->
+  <div class="square c1-bg" id="s1">
+    <div class="label">SQ 1 · PINK + CYAN</div>
+    <div class="glow-blob c1-b1" style="width:350px;height:350px;left:-80px;top:20px;"></div>
+    <div class="glow-blob c1-b2" style="width:300px;height:300px;right:-40px;bottom:-40px;"></div>
+    <div class="ghost-v3 c1-gh">v3</div>
+    <div class="content">
+      <div class="chip c1-chip"><span class="dot c1-dot"></span>LIVE · PRO SIGNALS</div>
+      <div class="title-main">Индикатор</div>
+      <div class="title-accent c1-acc">от Товарища</div>
+      <div class="btc-line c1-btc">BTC · ETH · SOL</div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="square c2-bg" id="s2">
+    <div class="label">SQ 2 · GREEN + AMBER</div>
+    <div class="glow-blob c2-b1" style="width:350px;height:350px;left:-80px;top:20px;"></div>
+    <div class="glow-blob c2-b2" style="width:300px;height:300px;right:-40px;bottom:-40px;"></div>
+    <div class="ghost-v3 c2-gh">v3</div>
+    <div class="content">
+      <div class="chip c2-chip"><span class="dot c2-dot"></span>LIVE · PRO SIGNALS</div>
+      <div class="title-main">Индикатор</div>
+      <div class="title-accent c2-acc">от Товарища</div>
+      <div class="btc-line c2-btc">BTC · ETH · SOL</div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="square c3-bg" id="s3">
+    <div class="label">SQ 3 · YELLOW + PURPLE</div>
+    <div class="glow-blob c3-b1" style="width:350px;height:350px;left:-80px;top:20px;"></div>
+    <div class="glow-blob c3-b2" style="width:300px;height:300px;right:-40px;bottom:-40px;"></div>
+    <div class="ghost-v3 c3-gh">v3</div>
+    <div class="content">
+      <div class="chip c3-chip"><span class="dot c3-dot"></span>LIVE · PRO SIGNALS</div>
+      <div class="title-main">Индикатор</div>
+      <div class="title-accent c3-acc">от Товарища</div>
+      <div class="btc-line c3-btc">BTC · ETH · SOL</div>
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="square c4-bg" id="s4">
+    <div class="label">SQ 4 · ORANGE + BLUE</div>
+    <div class="glow-blob c4-b1" style="width:350px;height:350px;left:-80px;top:20px;"></div>
+    <div class="glow-blob c4-b2" style="width:300px;height:300px;right:-40px;bottom:-40px;"></div>
+    <div class="ghost-v3 c4-gh">v3</div>
+    <div class="content">
+      <div class="chip c4-chip"><span class="dot c4-dot"></span>LIVE · PRO SIGNALS</div>
+      <div class="title-main">Индикатор</div>
+      <div class="title-accent c4-acc">от Товарища</div>
+      <div class="btc-line c4-btc">BTC · ETH · SOL</div>
+    </div>
+  </div>
+
+  <!-- S5 -->
+  <div class="square c5-bg" id="s5">
+    <div class="label">SQ 5 · RED + AQUA</div>
+    <div class="glow-blob c5-b1" style="width:350px;height:350px;left:-80px;top:20px;"></div>
+    <div class="glow-blob c5-b2" style="width:300px;height:300px;right:-40px;bottom:-40px;"></div>
+    <div class="ghost-v3 c5-gh">v3</div>
+    <div class="content">
+      <div class="chip c5-chip"><span class="dot c5-dot"></span>LIVE · PRO SIGNALS</div>
+      <div class="title-main">Индикатор</div>
+      <div class="title-accent c5-acc">от Товарища</div>
+      <div class="btc-line c5-btc">BTC · ETH · SOL</div>
+    </div>
+  </div>
+
+  <!-- S6 -->
+  <div class="square c6-bg" id="s6">
+    <div class="label">SQ 6 · GOLD + VIOLET</div>
+    <div class="glow-blob c6-b1" style="width:350px;height:350px;left:-80px;top:20px;"></div>
+    <div class="glow-blob c6-b2" style="width:300px;height:300px;right:-40px;bottom:-40px;"></div>
+    <div class="ghost-v3 c6-gh">v3</div>
+    <div class="content">
+      <div class="chip c6-chip"><span class="dot c6-dot"></span>LIVE · PRO SIGNALS</div>
+      <div class="title-main">Индикатор</div>
+      <div class="title-accent c6-acc">от Товарища</div>
+      <div class="btc-line c6-btc">BTC · ETH · SOL</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
