@@ -86,7 +86,10 @@
     font-size: 52px; font-weight: 900; letter-spacing: -2px; margin-bottom: 8px;
     color: var(--white); line-height: 1; position: relative; z-index: 1;
   }
-  .hero h1 .accent { color: var(--accent); }
+  .hero h1 .accent {
+    background: linear-gradient(180deg, #6FFFB2 0%, #2ecc71 50%, #126638 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
   .hero-sub { font-size: 15px; color: var(--lg); margin-bottom: 6px; position: relative; z-index: 1; }
   .hero-note { font-size: 13px; color: var(--muted); position: relative; z-index: 1; }
   .hero-coins {
