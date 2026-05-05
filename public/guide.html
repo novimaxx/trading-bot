@@ -115,14 +115,23 @@
   }
   .coin-pill {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 7px 18px; border-radius: 100px; border: 1px solid var(--line2);
-    font-size: 13px; font-weight: 700; color: var(--lg);
-    background: rgba(255,255,255,0.03);
+    padding: 8px 24px; border-radius: 100px;
+    border: 1px solid rgba(77,201,240,.35);
+    font-size: 14px; font-weight: 800; color: var(--cyan);
+    background: rgba(77,201,240,.07);
     font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 2px;
   }
 
   .hero-tfs { display: flex; justify-content: center; gap: 8px; position: relative; z-index: 1; }
-  .tf { padding: 5px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--line2); border-radius: 8px; font-size: 13px; color: var(--lg); }
+  .tf {
+    padding: 5px 16px; border-radius: 8px;
+    font-size: 12px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 1px;
+  }
+  .tf.tf-1d { background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.3); color: var(--accent); }
+  .tf.tf-4h { background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.3); color: var(--orange); }
+  .tf.tf-1h { background: rgba(77,201,240,.08); border: 1px solid rgba(77,201,240,.3); color: var(--cyan); }
 
   /* ─── SECTION ─── */
   .section { margin-bottom: 56px; }
@@ -381,9 +390,9 @@
       <div class="coin-pill">BTC · ETH · SOL</div>
     </div>
     <div class="hero-tfs">
-      <div class="tf">1D — День</div>
-      <div class="tf">4H — 4 Часа</div>
-      <div class="tf">1H — 1 Час</div>
+      <div class="tf tf-1d">1D — День</div>
+      <div class="tf tf-4h">4H — 4 Часа</div>
+      <div class="tf tf-1h">1H — 1 Час</div>
     </div>
   </div>
 
