@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0a0a0a; font-family: 'Inter', sans-serif; padding: 40px; display: flex; flex-direction: column; gap: 40px; }
+.label { color: #444; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+
+/* ── КОМБО A: Зелёный + структура v2 ── */
+.ca {
+  width: 900px; height: 420px;
+  background: #060e09;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 64px 72px;
+  position: relative; overflow: hidden;
+}
+.ca-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,210,100,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,210,100,0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.ca-glow {
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,210,100,0.06) 0%, transparent 65%);
+  top: 50%; left: 40%; transform: translate(-50%,-50%);
+  pointer-events: none;
+}
+.ca-left { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 18px; }
+.ca .chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,210,100,0.08); border: 1px solid rgba(0,210,100,0.25);
+  color: #00d264; font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+  padding: 7px 16px; border-radius: 100px; width: fit-content;
+}
+.ca .dot { width: 6px; height: 6px; border-radius: 50%; background: #00d264; box-shadow: 0 0 8px #00d264; }
+.ca h1 { color: #fff; font-size: 46px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+.ca h1 em { color: #00d264; font-style: normal; }
+.ca p { color: #1f4a30; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+
+.ca-right { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 24px; }
+.ca-v3 { font-size: 96px; font-weight: 900; line-height: 1; color: transparent;
+  -webkit-text-stroke: 2px rgba(0,210,100,0.2); letter-spacing: -4px; }
+.ca-coins { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.ca-coin { color: #00d264; font-size: 15px; font-weight: 700; letter-spacing: 1px; }
+.ca-tf { color: #1f4a30; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── КОМБО B: Тёмно-синий + зелёный акцент ── */
+.cb {
+  width: 900px; height: 420px;
+  background: linear-gradient(145deg, #060810 0%, #0a0d1f 40%, #060e0a 100%);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 64px 72px;
+  position: relative; overflow: hidden;
+}
+.cb-glow1 {
+  position: absolute; width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%);
+  top: -80px; left: -60px; pointer-events: none;
+}
+.cb-glow2 {
+  position: absolute; width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(0,210,100,0.07) 0%, transparent 70%);
+  bottom: -60px; right: 100px; pointer-events: none;
+}
+.cb-left { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 18px; }
+.cb .tag { color: #6366f1; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
+.cb h1 { color: #fff; font-size: 46px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+.cb h1 em { color: #00d264; font-style: normal; }
+.cb p { color: #252840; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+.cb-right { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 16px; }
+.cb-v3 { font-size: 96px; font-weight: 900; line-height: 1; color: transparent;
+  -webkit-text-stroke: 2px rgba(99,102,241,0.2); letter-spacing: -4px; }
+.cb-tags { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.cb-tag { display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(0,210,100,0.07); border: 1px solid rgba(0,210,100,0.15);
+  color: #00d264; font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+  padding: 5px 14px; border-radius: 100px; }
+.cb-tag2 { background: rgba(99,102,241,0.07); border-color: rgba(99,102,241,0.2); color: #6366f1; }
+
+/* ── КОМБО C: Квадрат лого (аватар) комбо-стиль ── */
+.cc {
+  width: 420px; height: 420px;
+  background: #060e09;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; position: relative; overflow: hidden;
+}
+.cc-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,210,100,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,210,100,0.04) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+.cc-glow {
+  position: absolute; width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0,210,100,0.09) 0%, transparent 70%);
+}
+.cc-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.cc-badge { background: rgba(0,210,100,0.1); border: 1px solid rgba(0,210,100,0.3);
+  color: #00d264; font-size: 10px; font-weight: 800; letter-spacing: 3px;
+  padding: 5px 14px; border-radius: 100px; }
+.cc h1 { color: #fff; font-size: 26px; font-weight: 800; text-align: center; line-height: 1.2; }
+.cc h1 em { color: #00d264; font-style: normal; }
+.cc-v3 { font-size: 11px; color: #1f4a30; letter-spacing: 4px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="label">Комбо A — Зелёный / Структура (баннер поста)</div>
+<div class="ca">
+  <div class="ca-grid"></div>
+  <div class="ca-glow"></div>
+  <div class="ca-left">
+    <div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div>
+    <h1>Индикатор<br>от <em>Товарища</em></h1>
+    <p>IT v3 · TradingView</p>
+  </div>
+  <div class="ca-right">
+    <div class="ca-v3">v3</div>
+    <div class="ca-coins">
+      <div class="ca-coin">BTC · ETH · SOL</div>
+      <div class="ca-tf">1D / 4H / 1H</div>
+    </div>
+  </div>
+</div>
+
+<div class="label">Комбо B — Синий + зелёный (двойной акцент)</div>
+<div class="cb">
+  <div class="cb-glow1"></div>
+  <div class="cb-glow2"></div>
+  <div class="cb-left">
+    <div class="tag">Обновление · IT v3</div>
+    <h1>Индикатор<br>от <em>Товарища</em></h1>
+    <p>Уровни · Структура · Ликвидность</p>
+  </div>
+  <div class="cb-right">
+    <div class="cb-v3">v3</div>
+    <div class="cb-tags">
+      <div class="cb-tag">● BTC · ETH · SOL</div>
+      <div class="cb-tag cb-tag2">TradingView</div>
+    </div>
+  </div>
+</div>
+
+<div class="label">Комбо C — Лого / Аватар (зелёный стиль)</div>
+<div class="cc">
+  <div class="cc-grid"></div>
+  <div class="cc-glow"></div>
+  <div class="cc-content">
+    <div class="cc-badge">IT V3</div>
+    <h1>Индикатор<br>от <em>Товарища</em></h1>
+    <div class="cc-v3">TradingView</div>
+  </div>
+</div>
+
+</body>
+</html>

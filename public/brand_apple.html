@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; font-family: 'Inter', sans-serif; padding: 40px; display: flex; flex-direction: column; gap: 32px; }
+.label { color: #555; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+
+.card {
+  width: 900px; height: 420px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 64px 72px; position: relative; overflow: hidden;
+  border-radius: 24px;
+}
+
+/* Шрифт */
+.left { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 18px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+  padding: 7px 16px; border-radius: 100px; width: fit-content;
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.8); animation: pulse 2s infinite; }
+h1 { color: #fff; font-size: 48px; font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; text-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+h1 em { font-style: normal; }
+.sub { color: rgba(255,255,255,0.45); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+.right { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 20px; }
+.v3 { font-size: 100px; font-weight: 900; line-height: 1; color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,0.15); letter-spacing: -4px; }
+.coins { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.coin { color: rgba(255,255,255,0.9); font-size: 15px; font-weight: 700; letter-spacing: 1px; }
+.tf { color: rgba(255,255,255,0.3); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+
+/* ── 1. Apple WWDC — фиолетово-синий ── */
+.wwdc {
+  background: linear-gradient(135deg, #0a0015 0%, #1a0050 30%, #0d1a6e 60%, #001a3d 100%);
+}
+.wwdc::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(120,40,255,0.35) 0%, transparent 55%),
+              radial-gradient(ellipse at 80% 30%, rgba(30,80,255,0.3) 0%, transparent 50%),
+              radial-gradient(ellipse at 60% 80%, rgba(0,180,255,0.2) 0%, transparent 45%);
+}
+.wwdc h1 em { color: #a78bfa; }
+
+/* ── 2. Sunset — оранжево-розово-фиолетовый ── */
+.sunset {
+  background: linear-gradient(135deg, #0d0005 0%, #3d0020 30%, #6b0040 55%, #1a0060 100%);
+}
+.sunset::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 15% 60%, rgba(255,80,0,0.4) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 20%, rgba(255,30,120,0.35) 0%, transparent 50%),
+              radial-gradient(ellipse at 85% 70%, rgba(120,0,255,0.3) 0%, transparent 45%);
+}
+.sunset h1 em { color: #fb923c; }
+
+/* ── 3. Aurora — зелёно-сине-фиолетовый ── */
+.aurora {
+  background: linear-gradient(135deg, #000d06 0%, #001a1a 40%, #000820 100%);
+}
+.aurora::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 10% 40%, rgba(0,255,120,0.25) 0%, transparent 50%),
+              radial-gradient(ellipse at 60% 20%, rgba(0,200,255,0.2) 0%, transparent 50%),
+              radial-gradient(ellipse at 85% 65%, rgba(100,0,255,0.2) 0%, transparent 45%),
+              radial-gradient(ellipse at 40% 80%, rgba(0,150,200,0.15) 0%, transparent 40%);
+}
+.aurora h1 em { color: #34d399; }
+
+/* ── 4. Gold Premium — чёрно-золотой ── */
+.goldprem {
+  background: linear-gradient(135deg, #080500 0%, #1a1000 40%, #0d0800 100%);
+}
+.goldprem::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(255,180,0,0.2) 0%, transparent 55%),
+              radial-gradient(ellipse at 75% 30%, rgba(255,140,0,0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 90%, rgba(200,100,0,0.1) 0%, transparent 40%);
+}
+.goldprem::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(45deg, transparent 40%, rgba(255,200,50,0.03) 50%, transparent 60%);
+}
+.goldprem h1 em { color: #fbbf24; }
+.goldprem .coin { color: #fbbf24; }
+
+/* ── 5. Neon Dark — яркий киберпанк ── */
+.neon {
+  background: #05000f;
+}
+.neon::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 0% 50%, rgba(255,0,128,0.2) 0%, transparent 45%),
+              radial-gradient(ellipse at 100% 50%, rgba(0,200,255,0.2) 0%, transparent 45%),
+              radial-gradient(ellipse at 50% 0%, rgba(120,0,255,0.15) 0%, transparent 50%);
+}
+.neon .chip { border-color: rgba(0,200,255,0.4); color: #00c8ff; }
+.neon .dot { background: #00c8ff; box-shadow: 0 0 12px #00c8ff; }
+.neon h1 em { color: #ff0080; }
+.neon .coin { color: #00c8ff; }
+
+/* ── 6. Space — серо-фиолетовый Apple Pro ── */
+.space {
+  background: linear-gradient(160deg, #0a0a12 0%, #12101e 50%, #0a0e16 100%);
+}
+.space::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 25% 40%, rgba(99,102,241,0.18) 0%, transparent 55%),
+              radial-gradient(ellipse at 75% 60%, rgba(139,92,246,0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 100%, rgba(59,130,246,0.1) 0%, transparent 45%);
+}
+.space .chip { border-color: rgba(139,92,246,0.4); color: #a78bfa; }
+.space .dot { background: #a78bfa; box-shadow: 0 0 10px #a78bfa; }
+.space h1 em { color: #818cf8; }
+.space .coin { color: #a78bfa; }
+</style>
+</head>
+<body>
+
+<div class="label">🍎 Apple WWDC — Фиолетово-синий</div>
+<div class="card wwdc">
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🌅 Sunset — Оранжево-розово-фиолетовый</div>
+<div class="card sunset">
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🌌 Aurora — Зелёно-синий</div>
+<div class="card aurora">
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">👑 Gold Premium — Чёрно-золотой</div>
+<div class="card goldprem">
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">⚡️ Neon — Киберпанк</div>
+<div class="card neon">
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🚀 Space — Apple Pro / Серо-фиолетовый</div>
+<div class="card space">
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+</body>
+</html>

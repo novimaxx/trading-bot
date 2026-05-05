@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #080808; font-family: 'Inter', sans-serif; padding: 40px; display: flex; flex-direction: column; gap: 32px; }
+.label { color: #444; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+.card {
+  width: 900px; height: 400px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 64px 72px; position: relative; overflow: hidden;
+}
+.grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(var(--gc) 1px, transparent 1px), linear-gradient(90deg, var(--gc) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.glow {
+  position: absolute; width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--glow) 0%, transparent 65%);
+  top: 50%; left: 42%; transform: translate(-50%,-50%); pointer-events: none;
+}
+.left { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 18px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--chip-bg); border: 1px solid var(--chip-bd);
+  color: var(--a); font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+  padding: 7px 16px; border-radius: 100px; width: fit-content;
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--a); box-shadow: 0 0 8px var(--a); }
+h1 { color: #fff; font-size: 46px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+h1 em { color: var(--a); font-style: normal; }
+.sub { color: var(--sub); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
+.right { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 20px; }
+.v3 { font-size: 100px; font-weight: 900; line-height: 1; color: transparent; -webkit-text-stroke: 2px var(--v3c); letter-spacing: -4px; }
+.coins { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.coin { color: var(--a); font-size: 15px; font-weight: 700; letter-spacing: 1px; }
+.tf { color: var(--sub); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+
+.green  { background:#060e09; --a:#00d264; --glow:rgba(0,210,100,.07); --gc:rgba(0,210,100,.04); --chip-bg:rgba(0,210,100,.08); --chip-bd:rgba(0,210,100,.25); --sub:#1f4a30; --v3c:rgba(0,210,100,.18); }
+.orange { background:#0d0800; --a:#f7931a; --glow:rgba(247,147,26,.07); --gc:rgba(247,147,26,.04); --chip-bg:rgba(247,147,26,.08); --chip-bd:rgba(247,147,26,.25); --sub:#3d2500; --v3c:rgba(247,147,26,.18); }
+.purple { background:#08060f; --a:#a855f7; --glow:rgba(168,85,247,.07); --gc:rgba(168,85,247,.04); --chip-bg:rgba(168,85,247,.08); --chip-bd:rgba(168,85,247,.25); --sub:#2a1a40; --v3c:rgba(168,85,247,.18); }
+.cyan   { background:#020d10; --a:#06b6d4; --glow:rgba(6,182,212,.07); --gc:rgba(6,182,212,.04); --chip-bg:rgba(6,182,212,.08); --chip-bd:rgba(6,182,212,.25); --sub:#062a30; --v3c:rgba(6,182,212,.18); }
+.gold   { background:#0b0900; --a:#eab308; --glow:rgba(234,179,8,.07); --gc:rgba(234,179,8,.04); --chip-bg:rgba(234,179,8,.08); --chip-bd:rgba(234,179,8,.25); --sub:#302600; --v3c:rgba(234,179,8,.18); }
+.red    { background:#0f0404; --a:#ef4444; --glow:rgba(239,68,68,.07); --gc:rgba(239,68,68,.04); --chip-bg:rgba(239,68,68,.08); --chip-bd:rgba(239,68,68,.25); --sub:#3a0a0a; --v3c:rgba(239,68,68,.18); }
+</style>
+</head>
+<body>
+
+<div class="label">🟢 Зелёный</div>
+<div class="card green"><div class="grid"></div><div class="glow"></div>
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🟠 Оранжевый</div>
+<div class="card orange"><div class="grid"></div><div class="glow"></div>
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🟣 Фиолетовый</div>
+<div class="card purple"><div class="grid"></div><div class="glow"></div>
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🔵 Голубой</div>
+<div class="card cyan"><div class="grid"></div><div class="glow"></div>
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🟡 Золотой</div>
+<div class="card gold"><div class="grid"></div><div class="glow"></div>
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+<div class="label">🔴 Красный</div>
+<div class="card red"><div class="grid"></div><div class="glow"></div>
+  <div class="left"><div class="chip"><div class="dot"></div>LIVE · PRO SIGNALS</div><h1>Индикатор<br>от <em>Товарища</em></h1><div class="sub">IT v3 · TradingView</div></div>
+  <div class="right"><div class="v3">v3</div><div class="coins"><div class="coin">BTC · ETH · SOL</div><div class="tf">1D / 4H / 1H</div></div></div>
+</div>
+
+</body>
+</html>
