@@ -10,21 +10,24 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg:    #080812;
-    --card:  #10102a;
-    --card2: #14143a;
-    --b:     #1e1e3a;
-    --b2:    #2a2a5a;
-    --green: #4caf50;
-    --green2:#66ff88;
-    --cyan:  #00bcd4;
-    --orange:#ff9800;
-    --yellow:#ffc107;
-    --blue:  #2196f3;
-    --red:   #f44336;
-    --white: #f0f0ff;
-    --gray:  #5a5a8a;
-    --lg:    #b0b0cc;
+    --bg:       #0a0a0c;
+    --bg2:      #0e0e12;
+    --card:     #0e0e12;
+    --card2:    #121216;
+    --line:     #1c1c22;
+    --line2:    #252530;
+    --muted:    #6b6b78;
+    --lg:       #a0a0b0;
+    --white:    #e8e8f0;
+    --accent:   #2ecc71;
+    --accent2:  #ff3d7f;
+    --cyan:     #4dc9f0;
+    --blue:     #4f8ef7;
+    --orange:   #f5a623;
+    --yellow:   #fbbf24;
+    --red:      #f94040;
+    --green:    #2ecc71;
+    --green2:   #6fffb2;
   }
 
   body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
@@ -32,28 +35,80 @@
 
   /* HERO */
   .hero {
-    background: linear-gradient(160deg, #0d0d28, #151535, #0d0d28);
-    border: 1px solid var(--b2); border-radius: 24px;
-    padding: 48px 40px 36px; text-align: center; margin-bottom: 40px;
+    background: var(--bg);
+    border: 1px solid var(--line2); border-radius: 24px;
+    padding: 64px 40px 48px; text-align: center; margin-bottom: 40px;
+    position: relative; overflow: hidden;
   }
-  .hero-pill {
-    display: inline-block;
-    background: rgba(76,175,80,.1); border: 1px solid rgba(76,175,80,.3);
-    color: var(--green); font-size: 11px; font-weight: 700;
-    letter-spacing: 3px; text-transform: uppercase;
-    padding: 6px 18px; border-radius: 100px; margin-bottom: 20px;
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 20%, transparent 85%);
+    pointer-events: none;
   }
-  .hero h1 { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-bottom: 8px; }
-  .hero-sub { font-size: 15px; color: var(--lg); margin-bottom: 6px; }
-  .hero-note { font-size: 13px; color: var(--gray); }
+  /* Corner brackets */
+  .bk { position:absolute; width:16px; height:16px; border:1.5px solid var(--accent); }
+  .bk.tl { top:20px; left:20px; border-right:none; border-bottom:none; }
+  .bk.tr { top:20px; right:20px; border-left:none; border-bottom:none; }
+  .bk.bl { bottom:20px; left:20px; border-right:none; border-top:none; }
+  .bk.br { bottom:20px; right:20px; border-left:none; border-top:none; }
+  /* Topbar */
+  .hero-topbar {
+    position: absolute;
+    top: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    color: var(--muted); white-space: nowrap;
+  }
+  .hero-topbar-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 6px var(--accent2);
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .hero-topbar-v3 { margin-left: auto; color: var(--muted); }
+  .hero-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 14px; position: relative; z-index: 1;
+  }
+  .hero h1 {
+    font-size: 52px; font-weight: 900; letter-spacing: -2px; margin-bottom: 8px;
+    color: var(--white); position: relative; z-index: 1;
+  }
+  .hero h1 .accent { color: var(--accent); }
+  .hero-sub { font-size: 15px; color: var(--lg); margin-bottom: 6px; position: relative; z-index: 1; }
+  .hero-note { font-size: 13px; color: var(--muted); position: relative; z-index: 1; }
+  .hero-coins {
+    display: flex; justify-content: center; gap: 10px;
+    margin-top: 20px; position: relative; z-index: 1;
+  }
+  .coin-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 18px; border-radius: 100px; border: 1px solid var(--line2);
+    font-size: 13px; font-weight: 700; color: var(--lg);
+    background: rgba(255,255,255,0.03);
+    font-family: 'JetBrains Mono', monospace;
+  }
 
   /* SECTION */
   .sec-label {
     display: flex; align-items: center; gap: 12px;
-    font-size: 11px; font-weight: 800; letter-spacing: 3px;
-    text-transform: uppercase; color: var(--gray); margin-bottom: 18px; margin-top: 40px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 18px; margin-top: 40px;
   }
-  .sec-label::after { content:''; flex:1; height:1px; background:var(--b); }
+  .sec-label::after { content:''; flex:1; height:1px; background:var(--line); }
   .sec-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
   .sec-desc { font-size: 14px; color: var(--lg); margin-bottom: 24px; }
 
@@ -63,29 +118,29 @@
   .step:not(:last-child)::after {
     content: ''; position: absolute;
     left: 21px; top: 44px; bottom: -8px; width: 2px;
-    background: linear-gradient(var(--b2), var(--b));
+    background: linear-gradient(var(--line2), var(--line));
   }
   .step-num {
     width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
     font-size: 18px; font-weight: 900; background: var(--card2);
-    border: 1px solid var(--b2); position: relative; z-index: 1;
+    border: 1px solid var(--line2); position: relative; z-index: 1;
   }
   .step-body { padding-bottom: 32px; padding-top: 4px; flex: 1; }
   .step-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
   .step-desc { font-size: 14px; color: var(--lg); margin-bottom: 10px; line-height: 1.6; }
   .step-tip {
-    background: var(--card); border: 1px solid var(--b2); border-radius: 10px;
+    background: var(--card); border: 1px solid var(--line2); border-radius: 10px;
     padding: 12px 16px; font-size: 13px; color: var(--lg); margin-top: 8px;
   }
   .step-tip strong { color: var(--white); }
   .step-img {
-    background: var(--card2); border: 1px solid var(--b2); border-radius: 10px;
+    background: var(--card2); border: 1px solid var(--line2); border-radius: 10px;
     padding: 14px 18px; margin-top: 10px; font-size: 13px;
-    color: var(--gray); font-style: italic; text-align: center;
+    color: var(--muted); font-style: italic; text-align: center;
   }
   .code-block {
-    background: #0a0a1e; border: 1px solid var(--b2); border-radius: 10px;
+    background: var(--card2); border: 1px solid var(--line2); border-radius: 10px;
     padding: 12px 16px; margin-top: 8px;
     font-family: 'JetBrains Mono', monospace; font-size: 13px;
     color: var(--cyan); word-break: break-all;
@@ -98,9 +153,9 @@
   }
   .alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
   .alert-text { font-size: 14px; line-height: 1.6; }
-  .alert.green { background: rgba(76,175,80,.08); border: 1px solid rgba(76,175,80,.2); }
-  .alert.yellow { background: rgba(255,193,7,.08); border: 1px solid rgba(255,193,7,.2); color: var(--lg); }
-  .alert.blue { background: rgba(33,150,243,.08); border: 1px solid rgba(33,150,243,.2); }
+  .alert.green { background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.2); }
+  .alert.yellow { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2); color: var(--lg); }
+  .alert.blue { background: rgba(79,142,247,.08); border: 1px solid rgba(79,142,247,.2); }
 
   /* PILL TAG */
   .tag {
@@ -114,31 +169,31 @@
   .kb-row { display: flex; gap: 6px; }
   .kb-btn {
     flex: 1; padding: 10px 14px; background: var(--card2);
-    border: 1px solid var(--b2); border-radius: 10px;
+    border: 1px solid var(--line2); border-radius: 10px;
     font-size: 13px; color: var(--white); text-align: center; font-weight: 500;
   }
-  .kb-btn.active { background: rgba(76,175,80,.15); border-color: rgba(76,175,80,.4); color: var(--green); }
+  .kb-btn.active { background: rgba(46,204,113,.15); border-color: rgba(46,204,113,.4); color: var(--green); }
 
   /* TG PREVIEW */
   .tg-preview {
-    background: #0e0e24; border: 1px solid var(--b2); border-left: 3px solid var(--green2);
+    background: var(--card2); border: 1px solid var(--line2); border-left: 3px solid var(--green2);
     border-radius: 12px; padding: 16px 18px; margin-top: 10px; max-width: 320px;
   }
   .tg-preview-title { font-size: 15px; font-weight: 800; color: var(--green2); margin-bottom: 4px; }
   .tg-preview-coin { font-size: 12px; color: var(--lg); margin-bottom: 10px; }
   .tg-preview-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
-  .tg-preview-lbl { color: var(--gray); }
+  .tg-preview-lbl { color: var(--muted); }
   .tg-preview-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-  .tg-preview-time { font-size: 11px; color: var(--gray); margin-top: 8px; }
+  .tg-preview-time { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
   /* FAQ */
   .faq { display: flex; flex-direction: column; gap: 10px; }
-  .faq-item { background: var(--card); border: 1px solid var(--b); border-radius: 12px; padding: 16px 20px; }
+  .faq-item { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
   .faq-q { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
   .faq-a { font-size: 13px; color: var(--lg); }
 
   /* FOOTER */
-  .footer { text-align: center; padding: 32px 0 0; border-top: 1px solid var(--b); font-size: 12px; color: var(--gray); }
+  .footer { text-align: center; padding: 32px 0 0; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
 
   .back-link {
     display: inline-flex; align-items: center; gap: 8px;
@@ -155,10 +210,23 @@
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-pill">Инструкция по установке</div>
-    <h1>Установка IT v3</h1>
+    <div class="hero-grid"></div>
+    <div class="bk tl"></div>
+    <div class="bk tr"></div>
+    <div class="bk bl"></div>
+    <div class="bk br"></div>
+    <div class="hero-topbar">
+      <div class="hero-topbar-dot"></div>
+      LIVE · PRO SIGNALS
+      <span class="hero-topbar-v3">v3</span>
+    </div>
+    <div class="hero-kicker">Индикатор</div>
+    <h1>от <span class="accent">Товарища</span></h1>
     <div class="hero-sub">Пошаговый гайд — от нуля до первого сигнала</div>
     <div class="hero-note">Займёт 5–10 минут</div>
+    <div class="hero-coins">
+      <div class="coin-pill">BTC · ETH · SOL</div>
+    </div>
   </div>
 
   <!-- ЧАСТЬ 1: ИНДИКАТОР -->
@@ -201,40 +269,40 @@
         <div class="step-title">Индикатор на графике — проверь что всё отображается</div>
         <div class="step-desc">На графике появятся уровни SM и таблица в правом верхнем углу:</div>
 
-        <div style="margin-top:12px; background:#0a0a1e; border:1px solid var(--b2); border-radius:12px; overflow:hidden; font-family:'JetBrains Mono',monospace; font-size:12px;">
-          <div style="background:#14143a; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--b2);">
+        <div style="margin-top:12px; background:var(--card2); border:1px solid var(--line2); border-radius:12px; overflow:hidden; font-family:'JetBrains Mono',monospace; font-size:12px;">
+          <div style="background:var(--card); padding:8px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line2);">
             <span style="font-weight:700; color:var(--white)">SOL/USDT</span>
             <span style="color:var(--lg)">84.13</span>
             <span style="color:var(--red); font-weight:700">▼ DN</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:6px 14px 4px; gap:2px; border-bottom:1px solid var(--b2);">
-            <span style="color:var(--gray); font-size:11px">УРОВЕНЬ</span>
-            <span style="color:var(--gray); font-size:11px; text-align:right">ЦЕНА</span>
-            <span style="color:var(--gray); font-size:11px; text-align:right">СИГНАЛ</span>
-            <span style="color:var(--gray); font-size:11px; text-align:right">ДО ЦЕЛИ</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:6px 14px 4px; gap:2px; border-bottom:1px solid var(--line2);">
+            <span style="color:var(--muted); font-size:11px">УРОВЕНЬ</span>
+            <span style="color:var(--muted); font-size:11px; text-align:right">ЦЕНА</span>
+            <span style="color:var(--muted); font-size:11px; text-align:right">СИГНАЛ</span>
+            <span style="color:var(--muted); font-size:11px; text-align:right">ДО ЦЕЛИ</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(244,67,54,.12);">
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(249,64,64,.12);">
             <span style="color:var(--red); font-weight:700">SM1</span><span style="text-align:right; color:var(--lg)">107.7</span><span style="text-align:right; color:var(--red)">SELL 100%</span><span style="text-align:right; color:var(--green)">+28.1%</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(255,152,0,.08);">
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(245,166,35,.08);">
             <span style="color:var(--orange); font-weight:700">SM2</span><span style="text-align:right; color:var(--lg)">95.5</span><span style="text-align:right; color:var(--orange)">SELL 50%</span><span style="text-align:right; color:var(--green)">+13.6%</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(255,193,7,.1);">
-            <span style="color:var(--yellow); font-weight:700">◆ SM3</span><span style="text-align:right; color:var(--lg)">84.7</span><span style="text-align:right; color:var(--yellow)">BUY 25%</span><span style="text-align:right; color:var(--gray)">+0.7%</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(251,191,36,.1);">
+            <span style="color:var(--yellow); font-weight:700">◆ SM3</span><span style="text-align:right; color:var(--lg)">84.7</span><span style="text-align:right; color:var(--yellow)">BUY 25%</span><span style="text-align:right; color:var(--muted)">+0.7%</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(76,175,80,.1);">
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(46,204,113,.1);">
             <span style="color:var(--green); font-weight:700">SM4</span><span style="text-align:right; color:var(--lg)">77.0</span><span style="text-align:right; color:var(--green)">BUY 50%</span><span style="text-align:right; color:var(--red)">−8.5%</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(102,255,136,.08);">
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:5px 14px; background:rgba(111,255,178,.08);">
             <span style="color:var(--green2); font-weight:700">SM5</span><span style="text-align:right; color:var(--lg)">68.6</span><span style="text-align:right; color:var(--green2)">BUY 100%</span><span style="text-align:right; color:var(--red)">−18.5%</span>
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:8px 14px; border-top:1px solid var(--b2); gap:4px;">
-            <span style="color:var(--gray); font-size:11px">RSI</span><span style="color:var(--lg); font-size:11px">NEUTRAL</span>
-            <span style="color:var(--gray); font-size:11px">VOL</span><span style="text-align:right; background:rgba(76,175,80,.2); color:var(--green); font-size:11px; padding:1px 6px; border-radius:4px; font-weight:700">OK</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:8px 14px; border-top:1px solid var(--line2); gap:4px;">
+            <span style="color:var(--muted); font-size:11px">RSI</span><span style="color:var(--lg); font-size:11px">NEUTRAL</span>
+            <span style="color:var(--muted); font-size:11px">VOL</span><span style="text-align:right; background:rgba(46,204,113,.2); color:var(--green); font-size:11px; padding:1px 6px; border-radius:4px; font-weight:700">OK</span>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; padding:4px 14px 8px; gap:4px;">
-            <span style="color:var(--gray); font-size:11px">PAT</span><span style="color:var(--lg); font-size:11px">нет паттерна</span>
-            <span style="color:var(--gray); font-size:11px">SIG</span><span style="color:var(--lg); font-size:11px">нет сигнала</span>
+            <span style="color:var(--muted); font-size:11px">PAT</span><span style="color:var(--lg); font-size:11px">нет паттерна</span>
+            <span style="color:var(--muted); font-size:11px">SIG</span><span style="color:var(--lg); font-size:11px">нет сигнала</span>
           </div>
         </div>
 
@@ -251,10 +319,10 @@
 
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:32px">
 
-    <div style="background:var(--card); border:1px solid var(--b2); border-radius:18px; padding:24px 22px">
-      <div style="font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--gray); margin-bottom:12px">STANDARD</div>
+    <div style="background:var(--card); border:1px solid var(--line2); border-radius:18px; padding:24px 22px">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:12px">STANDARD</div>
       <div style="font-size:28px; font-weight:900; margin-bottom:4px">30 <span style="font-size:14px; color:var(--lg)">USDT/мес</span></div>
-      <div style="height:1px; background:var(--b); margin:16px 0"></div>
+      <div style="height:1px; background:var(--line); margin:16px 0"></div>
       <div style="display:flex; flex-direction:column; gap:10px">
         <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--green)">✓</span><span>Доступ к индикатору IT v3</span></div>
         <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--green)">✓</span><span>Пошаговая инструкция по установке</span></div>
@@ -264,11 +332,11 @@
       </div>
     </div>
 
-    <div style="background:linear-gradient(160deg,#0d1428,#101830); border:1px solid rgba(33,150,243,.35); border-radius:18px; padding:24px 22px; position:relative; overflow:hidden">
+    <div style="background:linear-gradient(160deg,rgba(79,142,247,.05),rgba(77,201,240,.05)); border:1px solid rgba(79,142,247,.35); border-radius:18px; padding:24px 22px; position:relative; overflow:hidden">
       <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div>
-      <div style="font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:12px">PRO 💎</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:12px">PRO 💎</div>
       <div style="font-size:28px; font-weight:900; margin-bottom:4px">50 <span style="font-size:14px; color:var(--lg)">USDT/мес</span></div>
-      <div style="height:1px; background:rgba(33,150,243,.15); margin:16px 0"></div>
+      <div style="height:1px; background:rgba(79,142,247,.15); margin:16px 0"></div>
       <div style="display:flex; flex-direction:column; gap:10px">
         <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--cyan)">✓</span><span>Доступ к индикатору IT v3</span></div>
         <div style="display:flex; gap:10px; font-size:13px"><span style="color:var(--cyan)">✓</span><span>Пошаговая инструкция по установке</span></div>
@@ -293,8 +361,8 @@
     <div class="alert-text"><strong>Ничего настраивать не нужно.</strong> Как только подписка PRO активирована — сигналы начинают приходить в бот сами. Система работает 24/7.</div>
   </div>
 
-  <div style="background:var(--card); border:1px solid var(--b2); border-radius:16px; padding:24px; margin-bottom:20px">
-    <div style="font-size:13px; color:var(--gray); font-weight:700; text-transform:uppercase; letter-spacing:2px; margin-bottom:16px">Что приходит автоматически</div>
+  <div style="background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:24px; margin-bottom:20px">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:2px; margin-bottom:16px">Что приходит автоматически</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
       <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--green); margin-top:1px">🟢</span><span>BUY 50% / BUY 100% по уровням SM</span></div>
       <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--red); margin-top:1px">🔴</span><span>SELL 50% / SELL 100% по уровням SM</span></div>
@@ -304,7 +372,7 @@
       <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--green2); margin-top:1px">📐</span><span>Пивоты HH/LL + уровни Фибоначчи</span></div>
       <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--cyan); margin-top:1px">⚡</span><span>Ликвидность BSL/SSL найдена / пробита</span></div>
     </div>
-    <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--b); font-size:13px; color:var(--lg)">
+    <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--line); font-size:13px; color:var(--lg)">
       📍 Монеты: <strong style="color:var(--white)">BTC · ETH · SOL</strong> &nbsp;·&nbsp; Таймфреймы: <strong style="color:var(--white)">1D · 4H · 1H</strong>
     </div>
   </div>
@@ -324,19 +392,19 @@
   <div class="sec-desc">Главное правило — смотри на тренд, потом на уровень.</div>
 
   <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:32px">
-    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+    <div style="background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px">
       <div style="font-size:15px; font-weight:700; color:var(--cyan); margin-bottom:8px">📈 Тренд вверх + BUY сигнал = сильный вход</div>
       <div style="font-size:13px; color:var(--lg)">Когда цена выше оранжевой SMA и пришёл BUY 50%/100% — это оптимальный момент для покупки. Тренд подтверждает направление.</div>
     </div>
-    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+    <div style="background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px">
       <div style="font-size:15px; font-weight:700; color:var(--yellow); margin-bottom:8px">🔥 STRONG сигнал = действуй уверенно</div>
       <div style="font-size:13px; color:var(--lg)">STRONG BUY/SELL — три независимых фильтра (объём, RSI, тренд) одновременно подтвердили сигнал. Самые надёжные моменты.</div>
     </div>
-    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+    <div style="background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px">
       <div style="font-size:15px; font-weight:700; color:var(--orange); margin-bottom:8px">⚠️ Слом структуры = осторожность</div>
       <div style="font-size:13px; color:var(--lg)">Сигнал предупреждает — тренд может смениться. Не сигнал к немедленному действию, но повод пересмотреть позицию.</div>
     </div>
-    <div style="background:var(--card); border:1px solid var(--b); border-radius:14px; padding:18px 20px">
+    <div style="background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px">
       <div style="font-size:15px; font-weight:700; color:var(--green2); margin-bottom:8px">📐 Пивот + Фибо = зоны для входа</div>
       <div style="font-size:13px; color:var(--lg)">После нового максимума (HH) жди коррекцию к уровням 0.382–0.618 — там часто лучшие точки для покупки. Уровни приходят прямо в сообщении.</div>
     </div>

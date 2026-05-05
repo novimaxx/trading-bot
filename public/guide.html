@@ -10,24 +10,26 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg:       #080812;
-    --bg2:      #0f0f1e;
-    --card:     #10102a;
-    --card2:    #14143a;
-    --border:   #1e1e3a;
-    --border2:  #2a2a5a;
-    --green:    #4caf50;
-    --green2:   #66ff88;
-    --red:      #f44336;
-    --orange:   #ff9800;
-    --yellow:   #ffc107;
-    --blue:     #2196f3;
+    --bg:       #0a0a0c;
+    --bg2:      #0e0e12;
+    --card:     #0e0e12;
+    --card2:    #121216;
+    --line:     #1c1c22;
+    --line2:    #252530;
+    --muted:    #6b6b78;
+    --lg:       #a0a0b0;
+    --white:    #e8e8f0;
+    --accent:   #2ecc71;
+    --accent2:  #ff3d7f;
+    --cyan:     #4dc9f0;
+    --blue:     #4f8ef7;
+    --orange:   #f5a623;
+    --yellow:   #fbbf24;
+    --red:      #f94040;
+    --green:    #2ecc71;
+    --green2:   #6fffb2;
     --purple:   #9c27b0;
-    --cyan:     #00bcd4;
-    --white:    #f0f0ff;
-    --gray:     #5a5a8a;
-    --lg:       #b0b0cc;
-    --pink:     #e91e63;
+    --pink:     #ff3d7f;
     --fire:     #ff5722;
   }
 
@@ -38,8 +40,8 @@
 
   /* ─── HERO ─── */
   .hero {
-    background: linear-gradient(160deg, #0d0d28 0%, #151535 40%, #0d0d28 100%);
-    border: 1px solid var(--border2);
+    background: var(--bg);
+    border: 1px solid var(--line2);
     border-radius: 28px;
     padding: 64px 48px 48px;
     text-align: center;
@@ -47,67 +49,87 @@
     position: relative;
     overflow: hidden;
   }
-  .hero::after {
-    content: '';
+  .hero-grid {
     position: absolute;
-    bottom: -80px; left: 50%; transform: translateX(-50%);
-    width: 600px; height: 200px;
-    background: radial-gradient(ellipse, rgba(0,188,212,0.06) 0%, transparent 70%);
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 20%, transparent 85%);
     pointer-events: none;
   }
-  .hero-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0,188,212,0.08);
-    border: 1px solid rgba(0,188,212,0.25);
-    color: var(--cyan);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    padding: 7px 20px;
-    border-radius: 100px;
-    margin-bottom: 24px;
+  /* Corner brackets */
+  .bk { position:absolute; width:16px; height:16px; border:1.5px solid var(--accent); }
+  .bk.tl { top:20px; left:20px; border-right:none; border-bottom:none; }
+  .bk.tr { top:20px; right:20px; border-left:none; border-bottom:none; }
+  .bk.bl { bottom:20px; left:20px; border-right:none; border-top:none; }
+  .bk.br { bottom:20px; right:20px; border-left:none; border-top:none; }
+  /* Topbar */
+  .hero-topbar {
+    position: absolute;
+    top: 20px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    color: var(--muted); white-space: nowrap;
+  }
+  .hero-topbar-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 6px var(--accent2);
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .hero-topbar-v3 {
+    margin-left: auto; color: var(--muted);
+  }
+  .hero-kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 14px; position: relative; z-index: 1;
   }
   .hero h1 {
-    font-size: 80px;
+    font-size: 72px;
     font-weight: 900;
     letter-spacing: -4px;
     line-height: 1;
-    background: linear-gradient(135deg, #fff 30%, #8888bb 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--white);
     margin-bottom: 8px;
+    position: relative; z-index: 1;
   }
-  .hero-v { font-size: 24px; color: var(--cyan); font-weight: 700; margin-bottom: 16px; }
-  .hero-tagline { font-size: 16px; color: var(--lg); margin-bottom: 8px; font-weight: 500; }
-  .hero-sub { font-size: 13px; color: var(--gray); margin-bottom: 36px; }
+  .hero h1 .accent { color: var(--accent); }
+  .hero-tagline { font-size: 16px; color: var(--lg); margin-bottom: 8px; font-weight: 500; position: relative; z-index: 1; }
+  .hero-sub { font-size: 13px; color: var(--muted); margin-bottom: 36px; position: relative; z-index: 1; }
 
   .hero-coins {
     display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;
+    position: relative; z-index: 1;
   }
-  .coin {
-    display: flex; align-items: center; gap: 8px;
-    padding: 9px 22px; border-radius: 100px; border: 1px solid;
-    font-size: 14px; font-weight: 700;
+  .coin-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 18px; border-radius: 100px; border: 1px solid var(--line2);
+    font-size: 13px; font-weight: 700; color: var(--lg);
+    background: rgba(255,255,255,0.03);
+    font-family: 'JetBrains Mono', monospace;
   }
-  .coin.btc { border-color: rgba(76,175,80,.4); color: var(--green); background: rgba(76,175,80,.06); }
-  .coin.eth { border-color: rgba(33,150,243,.4); color: var(--blue); background: rgba(33,150,243,.06); }
-  .coin.sol { border-color: rgba(156,39,176,.4); color: var(--purple); background: rgba(156,39,176,.06); }
 
-  .hero-tfs { display: flex; justify-content: center; gap: 8px; }
-  .tf { padding: 5px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); border-radius: 8px; font-size: 13px; color: var(--lg); }
+  .hero-tfs { display: flex; justify-content: center; gap: 8px; position: relative; z-index: 1; }
+  .tf { padding: 5px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--line2); border-radius: 8px; font-size: 13px; color: var(--lg); }
 
   /* ─── SECTION ─── */
   .section { margin-bottom: 56px; }
   .sec-label {
     display: flex; align-items: center; gap: 14px;
-    font-size: 11px; font-weight: 800; letter-spacing: 3px;
-    text-transform: uppercase; color: var(--gray); margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
   }
-  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
   .sec-title { font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 8px; line-height: 1.2; }
   .sec-desc { font-size: 15px; color: var(--lg); margin-bottom: 24px; }
 
@@ -115,7 +137,7 @@
   .arch {
     display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr;
     align-items: center; gap: 0;
-    background: var(--card); border: 1px solid var(--border2);
+    background: var(--card); border: 1px solid var(--line2);
     border-radius: 20px; padding: 32px;
   }
   .arch-step { text-align: center; padding: 0 12px; }
@@ -125,8 +147,8 @@
     font-size: 26px; margin: 0 auto 12px;
   }
   .arch-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .arch-note { font-size: 12px; color: var(--gray); line-height: 1.4; }
-  .arch-arr { text-align: center; color: var(--border2); font-size: 22px; }
+  .arch-note { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .arch-arr { text-align: center; color: var(--line2); font-size: 22px; }
 
   /* ─── LEVELS ─── */
   .levels { display: flex; flex-direction: column; gap: 8px; }
@@ -140,7 +162,7 @@
   .lv-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .lv-sm { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; min-width: 36px; }
   .lv-sig { font-size: 13px; font-weight: 800; min-width: 110px; }
-  .lv-pct { font-size: 12px; color: var(--gray); min-width: 60px; font-family: 'JetBrains Mono', monospace; }
+  .lv-pct { font-size: 12px; color: var(--muted); min-width: 60px; font-family: 'JetBrains Mono', monospace; }
   .lv-desc { font-size: 13px; color: var(--lg); }
 
   /* ─── 2-COL GRID ─── */
@@ -149,43 +171,43 @@
 
   /* ─── FEATURE CARD ─── */
   .fcard {
-    background: var(--card); border: 1px solid var(--border2);
-    border-radius: 16px; padding: 22px 22px 18px; position: relative; overflow: hidden;
+    background: var(--card); border: 1px solid var(--line2);
+    border-radius: 10px; padding: 22px 22px 18px; position: relative; overflow: hidden;
   }
   .fcard-accent {
-    position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0;
+    position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0;
   }
   .fcard-icon { font-size: 28px; margin-bottom: 12px; display: block; }
   .fcard-title { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
   .fcard-text { font-size: 13px; color: var(--lg); line-height: 1.6; }
   .fcard ul { margin-top: 10px; padding-left: 0; list-style: none; }
   .fcard li { font-size: 13px; color: var(--lg); padding: 4px 0; display: flex; gap: 8px; }
-  .fcard li::before { content: '—'; color: var(--gray); flex-shrink: 0; }
+  .fcard li::before { content: '—'; color: var(--muted); flex-shrink: 0; }
 
   /* ─── STRONG BLOCK ─── */
   .strong-block {
-    background: linear-gradient(135deg, rgba(255,193,7,.05) 0%, rgba(255,87,34,.05) 100%);
-    border: 1px solid rgba(255,193,7,.2);
+    background: linear-gradient(135deg, rgba(251,191,36,.05) 0%, rgba(255,87,34,.05) 100%);
+    border: 1px solid rgba(251,191,36,.2);
     border-radius: 20px; padding: 28px 32px;
   }
   .strong-head {
     display: flex; align-items: center; gap: 14px; margin-bottom: 18px;
   }
   .strong-icon {
-    width: 48px; height: 48px; background: rgba(255,193,7,.12);
+    width: 48px; height: 48px; background: rgba(251,191,36,.12);
     border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px;
   }
   .strong-title { font-size: 20px; font-weight: 800; color: var(--yellow); }
-  .strong-sub { font-size: 13px; color: var(--gray); }
+  .strong-sub { font-size: 13px; color: var(--muted); }
   .filters-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
   .filter-pill {
     display: flex; align-items: center; gap: 8px;
     padding: 9px 18px; border-radius: 100px;
-    background: rgba(76,175,80,.1); border: 1px solid rgba(76,175,80,.25);
+    background: rgba(46,204,113,.1); border: 1px solid rgba(46,204,113,.25);
     font-size: 13px; font-weight: 600; color: var(--green);
   }
   .strong-note {
-    background: rgba(255,193,7,.08); border-radius: 10px; padding: 12px 16px;
+    background: rgba(251,191,36,.08); border-radius: 10px; padding: 12px 16px;
     font-size: 13px; color: var(--yellow); font-weight: 500;
   }
 
@@ -195,9 +217,9 @@
     padding: 18px 20px; border-radius: 14px; border: 1px solid;
     background: rgba(255,255,255,0.015);
   }
-  .struct-hh { border-color: rgba(76,175,80,.3); }
-  .struct-ll { border-color: rgba(244,67,54,.3); }
-  .struct-lh { border-color: rgba(255,152,0,.3); }
+  .struct-hh { border-color: rgba(46,204,113,.3); }
+  .struct-ll { border-color: rgba(249,64,64,.3); }
+  .struct-lh { border-color: rgba(245,166,35,.3); }
   .struct-hl { border-color: rgba(205,220,57,.3); }
   .struct-tag {
     display: inline-flex; align-items: center; gap: 6px;
@@ -205,7 +227,7 @@
     font-size: 20px; font-weight: 700; margin-bottom: 8px;
   }
   .struct-name { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
-  .struct-desc { font-size: 12.5px; color: var(--gray); line-height: 1.5; }
+  .struct-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
   .struct-alert {
     margin-top: 10px; padding: 7px 12px; border-radius: 7px;
     font-size: 12px; font-weight: 600;
@@ -221,34 +243,34 @@
   .liq-dot { width: 12px; height: 12px; border-radius: 50%; }
   .liq-title { font-size: 14px; font-weight: 800; }
   .liq-desc { font-size: 13px; color: var(--lg); margin-bottom: 8px; }
-  .liq-meaning { font-size: 12px; color: var(--gray); line-height: 1.5; }
+  .liq-meaning { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
   /* ─── BOT BLOCK ─── */
   .bot-block {
-    background: linear-gradient(135deg, #0a1428 0%, #101428 100%);
-    border: 1px solid rgba(33,150,243,.25); border-radius: 20px; padding: 32px;
+    background: linear-gradient(135deg, rgba(79,142,247,.05) 0%, rgba(77,201,240,.05) 100%);
+    border: 1px solid rgba(79,142,247,.25); border-radius: 20px; padding: 32px;
   }
   .bot-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
   .bot-icon {
-    width: 52px; height: 52px; background: rgba(33,150,243,.1);
-    border: 1px solid rgba(33,150,243,.3);
+    width: 52px; height: 52px; background: rgba(79,142,247,.1);
+    border: 1px solid rgba(79,142,247,.3);
     border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px;
   }
   .bot-title { font-size: 20px; font-weight: 800; color: var(--blue); }
-  .bot-sub { font-size: 13px; color: var(--gray); }
+  .bot-sub { font-size: 13px; color: var(--muted); }
 
   /* ─── TG MESSAGES ─── */
   .tg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .tg {
     border-radius: 16px; padding: 18px 20px;
-    background: #0e0e24; border: 1px solid var(--border2);
+    background: var(--card2); border: 1px solid var(--line2);
     border-left: 3px solid;
   }
   .tg-type { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; opacity: .65; }
   .tg-title { font-size: 17px; font-weight: 800; margin-bottom: 5px; }
   .tg-coin { font-size: 13px; color: var(--lg); margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
   .tg-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
-  .tg-lbl { color: var(--gray); }
+  .tg-lbl { color: var(--muted); }
   .tg-val { font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
   .tg-box {
     margin-top: 10px; padding: 10px 14px; border-radius: 8px;
@@ -256,17 +278,18 @@
   }
   .tg-box-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
   .tg-fibo { margin-top: 10px; padding: 12px 14px; border-radius: 8px; background: rgba(255,255,255,.03); }
-  .tg-fibo-title { font-size: 11px; font-weight: 700; color: var(--gray); letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
+  .tg-fibo-title { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
   .tg-fibo-row { display: flex; justify-content: space-between; font-size: 12.5px; padding: 4px 0; }
-  .tg-time { margin-top: 12px; font-size: 11px; color: var(--gray); }
+  .tg-time { margin-top: 12px; font-size: 11px; color: var(--muted); }
 
   /* ─── TABLE ─── */
-  .sig-table { width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden; }
+  .sig-table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; }
   .sig-table th {
     background: var(--card2); padding: 13px 16px;
     font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--gray); text-align: left;
-    border-bottom: 1px solid var(--border2);
+    text-transform: uppercase; color: var(--muted); text-align: left;
+    border-bottom: 1px solid var(--line2);
+    font-family: 'JetBrains Mono', monospace;
   }
   .sig-table td {
     padding: 12px 16px; font-size: 13px;
@@ -284,13 +307,13 @@
   /* ─── FOR WHOM ─── */
   .for-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
   .for-card {
-    padding: 22px; border-radius: 16px;
-    background: var(--card); border: 1px solid var(--border2);
+    padding: 22px; border-radius: 10px;
+    background: var(--card); border: 1px solid var(--line2);
     text-align: center;
   }
   .for-icon { font-size: 32px; margin-bottom: 12px; display: block; }
   .for-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
-  .for-desc { font-size: 12.5px; color: var(--gray); line-height: 1.5; }
+  .for-desc { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
 
   /* ─── HOW TO ─── */
   .steps { display: flex; flex-direction: column; gap: 0; }
@@ -298,31 +321,31 @@
   .step:not(:last-child)::before {
     content: ''; position: absolute;
     left: 19px; top: 40px; bottom: -12px; width: 2px;
-    background: var(--border);
+    background: var(--line);
   }
   .step-num {
     width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 800; background: var(--card2); border: 1px solid var(--border2);
+    font-size: 16px; font-weight: 800; background: var(--card2); border: 1px solid var(--line2);
   }
   .step-body { padding-bottom: 28px; }
   .step-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .step-desc { font-size: 13px; color: var(--gray); }
+  .step-desc { font-size: 13px; color: var(--muted); }
 
   /* ─── QUOTE ─── */
   .quote {
     background: var(--card); border-left: 4px solid var(--cyan);
-    border-radius: 0 16px 16px 0; padding: 24px 28px;
+    border-radius: 0 10px 10px 0; padding: 24px 28px;
     font-size: 17px; font-style: italic; color: var(--lg);
     margin: 32px 0; line-height: 1.7;
   }
-  .quote cite { display: block; font-size: 12px; font-style: normal; color: var(--gray); margin-top: 10px; }
+  .quote cite { display: block; font-size: 12px; font-style: normal; color: var(--muted); margin-top: 10px; }
 
   /* ─── FOOTER ─── */
   .footer {
     text-align: center; padding: 32px 0 0;
-    border-top: 1px solid var(--border);
-    font-size: 12px; color: var(--gray); line-height: 1.8;
+    border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--muted); line-height: 1.8;
   }
 
   @media print {
@@ -336,15 +359,22 @@
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-pill">📊 Обновлено · Версия 3</div>
-    <h1>IT v3</h1>
-    <div class="hero-v">Индикатор от Товарища</div>
+    <div class="hero-grid"></div>
+    <div class="bk tl"></div>
+    <div class="bk tr"></div>
+    <div class="bk bl"></div>
+    <div class="bk br"></div>
+    <div class="hero-topbar">
+      <div class="hero-topbar-dot"></div>
+      LIVE · PRO SIGNALS
+      <span class="hero-topbar-v3">v3</span>
+    </div>
+    <div class="hero-kicker">Индикатор</div>
+    <h1>от <span class="accent">Товарища</span></h1>
     <div class="hero-tagline">Универсальный инструмент для анализа рынка на TradingView</div>
     <div class="hero-sub">Уровни · Структура · Ликвидность · Автоматические сигналы в Telegram</div>
     <div class="hero-coins">
-      <div class="coin btc">₿ Bitcoin</div>
-      <div class="coin eth">Ξ Ethereum</div>
-      <div class="coin sol">◎ Solana</div>
+      <div class="coin-pill">BTC · ETH · SOL</div>
     </div>
     <div class="hero-tfs">
       <div class="tf">1D — День</div>
@@ -367,7 +397,7 @@
         <div class="fcard-text">5 линий, которые автоматически подстраиваются под любой актив и таймфрейм. Всегда актуальны.</div>
       </div>
       <div class="fcard">
-        <div class="fcard-accent" style="background: linear-gradient(90deg, var(--blue), var(--purple))"></div>
+        <div class="fcard-accent" style="background: linear-gradient(90deg, var(--blue), var(--cyan))"></div>
         <span class="fcard-icon">🔔</span>
         <div class="fcard-title" style="color:var(--blue)">Telegram-бот</div>
         <div class="fcard-text">Сигналы приходят в мессенджер автоматически — не нужно следить за графиком 24/7.</div>
@@ -410,35 +440,35 @@
     <div class="sec-title">Безопасные уровни SM</div>
     <div class="sec-desc">Пять автоматически рассчитываемых линий, которые подстраиваются под любой актив. Основа всей системы.</div>
     <div class="levels">
-      <div class="lv" style="border-color:rgba(244,67,54,.25)">
+      <div class="lv" style="border-color:rgba(249,64,64,.25)">
         <div class="lv-dot" style="background:var(--red)"></div>
         <div class="lv-sm" style="color:var(--red)">SM1</div>
         <div class="lv-sig" style="color:var(--red)">SELL 100%</div>
         <div class="lv-pct" style="color:var(--red)">+26%</div>
         <div class="lv-desc">Верхняя зона — максимально дорого. Выходи полностью из позиции.</div>
       </div>
-      <div class="lv" style="border-color:rgba(255,152,0,.25)">
+      <div class="lv" style="border-color:rgba(245,166,35,.25)">
         <div class="lv-dot" style="background:var(--orange)"></div>
         <div class="lv-sm" style="color:var(--orange)">SM2</div>
         <div class="lv-sig" style="color:var(--orange)">SELL 50%</div>
         <div class="lv-pct" style="color:var(--orange)">+14%</div>
         <div class="lv-desc">Зона фиксации прибыли. Продай половину — позволь остатку расти дальше.</div>
       </div>
-      <div class="lv" style="border-color:rgba(255,193,7,.25)">
+      <div class="lv" style="border-color:rgba(251,191,36,.25)">
         <div class="lv-dot" style="background:var(--yellow)"></div>
         <div class="lv-sm" style="color:var(--yellow)">SM3</div>
         <div class="lv-sig" style="color:var(--yellow)">BUY 25%</div>
-        <div class="lv-pct" style="color:var(--gray)">текущая</div>
+        <div class="lv-pct" style="color:var(--muted)">текущая</div>
         <div class="lv-desc">Базовая линия — текущая цена. Осторожный вход на 10–25% от позиции, только 1D.</div>
       </div>
-      <div class="lv" style="border-color:rgba(76,175,80,.25)">
+      <div class="lv" style="border-color:rgba(46,204,113,.25)">
         <div class="lv-dot" style="background:var(--green)"></div>
         <div class="lv-sm" style="color:var(--green)">SM4</div>
         <div class="lv-sig" style="color:var(--green)">BUY 50%</div>
         <div class="lv-pct" style="color:var(--red)">−9%</div>
         <div class="lv-desc">Хорошая зона покупки. Входи на 50% от планируемой позиции.</div>
       </div>
-      <div class="lv" style="border-color:rgba(102,255,136,.25)">
+      <div class="lv" style="border-color:rgba(111,255,178,.25)">
         <div class="lv-dot" style="background:var(--green2)"></div>
         <div class="lv-sm" style="color:var(--green2)">SM5</div>
         <div class="lv-sig" style="color:var(--green2)">BUY 100%</div>
@@ -476,13 +506,13 @@
     <div class="sec-title">Оранжевая линия SMA50</div>
     <div class="sec-desc">Главный ориентир для определения направления рынка. Закрытие свечи выше или ниже этой линии — сигнал о смене фазы.</div>
     <div class="grid2">
-      <div class="fcard" style="border-color:rgba(0,188,212,.25)">
+      <div class="fcard" style="border-color:rgba(77,201,240,.25)">
         <div class="fcard-accent" style="background:var(--cyan)"></div>
         <span class="fcard-icon">📈</span>
         <div class="fcard-title" style="color:var(--cyan)">Тренд вверх</div>
         <div class="fcard-text">Цена закрылась <strong>выше</strong> SMA50. Бычий рынок активен — предпочитаем покупки на уровнях SM4 и SM5.</div>
       </div>
-      <div class="fcard" style="border-color:rgba(233,30,99,.25)">
+      <div class="fcard" style="border-color:rgba(255,61,127,.25)">
         <div class="fcard-accent" style="background:var(--pink)"></div>
         <span class="fcard-icon">📉</span>
         <div class="fcard-title" style="color:var(--pink)">Тренд вниз</div>
@@ -511,7 +541,7 @@
         <div class="struct-tag" style="color:var(--orange)">LH <span style="font-size:14px">Lower High</span></div>
         <div class="struct-name" style="color:var(--orange)">Слом структуры ⚠️</div>
         <div class="struct-desc">Пик оказался ниже предыдущего — бычья структура сломана. Возможный разворот вниз.</div>
-        <div class="struct-alert" style="background:rgba(255,152,0,.08); color:var(--orange)">→ Приходит алерт в Telegram</div>
+        <div class="struct-alert" style="background:rgba(245,166,35,.08); color:var(--orange)">→ Приходит алерт в Telegram</div>
       </div>
       <div class="struct-card struct-hl">
         <div class="struct-tag" style="color:#cddc39">HL <span style="font-size:14px">Higher Low</span></div>
@@ -528,7 +558,7 @@
     <div class="sec-title">Пивоты HH / LL + Фибоначчи</div>
     <div class="sec-desc">При каждом новом локальном максимуме (HH) или минимуме (LL) на дневном таймфрейме индикатор автоматически рассчитывает уровни Фибоначчи — зоны, куда цена исторически возвращается после импульса.</div>
     <div class="grid2">
-      <div class="fcard" style="border-color:rgba(102,255,136,.2)">
+      <div class="fcard" style="border-color:rgba(111,255,178,.2)">
         <div class="fcard-accent" style="background:var(--green2)"></div>
         <span class="fcard-icon">📈</span>
         <div class="fcard-title" style="color:var(--green2)">После HH — коррекция вниз</div>
@@ -539,7 +569,7 @@
           <li>0.618 — глубокая коррекция</li>
         </ul>
       </div>
-      <div class="fcard" style="border-color:rgba(244,67,54,.2)">
+      <div class="fcard" style="border-color:rgba(249,64,64,.2)">
         <div class="fcard-accent" style="background:var(--red)"></div>
         <span class="fcard-icon">📉</span>
         <div class="fcard-title" style="color:var(--red)">После LL — отскок вверх</div>
@@ -559,7 +589,7 @@
     <div class="sec-title">Зоны ликвидности</div>
     <div class="sec-desc">Визуализирует области где сосредоточены стопы и крупные объёмы. Теперь с автоматическими алертами — узнаешь не только о появлении зоны, но и о её пробое.</div>
     <div class="liq-grid">
-      <div class="liq-card" style="border-color:rgba(76,175,80,.25)">
+      <div class="liq-card" style="border-color:rgba(46,204,113,.25)">
         <div class="liq-head">
           <div class="liq-dot" style="background:var(--green)"></div>
           <div class="liq-title" style="color:var(--green)">Buyside НАЙДЕНА</div>
@@ -575,7 +605,7 @@
         <div class="liq-desc">Цена пробила зону покупок — стопы покупателей выбиты.</div>
         <div class="liq-meaning">После сбора стопов возможен резкий разворот вниз. Сигнал для осторожности с лонгами.</div>
       </div>
-      <div class="liq-card" style="border-color:rgba(244,67,54,.25)">
+      <div class="liq-card" style="border-color:rgba(249,64,64,.25)">
         <div class="liq-head">
           <div class="liq-dot" style="background:var(--red)"></div>
           <div class="liq-title" style="color:var(--red)">Sellside НАЙДЕНА</div>
@@ -583,7 +613,7 @@
         <div class="liq-desc">Обнаружена зона скопления продаж — стопы продавцов ниже этой зоны.</div>
         <div class="liq-meaning">Рынок может притянуться к уровню чтобы "собрать" шорт-стопы перед движением вверх.</div>
       </div>
-      <div class="liq-card" style="border-color:rgba(102,255,136,.25)">
+      <div class="liq-card" style="border-color:rgba(111,255,178,.25)">
         <div class="liq-head">
           <div class="liq-dot" style="background:var(--green2)"></div>
           <div class="liq-title" style="color:var(--green2)">Sellside ПРОБИТА</div>
@@ -610,19 +640,19 @@
       </div>
       <div class="arch" style="background:transparent; border:none; padding:0">
         <div class="arch-step">
-          <div class="arch-ico" style="background:rgba(0,188,212,.1); color:var(--cyan)">📊</div>
+          <div class="arch-ico" style="background:rgba(77,201,240,.1); color:var(--cyan)">📊</div>
           <div class="arch-name" style="color:var(--cyan)">TradingView</div>
           <div class="arch-note">Индикатор IT v3 видит сигнал на закрытии свечи</div>
         </div>
         <div class="arch-arr">→</div>
         <div class="arch-step">
-          <div class="arch-ico" style="background:rgba(255,152,0,.1); color:var(--orange)">⚡</div>
+          <div class="arch-ico" style="background:rgba(245,166,35,.1); color:var(--orange)">⚡</div>
           <div class="arch-name" style="color:var(--orange)">Railway</div>
           <div class="arch-note">Сервер получает webhook и форматирует сообщение</div>
         </div>
         <div class="arch-arr">→</div>
         <div class="arch-step">
-          <div class="arch-ico" style="background:rgba(76,175,80,.1); color:var(--green)">✈</div>
+          <div class="arch-ico" style="background:rgba(46,204,113,.1); color:var(--green)">✈</div>
           <div class="arch-name" style="color:var(--green)">Telegram</div>
           <div class="arch-note">Красивое уведомление с ценой, уровнем и временем</div>
         </div>
@@ -651,7 +681,7 @@
           <div class="tg-box-row"><span style="color:var(--green)">✅</span> RSI в зоне</div>
           <div class="tg-box-row"><span style="color:var(--green)">✅</span> Тренд совпадает</div>
         </div>
-        <div class="tg-box" style="background:rgba(255,193,7,.08); color:var(--yellow); font-weight:600; margin-top:6px">⚡ Все три фильтра совпали</div>
+        <div class="tg-box" style="background:rgba(251,191,36,.08); color:var(--yellow); font-weight:600; margin-top:6px">⚡ Все три фильтра совпали</div>
         <div class="tg-time">🕐 01.05.2026, 09:00</div>
       </div>
 
@@ -671,9 +701,9 @@
         <div class="tg-row"><span class="tg-lbl">💰 Цена</span><span class="tg-val">88 500</span></div>
         <div class="tg-fibo">
           <div class="tg-fibo-title">📊 Фибо коррекция ↓</div>
-          <div class="tg-fibo-row"><span style="color:var(--gray)">0.382</span><span class="mono" style="color:var(--green2)">79 400</span></div>
-          <div class="tg-fibo-row"><span style="color:var(--gray)">0.500</span><span class="mono" style="color:var(--yellow)">75 000</span></div>
-          <div class="tg-fibo-row"><span style="color:var(--gray)">0.618</span><span class="mono" style="color:var(--red)">70 600</span></div>
+          <div class="tg-fibo-row"><span style="color:var(--muted)">0.382</span><span class="mono" style="color:var(--green2)">79 400</span></div>
+          <div class="tg-fibo-row"><span style="color:var(--muted)">0.500</span><span class="mono" style="color:var(--yellow)">75 000</span></div>
+          <div class="tg-fibo-row"><span style="color:var(--muted)">0.618</span><span class="mono" style="color:var(--red)">70 600</span></div>
         </div>
         <div class="tg-time">🕐 01.05.2026, 20:00</div>
       </div>
@@ -707,9 +737,9 @@
     <div class="sec-desc">Индикатор доступен с любым тарифом. Сигналы в Telegram — только для PRO.</div>
     <div class="grid2">
 
-      <div class="fcard" style="border-color:var(--border2)">
-        <div class="fcard-accent" style="background:linear-gradient(90deg,var(--gray),var(--border2))"></div>
-        <div style="font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--gray); margin-bottom:12px">STANDARD</div>
+      <div class="fcard" style="border-color:var(--line2)">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,var(--muted),var(--line2))"></div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:12px">STANDARD</div>
         <div style="font-size:30px; font-weight:900; margin-bottom:16px">30 <span style="font-size:14px; color:var(--lg); font-weight:400">USDT/мес</span></div>
         <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px">
           <li style="display:flex; gap:8px; font-size:13px; color:var(--lg)"><span style="color:var(--green)">✓</span> Индикатор IT v3 на TradingView</li>
@@ -719,9 +749,9 @@
         </ul>
       </div>
 
-      <div class="fcard" style="border-color:rgba(33,150,243,.35); background:linear-gradient(160deg,#0d1428,#101830); position:relative; overflow:hidden">
+      <div class="fcard" style="border-color:rgba(79,142,247,.35); background:linear-gradient(160deg,rgba(79,142,247,.05),rgba(77,201,240,.05)); position:relative; overflow:hidden">
         <div class="fcard-accent" style="background:linear-gradient(90deg,var(--blue),var(--cyan))"></div>
-        <div style="font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:12px">PRO 💎</div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--blue); margin-bottom:12px">PRO 💎</div>
         <div style="font-size:30px; font-weight:900; margin-bottom:16px">50 <span style="font-size:14px; color:var(--lg); font-weight:400">USDT/мес</span></div>
         <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px">
           <li style="display:flex; gap:8px; font-size:13px; color:var(--lg)"><span style="color:var(--cyan)">✓</span> Индикатор IT v3 на TradingView</li>
@@ -795,24 +825,24 @@
         </tr>
       </thead>
       <tbody>
-        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">BUY 100%</strong></td><td><span class="mono" style="color:var(--green2)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Максимальный вход в позицию</td></tr>
-        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">BUY 50%</strong></td><td><span class="mono" style="color:var(--green)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Хорошая зона для входа</td></tr>
-        <tr><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">BUY 25%</strong></td><td><span class="mono" style="color:var(--yellow)">SM3</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Осторожный вход, только дневной таймфрейм</td></tr>
-        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">SELL 50%</strong></td><td><span class="mono" style="color:var(--orange)">SM2</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Фиксация части прибыли</td></tr>
-        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">SELL 100%</strong></td><td><span class="mono" style="color:var(--red)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Полный выход из позиции</td></tr>
-        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 100%</strong></td><td><span class="mono" style="color:var(--yellow)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM5 + объём + RSI + тренд</td></tr>
-        <tr style="background:rgba(255,193,7,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 50%</strong></td><td><span class="mono" style="color:var(--yellow)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM4 + объём + RSI + тренд</td></tr>
-        <tr style="background:rgba(255,87,34,.03)"><td><span class="dot" style="background:var(--fire)"></span><strong style="color:var(--fire)">STRONG SELL 100%</strong></td><td><span class="mono" style="color:var(--fire)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">SM1 + объём + RSI + тренд</td></tr>
-        <tr><td><span class="dot" style="background:var(--cyan)"></span><strong style="color:var(--cyan)">Тренд вверх</strong></td><td><span class="mono" style="color:var(--cyan)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие выше оранжевой SMA</td></tr>
-        <tr><td><span class="dot" style="background:var(--pink)"></span><strong style="color:var(--pink)">Тренд вниз</strong></td><td><span class="mono" style="color:var(--pink)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Закрытие ниже оранжевой SMA</td></tr>
-        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">Слом структуры</strong></td><td><span class="mono" style="color:var(--orange)">LH</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">LH после HH — бычья структура сломана</td></tr>
-        <tr><td><span class="dot" style="background:#cddc39"></span><strong style="color:#cddc39">Разворот</strong></td><td><span class="mono" style="color:#cddc39">HL</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--gray)">HL после LL — медвежья структура сломана</td></tr>
-        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">Buyside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона покупок обнаружена</td></tr>
-        <tr><td><span class="dot" style="background:#ff5252"></span><strong style="color:#ff5252">Buyside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вниз?</td></tr>
-        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Sellside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Зона продаж обнаружена</td></tr>
-        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Sellside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--gray)">Стопы выбиты — разворот вверх?</td></tr>
-        <tr style="background:rgba(102,255,136,.03)"><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Пивот HH + Фибо</strong></td><td><span class="mono" style="color:var(--green2)">HH</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый максимум + уровни коррекции Фибо</td></tr>
-        <tr style="background:rgba(244,67,54,.03)"><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Пивот LL + Фибо</strong></td><td><span class="mono" style="color:var(--red)">LL</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--gray)">Новый минимум + уровни отскока Фибо</td></tr>
+        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">BUY 100%</strong></td><td><span class="mono" style="color:var(--green2)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Максимальный вход в позицию</td></tr>
+        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">BUY 50%</strong></td><td><span class="mono" style="color:var(--green)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Хорошая зона для входа</td></tr>
+        <tr><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">BUY 25%</strong></td><td><span class="mono" style="color:var(--yellow)">SM3</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--muted)">Осторожный вход, только дневной таймфрейм</td></tr>
+        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">SELL 50%</strong></td><td><span class="mono" style="color:var(--orange)">SM2</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Фиксация части прибыли</td></tr>
+        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">SELL 100%</strong></td><td><span class="mono" style="color:var(--red)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Полный выход из позиции</td></tr>
+        <tr style="background:rgba(251,191,36,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 100%</strong></td><td><span class="mono" style="color:var(--yellow)">SM5</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">SM5 + объём + RSI + тренд</td></tr>
+        <tr style="background:rgba(251,191,36,.03)"><td><span class="dot" style="background:var(--yellow)"></span><strong style="color:var(--yellow)">STRONG BUY 50%</strong></td><td><span class="mono" style="color:var(--yellow)">SM4</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">SM4 + объём + RSI + тренд</td></tr>
+        <tr style="background:rgba(255,87,34,.03)"><td><span class="dot" style="background:var(--fire)"></span><strong style="color:var(--fire)">STRONG SELL 100%</strong></td><td><span class="mono" style="color:var(--fire)">SM1</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">SM1 + объём + RSI + тренд</td></tr>
+        <tr><td><span class="dot" style="background:var(--cyan)"></span><strong style="color:var(--cyan)">Тренд вверх</strong></td><td><span class="mono" style="color:var(--cyan)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Закрытие выше оранжевой SMA</td></tr>
+        <tr><td><span class="dot" style="background:var(--pink)"></span><strong style="color:var(--pink)">Тренд вниз</strong></td><td><span class="mono" style="color:var(--pink)">SMA50</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Закрытие ниже оранжевой SMA</td></tr>
+        <tr><td><span class="dot" style="background:var(--orange)"></span><strong style="color:var(--orange)">Слом структуры</strong></td><td><span class="mono" style="color:var(--orange)">LH</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--muted)">LH после HH — бычья структура сломана</td></tr>
+        <tr><td><span class="dot" style="background:#cddc39"></span><strong style="color:#cddc39">Разворот</strong></td><td><span class="mono" style="color:#cddc39">HL</span></td><td style="color:var(--lg)">1D · 4H</td><td style="color:var(--muted)">HL после LL — медвежья структура сломана</td></tr>
+        <tr><td><span class="dot" style="background:var(--green)"></span><strong style="color:var(--green)">Buyside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Зона покупок обнаружена</td></tr>
+        <tr><td><span class="dot" style="background:#ff5252"></span><strong style="color:#ff5252">Buyside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">BSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Стопы выбиты — разворот вниз?</td></tr>
+        <tr><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Sellside НАЙДЕНА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Зона продаж обнаружена</td></tr>
+        <tr><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Sellside ПРОБИТА</strong></td><td><span class="mono" style="color:var(--cyan)">SSL</span></td><td style="color:var(--lg)">1D · 4H · 1H</td><td style="color:var(--muted)">Стопы выбиты — разворот вверх?</td></tr>
+        <tr style="background:rgba(111,255,178,.03)"><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Пивот HH + Фибо</strong></td><td><span class="mono" style="color:var(--green2)">HH</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--muted)">Новый максимум + уровни коррекции Фибо</td></tr>
+        <tr style="background:rgba(249,64,64,.03)"><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Пивот LL + Фибо</strong></td><td><span class="mono" style="color:var(--red)">LL</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--muted)">Новый минимум + уровни отскока Фибо</td></tr>
       </tbody>
     </table>
   </div>
