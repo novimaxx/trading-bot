@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Brand Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; font-family: 'Arial Black', Arial, sans-serif; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .card {
+    width: 640px;
+    height: 640px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 64px;
+  }
+
+  /* Variant 1 — Original: Pink + Cyan (reference) */
+  .v1 { background: radial-gradient(ellipse at 30% 40%, #1a0a3d 0%, #0a0a1a 60%, #001020 100%); }
+  .v1 .acc1 { color: #ff3fa0; text-shadow: 0 0 30px #ff3fa0aa, 0 0 60px #ff3fa060; }
+  .v1 .acc2 { color: #00e5ff; text-shadow: 0 0 20px #00e5ffaa; }
+  .v1 .chip { background: rgba(0,229,255,0.12); border: 1px solid rgba(0,229,255,0.35); color: #00e5ff; }
+  .v1 .dot { background: #00e5ff; box-shadow: 0 0 8px #00e5ff; }
+  .v1 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(0,229,255,0.15); }
+  .v1 .lines::before, .v1 .lines::after { background: rgba(0,229,255,0.2); }
+
+  /* Variant 2 — Green + Orange */
+  .v2 { background: radial-gradient(ellipse at 30% 40%, #0d2a10 0%, #050d05 60%, #0a0a00 100%); }
+  .v2 .acc1 { color: #00ff7f; text-shadow: 0 0 30px #00ff7faa, 0 0 60px #00ff7f60; }
+  .v2 .acc2 { color: #ff7700; text-shadow: 0 0 20px #ff7700aa; }
+  .v2 .chip { background: rgba(255,119,0,0.12); border: 1px solid rgba(255,119,0,0.35); color: #ff7700; }
+  .v2 .dot { background: #ff7700; box-shadow: 0 0 8px #ff7700; }
+  .v2 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(0,255,127,0.15); }
+
+  /* Variant 3 — Yellow + Purple */
+  .v3 { background: radial-gradient(ellipse at 30% 40%, #1a1200 0%, #0d0d0d 60%, #08000f 100%); }
+  .v3 .acc1 { color: #ffe600; text-shadow: 0 0 30px #ffe600aa, 0 0 60px #ffe60060; }
+  .v3 .acc2 { color: #cc44ff; text-shadow: 0 0 20px #cc44ffaa; }
+  .v3 .chip { background: rgba(204,68,255,0.12); border: 1px solid rgba(204,68,255,0.35); color: #cc44ff; }
+  .v3 .dot { background: #ffe600; box-shadow: 0 0 8px #ffe600; }
+  .v3 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(255,230,0,0.15); }
+
+  /* Variant 4 — Cyan + Lime */
+  .v4 { background: radial-gradient(ellipse at 30% 40%, #00151a 0%, #030d10 60%, #000a06 100%); }
+  .v4 .acc1 { color: #00ccff; text-shadow: 0 0 30px #00ccffaa, 0 0 60px #00ccff60; }
+  .v4 .acc2 { color: #aaff00; text-shadow: 0 0 20px #aaff00aa; }
+  .v4 .chip { background: rgba(170,255,0,0.12); border: 1px solid rgba(170,255,0,0.35); color: #aaff00; }
+  .v4 .dot { background: #aaff00; box-shadow: 0 0 8px #aaff00; }
+  .v4 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(0,204,255,0.15); }
+
+  /* Variant 5 — Orange + Electric Blue */
+  .v5 { background: radial-gradient(ellipse at 30% 40%, #1a0800 0%, #100808 60%, #00000d 100%); }
+  .v5 .acc1 { color: #ff6600; text-shadow: 0 0 30px #ff6600aa, 0 0 60px #ff660060; }
+  .v5 .acc2 { color: #2979ff; text-shadow: 0 0 20px #2979ffaa; }
+  .v5 .chip { background: rgba(41,121,255,0.12); border: 1px solid rgba(41,121,255,0.35); color: #2979ff; }
+  .v5 .dot { background: #ff6600; box-shadow: 0 0 8px #ff6600; }
+  .v5 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(255,102,0,0.15); }
+
+  /* Variant 6 — Red + Aqua */
+  .v6 { background: radial-gradient(ellipse at 30% 40%, #200008 0%, #100007 60%, #000a0a 100%); }
+  .v6 .acc1 { color: #ff2255; text-shadow: 0 0 30px #ff2255aa, 0 0 60px #ff225560; }
+  .v6 .acc2 { color: #00ffcc; text-shadow: 0 0 20px #00ffccaa; }
+  .v6 .chip { background: rgba(0,255,204,0.12); border: 1px solid rgba(0,255,204,0.35); color: #00ffcc; }
+  .v6 .dot { background: #00ffcc; box-shadow: 0 0 8px #00ffcc; }
+  .v6 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(255,34,85,0.15); }
+
+  /* Variant 7 — Gold + Violet */
+  .v7 { background: radial-gradient(ellipse at 30% 40%, #1a1000 0%, #0e0a00 60%, #0a0010 100%); }
+  .v7 .acc1 { color: #ffcc00; text-shadow: 0 0 30px #ffcc00aa, 0 0 60px #ffcc0060; }
+  .v7 .acc2 { color: #9900ff; text-shadow: 0 0 20px #9900ffcc; }
+  .v7 .chip { background: rgba(153,0,255,0.12); border: 1px solid rgba(153,0,255,0.4); color: #bb44ff; }
+  .v7 .dot { background: #ffcc00; box-shadow: 0 0 8px #ffcc00; }
+  .v7 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(255,204,0,0.15); }
+
+  /* Variant 8 — White + Neon Green (monochrome) */
+  .v8 { background: radial-gradient(ellipse at 30% 40%, #0a1a0a 0%, #050d05 60%, #000000 100%); }
+  .v8 .acc1 { color: #39ff14; text-shadow: 0 0 30px #39ff14aa, 0 0 60px #39ff1460; }
+  .v8 .acc2 { color: #ffffff; text-shadow: 0 0 20px #ffffffaa; }
+  .v8 .chip { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.3); color: #ffffff; }
+  .v8 .dot { background: #39ff14; box-shadow: 0 0 8px #39ff14; }
+  .v8 .ghost { color: transparent; -webkit-text-stroke: 2px rgba(57,255,20,0.15); }
+
+  /* ── shared layout ── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    width: fit-content;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .title-block { position: relative; }
+
+  .line1 {
+    font-size: 64px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .line2 {
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 36px;
+  }
+  .sub {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+  }
+
+  .ghost {
+    position: absolute;
+    right: 32px;
+    bottom: -20px;
+    font-size: 200px;
+    font-weight: 900;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .label {
+    position: absolute;
+    top: 18px;
+    left: 20px;
+    color: rgba(255,255,255,0.25);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="grid">
+
+  <!-- V1: Pink + Cyan (reference) -->
+  <div class="card v1">
+    <div class="label">1 · PINK + CYAN</div>
+    <div class="chip v1"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc2">v3</div>
+    </div>
+  </div>
+
+  <!-- V2: Green + Orange -->
+  <div class="card v2">
+    <div class="label">2 · GREEN + ORANGE</div>
+    <div class="chip v2"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc1">v3</div>
+    </div>
+  </div>
+
+  <!-- V3: Yellow + Purple -->
+  <div class="card v3">
+    <div class="label">3 · YELLOW + PURPLE</div>
+    <div class="chip v3"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc1">v3</div>
+    </div>
+  </div>
+
+  <!-- V4: Cyan + Lime -->
+  <div class="card v4">
+    <div class="label">4 · CYAN + LIME</div>
+    <div class="chip v4"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc1">v3</div>
+    </div>
+  </div>
+
+  <!-- V5: Orange + Electric Blue -->
+  <div class="card v5">
+    <div class="label">5 · ORANGE + BLUE</div>
+    <div class="chip v5"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc1">v3</div>
+    </div>
+  </div>
+
+  <!-- V6: Red + Aqua -->
+  <div class="card v6">
+    <div class="label">6 · RED + AQUA</div>
+    <div class="chip v6"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc1">v3</div>
+    </div>
+  </div>
+
+  <!-- V7: Gold + Violet -->
+  <div class="card v7">
+    <div class="label">7 · GOLD + VIOLET</div>
+    <div class="chip v7"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc1">v3</div>
+    </div>
+  </div>
+
+  <!-- V8: Neon Green + White -->
+  <div class="card v8">
+    <div class="label">8 · NEON GREEN + WHITE</div>
+    <div class="chip v8"><span class="dot"></span>LIVE · PRO SIGNALS</div>
+    <div class="title-block">
+      <div class="line1">Индикатор</div>
+      <div class="line2 acc1">от Товарища</div>
+      <div class="sub acc2">BTC · ETH · SOL</div>
+      <div class="ghost acc1">v3</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
