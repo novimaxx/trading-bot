@@ -570,6 +570,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="atab" id="atab-payments" onclick="adminTab('payments')">
       Заявки <span id="pay-count-badge" style="display:none;background:var(--accent2);color:#fff;font-size:8px;padding:1px 5px;border-radius:8px;margin-left:4px">0</span>
     </div>
+    <div class="atab" id="atab-send" onclick="adminTab('send')">📤 Пост</div>
   </div>
 
   <!-- Stats tab -->
@@ -613,6 +614,32 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   <!-- Payments tab -->
   <div class="atab-content" id="acontent-payments">
     <div id="payments-list" style="padding:12px 0 8px"></div>
+  </div>
+
+  <!-- Send tab -->
+  <div class="atab-content" id="acontent-send">
+    <div style="padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1">
+      <div class="ctrl">
+        <label>Заголовок</label>
+        <input type="text" id="bc-title" placeholder="💎 SOL — обновление по рынку">
+      </div>
+      <div class="ctrl">
+        <label>Тег</label>
+        <input type="text" id="bc-tag" placeholder="SOL · 1D" value="АНАЛИТИКА">
+      </div>
+      <div class="ctrl">
+        <label>Текст поста</label>
+        <textarea id="bc-body" style="min-height:180px;background:#13131a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;line-height:1.7;outline:none;resize:vertical;font-family:'Inter',sans-serif" placeholder="Напиши аналитику..."></textarea>
+      </div>
+      <div class="ctrl">
+        <label>Ссылка на картинку (необязательно)</label>
+        <input type="text" id="bc-img" placeholder="https://...">
+      </div>
+      <div id="bc-preview" style="display:none;background:#13131a;border:1px solid rgba(46,204,113,.2);border-radius:12px;padding:14px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);white-space:pre-wrap"></div>
+      <button style="background:#13131a;border:1px solid rgba(255,255,255,.1);color:var(--muted);border-radius:10px;padding:10px;font-size:13px;cursor:pointer" onclick="bcPreview()">👁 Превью</button>
+      <button id="bc-send-btn" style="background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif" onclick="bcSend()">📤 Отправить подписчикам</button>
+      <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);padding:8px"></div>
+    </div>
   </div>
 </div>
 
@@ -1091,6 +1118,44 @@ async function deactivateUser(uid) {
   } else { toast('Ошибка', true); }
 }
 
+function bcPreview() {
+  const title = document.getElementById('bc-title').value;
+  const body  = document.getElementById('bc-body').value;
+  const tag   = document.getElementById('bc-tag').value;
+  const prev  = document.getElementById('bc-preview');
+  const text  = [title, body, tag ? '🏷 ' + tag : null].filter(Boolean).join('\n\n');
+  prev.textContent = text || '(пусто)';
+  prev.style.display = 'block';
+}
+
+async function bcSend() {
+  const title = document.getElementById('bc-title').value.trim();
+  const body  = document.getElementById('bc-body').value.trim();
+  const tag   = document.getElementById('bc-tag').value.trim();
+  const img   = document.getElementById('bc-img').value.trim();
+  if (!body && !title) { toast('Напиши текст поста', true); return; }
+
+  const btn = document.getElementById('bc-send-btn');
+  btn.disabled = true; btn.textContent = '⏳ Отправляю...';
+
+  const r = await adminApi('/api/admin/broadcast', 'POST', { title, body, tag, image_url: img || null });
+
+  btn.disabled = false; btn.textContent = '📤 Отправить подписчикам';
+
+  if (r?.ok) {
+    const res = document.getElementById('bc-result');
+    res.textContent = `✅ Отправлено: ${r.sent} · Ошибок: ${r.failed} · Всего подписчиков: ${r.total}`;
+    res.style.display = 'block';
+    toast('✅ Пост отправлен!');
+    // Очистить форму
+    document.getElementById('bc-title').value = '';
+    document.getElementById('bc-body').value = '';
+    document.getElementById('bc-preview').style.display = 'none';
+  } else {
+    toast('Ошибка отправки', true);
+  }
+}
+
 function adminTab(tab) {
   document.querySelectorAll('.atab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.atab-content').forEach(t => t.classList.remove('active'));
@@ -1098,6 +1163,7 @@ function adminTab(tab) {
   document.getElementById('acontent-' + tab).classList.add('active');
   if (tab === 'users' && !adminData.users.length) loadAdminUsers();
   if (tab === 'payments' && !adminData.payments.length) loadAdminPayments();
+  if (tab === 'send') { /* ready */ }
 }
 
 // close modal on backdrop click

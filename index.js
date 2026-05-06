@@ -756,6 +756,63 @@ app.post('/api/payment-request', async (req, res) => {
   }
 })
 
+// ─── API: Admin broadcast post ───────────────────────────
+app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
+  const { title, body, tag, image_url } = req.body
+  if (!body && !title) return res.sendStatus(400)
+
+  let savedId = null
+
+  // Сохранить пост в БД
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `INSERT INTO app_posts (title, body, image_url, tag) VALUES ($1,$2,$3,$4) RETURNING id`,
+        [title||null, body||null, image_url||null, tag||'АНАЛИТИКА']
+      )
+      savedId = rows[0].id
+    } catch (err) {
+      console.error('Broadcast save error:', err.message)
+    }
+  }
+
+  // Собрать список подписчиков
+  let subscribers = []
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW()`
+      )
+      subscribers = rows.map(r => r.id)
+    } catch (err) {
+      console.error('Broadcast get subs error:', err.message)
+    }
+  }
+
+  // Отправить через бота
+  const text = [
+    title ? `*${title}*` : null,
+    body || null,
+    tag ? `\n🏷 ${tag}` : null,
+    '\n📱 _IT v3_'
+  ].filter(Boolean).join('\n\n')
+
+  let sent = 0, failed = 0
+  for (const id of subscribers) {
+    try {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: id, text, parse_mode: 'Markdown' })
+      })
+      sent++
+      await new Promise(r => setTimeout(r, 50))
+    } catch (_) { failed++ }
+  }
+
+  res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
+})
+
 // ─── API: Approve payment request ────────────────────────
 app.post('/api/admin/payments/:id/approve', adminOnly, async (req, res) => {
   if (!pool) return res.sendStatus(503)
