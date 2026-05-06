@@ -88,13 +88,13 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
 
 /* Corner brackets */
 .corner {
-  position:absolute; width:18px; height:18px;
-  border-color:#ff3d7f; border-style:solid; opacity:.8;
+  position:absolute; width:44px; height:44px;
+  border-color:#ff3d7f; border-style:solid; opacity:.85;
 }
-.c-tl { top:14px; left:14px; border-width:2px 0 0 2px; }
-.c-tr { top:14px; right:14px; border-width:2px 2px 0 0; }
-.c-bl { bottom:14px; left:14px; border-width:0 0 2px 2px; }
-.c-br { bottom:14px; right:14px; border-width:0 2px 2px 0; }
+.c-tl { top:12px; left:12px; border-width:2.5px 0 0 2.5px; }
+.c-tr { top:12px; right:12px; border-width:2.5px 2.5px 0 0; }
+.c-bl { bottom:12px; left:12px; border-width:0 0 2.5px 2.5px; }
+.c-br { bottom:12px; right:12px; border-width:0 2.5px 2.5px 0; }
 
 /* Top bar */
 .top-bar {
@@ -339,9 +339,9 @@ function drawOverlay(ctx, W, H) {
 
   // Corner brackets
   ctx.strokeStyle = '#ff3d7f';
-  ctx.lineWidth = 3;
-  ctx.globalAlpha = 0.8;
-  const bs = 28; const bp = 20;
+  ctx.lineWidth = 5;
+  ctx.globalAlpha = 0.85;
+  const bs = 80; const bp = 24;
   // TL
   ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
   // TR
