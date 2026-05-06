@@ -666,26 +666,38 @@ async function bmSend() {
 
   btn.innerHTML = '<span>⏳</span> Отправляю...';
 
+  const res = document.getElementById('bm-result');
+  res.style.display = 'block';
+  res.style.color = 'rgba(255,255,255,.4)';
+  res.textContent = '⏳ Отправка...';
+
   try {
+    const payload = JSON.stringify({ title, tag, body, image_b64, audience: bmAudience });
+    console.log('[bmSend] payload size:', Math.round(payload.length / 1024), 'kb');
+
     const r = await fetch('/api/admin/broadcast-photo?tg_id=562914492', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, tag, body, image_b64, audience: bmAudience })
+      body: payload
     });
-    const j = await r.json();
 
-    const res = document.getElementById('bm-result');
-    if (j.ok) {
+    console.log('[bmSend] status:', r.status);
+    let j;
+    try { j = await r.json(); } catch { j = {}; }
+    console.log('[bmSend] response:', j);
+
+    if (r.ok && j.ok) {
       res.textContent = `✅ Отправлено: ${j.sent} · Ошибок: ${j.failed} · Всего: ${j.total}`;
       res.style.color = '#2ecc71';
       showToast('✅ Пост с баннером отправлен!');
     } else {
-      res.textContent = '❌ Ошибка: ' + (j.error || r.status);
+      res.textContent = `❌ HTTP ${r.status} — ${j.error || JSON.stringify(j) || 'нет ответа'}`;
       res.style.color = '#ff3d7f';
     }
-    res.style.display = 'block';
   } catch(e) {
-    showToast('⚠️ Ошибка соединения');
+    console.error('[bmSend] catch:', e);
+    res.textContent = '❌ ' + e.message;
+    res.style.color = '#ff3d7f';
   }
 
   btn.disabled = false; btn.innerHTML = '<span>📤</span> Отправить с баннером';
