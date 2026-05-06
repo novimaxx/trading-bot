@@ -363,6 +363,19 @@
   }
   .cta-pro-note strong { color: var(--yellow); }
 
+  /* ─── HERO DOWNLOAD BTN ─── */
+  .hero-dl-btn {
+    position: relative; z-index: 10;
+    margin-top: 28px;
+    background: var(--accent); color: #000; border: none;
+    padding: 14px 40px; border-radius: 12px;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+    font-family: 'Inter', sans-serif; letter-spacing: .02em;
+    transition: opacity .15s; box-shadow: 0 0 24px rgba(46,204,113,.35);
+  }
+  .hero-dl-btn:hover { opacity: .85; }
+  .hero-dl-btn:disabled { opacity: .5; cursor: wait; }
+
   /* ─── FOOTER ─── */
   .footer {
     text-align: center; padding: 32px 0 0;
@@ -418,6 +431,7 @@
       <div>IT V3</div>
       <div class="hero-footer-r">TRADINGVIEW</div>
     </div>
+    <button class="hero-dl-btn" id="hero-dl-btn" onclick="heroDl()">⬇ Скачать баннер</button>
   </div>
 
   <!-- ЧТО НОВОГО -->
@@ -658,5 +672,31 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+async function heroDl() {
+  const btn = document.getElementById('hero-dl-btn');
+  btn.disabled = true;
+  btn.style.display = 'none'; // скрыть кнопку чтобы не попала на баннер
+  try {
+    const hero = document.querySelector('.hero');
+    const canvas = await html2canvas(hero, {
+      scale: 2, useCORS: true,
+      backgroundColor: '#0a0a0c', logging: false
+    });
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'IT_v3_banner.png';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, 'image/png');
+  } catch(e) { alert('Ошибка: ' + e.message); }
+  finally {
+    btn.style.display = ''; btn.disabled = false; btn.textContent = '⬇ Скачать баннер';
+  }
+}
+</script>
 </body>
 </html>
