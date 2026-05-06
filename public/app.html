@@ -300,6 +300,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   padding:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s}
 .pr-approve:active{opacity:.8}
 
+.aud-btn{flex:1;padding:9px 6px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;border:1px solid var(--line);background:var(--card);
+  color:var(--muted);transition:all .15s}
+.aud-btn.active{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.4);color:var(--accent)}
+
 .act-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;
   display:none;align-items:flex-end;justify-content:center}
 .act-modal.open{display:flex}
@@ -626,6 +631,14 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div class="ctrl">
         <label>Тег</label>
         <input type="text" id="bc-tag" placeholder="SOL · 1D" value="АНАЛИТИКА">
+      </div>
+      <div class="ctrl">
+        <label>Аудитория</label>
+        <div style="display:flex;gap:8px">
+          <button class="aud-btn active" id="aud-all" onclick="setAudience('all',this)">👥 Все</button>
+          <button class="aud-btn" id="aud-std" onclick="setAudience('STANDARD',this)">📊 STANDARD</button>
+          <button class="aud-btn" id="aud-pro" onclick="setAudience('PRO',this)">💎 PRO</button>
+        </div>
       </div>
       <div class="ctrl">
         <label>Текст поста</label>
@@ -1118,6 +1131,13 @@ async function deactivateUser(uid) {
   } else { toast('Ошибка', true); }
 }
 
+let bcAudience = 'all';
+function setAudience(val, el) {
+  bcAudience = val;
+  document.querySelectorAll('.aud-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
 function bcPreview() {
   const title = document.getElementById('bc-title').value;
   const body  = document.getElementById('bc-body').value;
@@ -1138,7 +1158,7 @@ async function bcSend() {
   const btn = document.getElementById('bc-send-btn');
   btn.disabled = true; btn.textContent = '⏳ Отправляю...';
 
-  const r = await adminApi('/api/admin/broadcast', 'POST', { title, body, tag, image_url: img || null });
+  const r = await adminApi('/api/admin/broadcast', 'POST', { title, body, tag, image_url: img || null, audience: bcAudience });
 
   btn.disabled = false; btn.textContent = '📤 Отправить подписчикам';
 

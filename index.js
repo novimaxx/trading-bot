@@ -776,12 +776,15 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
     }
   }
 
-  // Собрать список подписчиков
+  // Собрать список подписчиков (audience: all | PRO | STANDARD)
+  const audience = req.body.audience || 'all'
   let subscribers = []
   if (pool) {
     try {
+      const planFilter = audience === 'all'
+        ? '' : `AND subscription_plan = '${audience === 'PRO' ? 'PRO' : 'STANDARD'}'`
       const { rows } = await pool.query(
-        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW()`
+        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() ${planFilter}`
       )
       subscribers = rows.map(r => r.id)
     } catch (err) {
