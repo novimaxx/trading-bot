@@ -352,7 +352,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 <div class="screen active" id="screen-home">
   <div class="hero">
     <div class="kicker">Индикатор</div>
-    <div class="hero-title"><span class="grad">IT v3</span></div>
+    <div class="hero-title" onclick="adminTap()"><span class="grad">IT v3</span></div>
     <div class="status-row">
       <div class="badge badge-live"><span class="badge-dot"></span>LIVE</div>
       <div class="badge badge-pro" id="hero-plan-badge" style="display:none">PRO</div>
@@ -682,9 +682,8 @@ const BASE = 'https://trading-bot-production-7d20.up.railway.app';
 const ADMIN_IDS = ['562914492'];
 const tgUser = tg?.initDataUnsafe?.user || {};
 const userId = tgUser.id || null;
-const isAdmin = ADMIN_IDS.includes(String(userId));
-// DEBUG — убрать после проверки
-console.log('TG userId:', userId, 'isAdmin:', isAdmin, 'initData:', tg?.initData?.substring(0,50));
+let isAdmin = ADMIN_IDS.includes(String(userId));
+let adminTapCount = 0;
 const userName = tgUser.first_name || 'Пользователь';
 const userUsername = tgUser.username ? '@' + tgUser.username : '';
 const userInitial = (userName[0] || 'U').toUpperCase();
@@ -921,6 +920,18 @@ async function boot() {
   loader.style.transition = 'opacity .3s';
   loader.style.opacity = '0';
   setTimeout(() => loader.style.display = 'none', 300);
+}
+
+// ── secret admin tap ──
+function adminTap() {
+  adminTapCount++;
+  if (adminTapCount >= 5) {
+    adminTapCount = 0;
+    isAdmin = true;
+    document.getElementById('nav-admin').style.display = 'flex';
+    loadAdminStats();
+    toast('⚙️ Режим админа активирован');
+  }
 }
 
 // ══════════════════════════════════════
