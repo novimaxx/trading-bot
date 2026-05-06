@@ -166,22 +166,49 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 .pay-btn:active{opacity:.8;transform:scale(.98)}
 
 /* ── posts ── */
-.posts{padding:4px 16px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.posts{padding:4px 16px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
 .post-card{background:var(--card);border:1px solid var(--line);border-radius:16px;
-  overflow:hidden;position:relative;cursor:pointer;transition:opacity .15s}
-.post-card:active{opacity:.75}
-.post-tag-bar{padding:10px 14px 0;display:flex;align-items:center;justify-content:space-between}
+  overflow:hidden;cursor:pointer;transition:opacity .15s,transform .15s}
+.post-card:active{opacity:.8;transform:scale(.99)}
+.post-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--bg2)}
+.post-img-wrap{position:relative;overflow:hidden}
+.post-img-wrap::after{content:'';position:absolute;bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(transparent,rgba(19,19,26,.95))}
+.post-tag-bar{padding:10px 14px 6px;display:flex;align-items:center;justify-content:space-between}
 .post-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
   letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
   display:flex;align-items:center;gap:5px}
-.post-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.post-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0}
 .post-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
-.post-body{padding:10px 14px 14px}
-.post-title{font-size:15px;font-weight:800;margin-bottom:6px;line-height:1.25}
-.post-text{font-size:13px;color:rgba(255,255,255,.7);line-height:1.55;
-  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.post-card.featured{border-color:rgba(46,204,113,.25)}
-.post-card.featured .post-tag{color:var(--accent)}
+.post-body{padding:0 14px 14px}
+.post-title{font-size:15px;font-weight:800;margin-bottom:7px;line-height:1.3}
+.post-text{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.post-card.featured{border-color:rgba(46,204,113,.2)}
+.post-read-more{margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--accent);font-weight:700;letter-spacing:.05em}
+
+/* ── post detail overlay ── */
+#post-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;
+  display:none;flex-direction:column;overflow-y:auto}
+#post-overlay.open{display:flex}
+.po-header{position:sticky;top:0;background:rgba(10,10,12,.97);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);padding:14px 16px;
+  display:flex;align-items:center;gap:12px;z-index:10;flex-shrink:0}
+.po-back{font-size:22px;color:var(--accent2);cursor:pointer;line-height:1;padding:2px 4px}
+.po-header-title{font-size:14px;font-weight:800;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.po-img{width:100%;max-height:280px;object-fit:cover;display:block}
+.po-tag-bar{padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between}
+.po-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:5px}
+.po-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.po-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.po-title{font-size:20px;font-weight:900;letter-spacing:-.02em;line-height:1.2;
+  padding:0 16px 10px}
+.po-body{padding:0 16px 40px;font-size:14px;color:rgba(255,255,255,.8);
+  line-height:1.7;white-space:pre-wrap}
 
 /* ── profile ── */
 .profile-header{padding:24px 20px 18px;border-bottom:1px solid var(--line);position:relative;z-index:1}
@@ -457,6 +484,21 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   </div>
 </div>
 
+<!-- ════════════ POST DETAIL ════════════ -->
+<div id="post-overlay">
+  <div class="po-header">
+    <div class="po-back" onclick="closePost()">‹</div>
+    <div class="po-header-title" id="po-header-title">Аналитика</div>
+  </div>
+  <img id="po-img" class="po-img" style="display:none" src="" alt="">
+  <div class="po-tag-bar">
+    <div class="po-tag" id="po-tag">АНАЛИТИКА</div>
+    <div class="po-date" id="po-date"></div>
+  </div>
+  <div class="po-title" id="po-title"></div>
+  <div class="po-body" id="po-body"></div>
+</div>
+
 <!-- ════════════ BOTTOM NAV ════════════ -->
 <nav class="bottom-nav">
   <div class="nav-item active" id="nav-home" onclick="navigate('home')">
@@ -580,23 +622,62 @@ function sigCard(s) {
 function postCard(p, featured) {
   const d = new Date(p.sent_at);
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+  const imgUrl = p.file_id ? `${BASE}/api/image/${p.file_id}` : null;
   return `<div class="post-card ${featured?'featured':''}" onclick="openPostDetail(${p.id})">
+    ${imgUrl ? `<div class="post-img-wrap"><img class="post-img" src="${imgUrl}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
     <div class="post-tag-bar">
       <div class="post-tag">${p.tag || 'АНАЛИТИКА'}</div>
       <div class="post-date">${dateStr}</div>
     </div>
     <div class="post-body">
-      ${p.title ? `<div class="post-title">${p.title}</div>` : ''}
-      <div class="post-text">${p.body || ''}</div>
+      ${p.title ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
+      <div class="post-text">${escHtml(p.body || '')}</div>
+      <div class="post-read-more">Читать полностью →</div>
     </div>
   </div>`;
 }
 
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 function openPostDetail(id) {
   const p = allPosts.find(x => x.id === id);
-  if (!p || !tg) return;
-  // На будущее — показывать полный пост
-  // Пока просто открываем в канале если есть
+  if (!p) return;
+
+  const d = new Date(p.sent_at);
+  const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
+
+  document.getElementById('po-header-title').textContent = p.title || 'Аналитика';
+  document.getElementById('po-tag').textContent = p.tag || 'АНАЛИТИКА';
+  document.getElementById('po-date').textContent = dateStr;
+  document.getElementById('po-title').textContent = p.title || '';
+
+  // Форматируем текст: секции с •, ⚠️, 🔻 etc — красиво
+  document.getElementById('po-body').textContent = p.body || '';
+
+  const img = document.getElementById('po-img');
+  if (p.file_id) {
+    img.src = `${BASE}/api/image/${p.file_id}`;
+    img.style.display = 'block';
+  } else {
+    img.style.display = 'none';
+  }
+
+  const overlay = document.getElementById('post-overlay');
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+
+  // Telegram BackButton
+  if (tg?.BackButton) {
+    tg.BackButton.show();
+    tg.BackButton.onClick(closePost);
+  }
+}
+
+function closePost() {
+  document.getElementById('post-overlay').classList.remove('open');
+  if (tg?.BackButton) { tg.BackButton.hide(); tg.BackButton.offClick(closePost); }
 }
 
 // ── load data ──

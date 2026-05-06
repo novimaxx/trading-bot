@@ -550,27 +550,56 @@ function getDemoPosts() {
   return [
     {
       id: 1,
-      title: 'BTC — Анализ недели',
-      body: 'Биткоин консолидируется у уровня $96K. Структура бычья — серия HH/HL сохраняется. Ключевая зона поддержки: $93,500–$94,800. Пока держимся выше — сетапы на покупку актуальны.',
-      tag: 'BTC · 1D',
+      title: '💎 SOL — обновление по рынку',
+      body: `Структура ослабла.\n\n📍 Что произошло:\n\n• Цена закрепилась ниже оранжевой линии SM\n• Потеряли локальную поддержку\n• Покупатель пока не показывает силы\n\nЭто сигнал о смещении приоритета в сторону коррекции.\n\n⚠️ Важно\n\nС текущих уровней покупки не рассматриваем.\nРиск продолжения снижения сохраняется.\n\n🔻 Зоны набора\n\nОбозначены уровни, откуда логично работать частями:\n\n• ~78 зона частичного набора\n• ~69–70 более сильная зона поддержки\n\nИменно там имеет смысл смотреть реакцию рынка.\n\nПока цена ниже оранжевой SM —\nприоритет за коррекцией.`,
+      tag: 'SOL · 1D',
+      file_id: null,
       sent_at: new Date(Date.now() - 86400000 * 1).toISOString(),
     },
     {
       id: 2,
-      title: 'ETH — Накопление',
-      body: 'ETH формирует базу в диапазоне $1,780–$1,850. RSI на дневном выходит из зоны перепроданности. Ожидаем попытку теста $1,920.',
-      tag: 'ETH · 4H',
+      title: '₿ BTC — Анализ недели',
+      body: `Биткоин консолидируется у уровня $96K.\n\nСтруктура бычья — серия HH/HL сохраняется на дневном.\n\n📍 Ключевые уровни:\n\n• $93,500–$94,800 — зона поддержки\n• $98,200 — ближайшее сопротивление\n• $101,500 — цель при пробое\n\nПока держимся выше оранжевой SM — сетапы на покупку актуальны.`,
+      tag: 'BTC · 1D',
+      file_id: null,
       sent_at: new Date(Date.now() - 86400000 * 2).toISOString(),
     },
     {
       id: 3,
-      title: 'SOL — Слом структуры',
-      body: 'SOL сломал бычью структуру на 4H — сформировал LH после HH. Осторожно с лонгами. Ближайшая поддержка $135–$138.',
-      tag: 'SOL · 4H',
+      title: 'Ξ ETH — Накопление',
+      body: `ETH формирует базу в диапазоне $1,780–$1,850.\n\nRSI на дневном выходит из зоны перепроданности.\nОбъёмы немного растут — признак накопления.\n\n⚠️ Важно:\n\nПока нет подтверждения — позицию не набираем.\nОжидаем реакцию у $1,780 или пробой $1,880 с объёмом.`,
+      tag: 'ETH · 4H',
+      file_id: null,
       sent_at: new Date(Date.now() - 86400000 * 3).toISOString(),
     },
   ]
 }
+
+// ─── API: прокси Telegram-фото для мини-апп ──────────────
+app.get('/api/image/:fileId', async (req, res) => {
+  const { fileId } = req.params
+  if (!BOT_TOKEN) return res.sendStatus(404)
+
+  try {
+    // Получить путь к файлу
+    const infoRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`)
+    const info = await infoRes.json()
+    if (!info.ok) return res.sendStatus(404)
+
+    // Стримим файл
+    const fileRes = await fetch(`https://api.telegram.org/file/bot${BOT_TOKEN}/${info.result.file_path}`)
+    if (!fileRes.ok) return res.sendStatus(404)
+
+    res.set('Content-Type', fileRes.headers.get('content-type') || 'image/jpeg')
+    res.set('Cache-Control', 'public, max-age=86400')
+
+    const buf = await fileRes.arrayBuffer()
+    res.send(Buffer.from(buf))
+  } catch (err) {
+    console.error('Image proxy error:', err.message)
+    res.sendStatus(500)
+  }
+})
 
 // ─── Health ───────────────────────────────────────────────
 app.get('/', (req, res) => {
