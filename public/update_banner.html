@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT v3 — Update Banner</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#060608; color:#fff; font-family:'Inter',sans-serif; min-height:100vh;
+  display:flex; flex-direction:column; align-items:center; padding:40px 20px; gap:28px; }
+
+h1 { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+  letter-spacing:.3em; color:rgba(255,255,255,.25); text-transform:uppercase; }
+
+.preview-wrap { position:relative; width:700px; height:394px; border-radius:16px;
+  overflow:hidden; border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 60px rgba(0,0,0,.9); }
+
+canvas#preview { width:700px; height:394px; display:block; }
+canvas#export  { display:none; }
+
+.btn-row { display:flex; gap:12px; }
+.dl-btn { background:#2ecc71; color:#000; border:none; padding:13px 36px;
+  border-radius:10px; font-size:14px; font-weight:800; cursor:pointer;
+  font-family:'Inter',sans-serif; transition:opacity .15s; }
+.dl-btn:hover { opacity:.85; }
+.copy-btn { background:#1a1a24; color:#4dc9f0; border:1px solid rgba(77,201,240,.25);
+  padding:13px 28px; border-radius:10px; font-size:14px; font-weight:700;
+  cursor:pointer; font-family:'JetBrains Mono',monospace; transition:opacity .15s; }
+.copy-btn:hover { opacity:.85; }
+</style>
+</head>
+<body>
+
+<h1>— IT v3 · Update Banner Generator —</h1>
+
+<div class="preview-wrap">
+  <canvas id="preview"></canvas>
+</div>
+<canvas id="export"></canvas>
+
+<div class="btn-row">
+  <button class="dl-btn" onclick="downloadBanner()">⬇ Скачать PNG (1280×720)</button>
+  <button class="copy-btn" onclick="copyPostText()">📋 Копировать текст поста</button>
+</div>
+
+<script>
+const POST_TEXT = `🚀 IT v3 — глобальное обновление. Завтра.
+
+Мы переписали всё с нуля. Вот что вас ждёт:
+
+📊 Улучшенный индикатор
+Больше данных, точнее сигналы. Новые слои аналитики прямо на графике — видишь всё что нужно с первого взгляда.
+
+⚡️ Автоматические сигналы 24/7
+Индикатор сам отслеживает рынок и присылает сигнал в момент входа. Больше не нужно сидеть за графиком круглосуточно — IT v3 работает пока ты спишь.
+
+📱 Мини-апп в Telegram
+Все сигналы, аналитика и обновления прямо в твоём мессенджере. Один тап и ты в рынке.
+
+——————————————
+⏰ Завтра, 07 мая — запуск.
+Подписчики PRO получают доступ первыми.
+
+📌 Индикатор IT v3`;
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+function drawBanner(ctx, W, H) {
+  // ── Background ──────────────────────────────────────────────
+  ctx.fillStyle = '#08080c';
+  ctx.fillRect(0, 0, W, H);
+
+  // Radial glow — green bottom-left
+  const g1 = ctx.createRadialGradient(W*0.18, H*0.85, 0, W*0.18, H*0.85, W*0.55);
+  g1.addColorStop(0, 'rgba(46,204,113,0.18)');
+  g1.addColorStop(1, 'rgba(46,204,113,0)');
+  ctx.fillStyle = g1; ctx.fillRect(0,0,W,H);
+
+  // Radial glow — pink top-right
+  const g2 = ctx.createRadialGradient(W*0.88, H*0.12, 0, W*0.88, H*0.12, W*0.45);
+  g2.addColorStop(0, 'rgba(255,61,127,0.14)');
+  g2.addColorStop(1, 'rgba(255,61,127,0)');
+  ctx.fillStyle = g2; ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(46,204,113,0.035)'; ctx.lineWidth = 1;
+  for (let x=0; x<W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y=0; y<H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Subtle horizontal scan line
+  const scan = ctx.createLinearGradient(0, H*0.42, 0, H*0.58);
+  scan.addColorStop(0, 'rgba(46,204,113,0)');
+  scan.addColorStop(0.5, 'rgba(46,204,113,0.04)');
+  scan.addColorStop(1, 'rgba(46,204,113,0)');
+  ctx.fillStyle = scan; ctx.fillRect(0, H*0.42, W, H*0.16);
+
+  // ── Corner brackets ─────────────────────────────────────────
+  ctx.strokeStyle = '#ff3d7f'; ctx.lineWidth = 5; ctx.globalAlpha = 0.85;
+  const bs=30, bp=8;
+  ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W-bp-bs,bp); ctx.lineTo(W-bp,bp); ctx.lineTo(W-bp,bp+bs); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bp+bs,H-bp); ctx.lineTo(bp,H-bp); ctx.lineTo(bp,H-bp-bs); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W-bp-bs,H-bp); ctx.lineTo(W-bp,H-bp); ctx.lineTo(W-bp,H-bp-bs); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // ── IT V3 badge (top-right) ──────────────────────────────────
+  const bt = 'IT V3'; ctx.font = 'bold 12px JetBrains Mono, monospace';
+  const bw = ctx.measureText(bt).width + 30, bh = 26;
+  const bx = W - bw - 28, by = 22;
+  ctx.fillStyle = 'rgba(46,204,113,0.15)'; roundRect(ctx,bx,by,bw,bh,13); ctx.fill();
+  ctx.strokeStyle = 'rgba(46,204,113,0.5)'; ctx.lineWidth=1; roundRect(ctx,bx,by,bw,bh,13); ctx.stroke();
+  ctx.beginPath(); ctx.arc(bx+13, by+bh/2, 3.5, 0, Math.PI*2);
+  ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+  ctx.fillStyle='#2ecc71'; ctx.textAlign='left'; ctx.fillText(bt, bx+22, by+17);
+
+  // ── Kicker top-center ────────────────────────────────────────
+  ctx.font = 'bold 13px JetBrains Mono, monospace';
+  ctx.fillStyle = '#ff3d7f'; ctx.textAlign = 'center'; ctx.globalAlpha = 0.9;
+  ctx.fillText('— ГЛОБАЛЬНЫЙ АПДЕЙТ —', W/2, 42); ctx.globalAlpha = 1;
+
+  // Live dot + label (top-left)
+  ctx.beginPath(); ctx.arc(52, 38, 5, 0, Math.PI*2);
+  ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
+  ctx.font='bold 10px JetBrains Mono, monospace';
+  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.textAlign='left';
+  ctx.fillText('LIVE · PRO SIGNALS', 66, 42);
+
+  // ── Main headline ────────────────────────────────────────────
+  // "IT v3" — giant
+  ctx.font = '900 110px Inter, sans-serif';
+  ctx.textAlign = 'left';
+  // Gradient text
+  const tg = ctx.createLinearGradient(60, H*0.25, 60, H*0.55);
+  tg.addColorStop(0, '#ffffff');
+  tg.addColorStop(0.6, 'rgba(255,255,255,0.85)');
+  tg.addColorStop(1, 'rgba(255,255,255,0.5)');
+  ctx.fillStyle = tg;
+  ctx.fillText('IT v3', 52, H*0.52);
+
+  // Glow behind text
+  ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 40;
+  ctx.fillStyle = 'rgba(46,204,113,0.08)';
+  ctx.fillText('IT v3', 52, H*0.52);
+  ctx.shadowBlur = 0;
+
+  // "ЗАПУСК" accent word (right side, vertical-ish)
+  ctx.save();
+  ctx.translate(W - 68, H*0.22);
+  ctx.rotate(Math.PI / 2);
+  ctx.font = 'bold 11px JetBrains Mono, monospace';
+  ctx.fillStyle = 'rgba(255,61,127,0.6)';
+  ctx.textAlign = 'center'; ctx.letterSpacing = '0.3em';
+  ctx.fillText('07 МАЯ · ЗАВТРА', 0, 0);
+  ctx.restore();
+
+  // ── Date pill ────────────────────────────────────────────────
+  const dateText = '⏰  07 МАЯ — ЗАПУСК';
+  ctx.font = 'bold 13px JetBrains Mono, monospace';
+  const dpw = ctx.measureText(dateText).width + 36, dph = 34;
+  const dpx = 52, dpy = H*0.56;
+  ctx.fillStyle = 'rgba(255,61,127,0.12)';
+  roundRect(ctx, dpx, dpy, dpw, dph, 17); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,61,127,0.4)'; ctx.lineWidth = 1;
+  roundRect(ctx, dpx, dpy, dpw, dph, 17); ctx.stroke();
+  ctx.fillStyle = '#ff3d7f'; ctx.textAlign = 'left';
+  ctx.fillText(dateText, dpx + 18, dpy + 22);
+
+  // ── Three feature pills ──────────────────────────────────────
+  const features = [
+    { icon: '📊', label: 'Новый индикатор' },
+    { icon: '⚡️', label: 'Сигналы 24/7' },
+    { icon: '📱', label: 'Мини-апп' },
+  ];
+  ctx.font = 'bold 12px JetBrains Mono, monospace';
+  let fx = 52;
+  const fy = H*0.73, fh = 32;
+  features.forEach(f => {
+    const label = f.icon + '  ' + f.label;
+    const fw = ctx.measureText(label).width + 28;
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    roundRect(ctx, fx, fy, fw, fh, 16); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
+    roundRect(ctx, fx, fy, fw, fh, 16); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.textAlign = 'left';
+    ctx.fillText(label, fx + 14, fy + 21);
+    fx += fw + 12;
+  });
+
+  // ── Bottom tagline ───────────────────────────────────────────
+  ctx.font = '400 15px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.textAlign = 'left';
+  ctx.fillText('Подписчики PRO получают доступ первыми  💎', 52, H - 28);
+
+  // Bottom-right: PRO pill
+  const proText = 'PRO FIRST';
+  ctx.font = 'bold 11px JetBrains Mono, monospace';
+  const ppw = ctx.measureText(proText).width + 24, pph = 26;
+  const ppx = W - ppw - 28, ppy = H - 48;
+  ctx.fillStyle = 'rgba(255,204,0,0.12)';
+  roundRect(ctx, ppx, ppy, ppw, pph, 13); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,204,0,0.35)'; ctx.lineWidth = 1;
+  roundRect(ctx, ppx, ppy, ppw, pph, 13); ctx.stroke();
+  ctx.fillStyle = '#ffcc00'; ctx.textAlign = 'left';
+  ctx.fillText(proText, ppx + 12, ppy + 17);
+}
+
+// ── Draw live preview ────────────────────────────────────────────
+function renderPreview() {
+  const c = document.getElementById('preview');
+  c.width = 700; c.height = 394;
+  const ctx = c.getContext('2d');
+  ctx.scale(700/1280, 394/720);
+  drawBanner(ctx, 1280, 720);
+}
+
+// ── Download full-res ────────────────────────────────────────────
+function downloadBanner() {
+  const c = document.getElementById('export');
+  c.width = 1280; c.height = 720;
+  const ctx = c.getContext('2d');
+  drawBanner(ctx, 1280, 720);
+  c.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'IT_v3_global_update_banner.png';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, 'image/png');
+}
+
+function copyPostText() {
+  navigator.clipboard.writeText(POST_TEXT)
+    .then(() => alert('✅ Текст поста скопирован!'))
+    .catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = POST_TEXT; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta); alert('✅ Текст поста скопирован!');
+    });
+}
+
+renderPreview();
+</script>
+</body>
+</html>
