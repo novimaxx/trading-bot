@@ -31,6 +31,50 @@ if (process.env.DATABASE_URL) {
   console.log('⚠️  DATABASE_URL не задан — сигналы идут в CHAT_ID (fallback)')
 }
 
+// ─── Авто-миграция таблиц ─────────────────────────────────
+async function runMigrations() {
+  if (!pool) return
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS app_signals (
+        id         SERIAL PRIMARY KEY,
+        pair       TEXT NOT NULL,
+        action     TEXT NOT NULL,
+        tag        TEXT,
+        timeframe  TEXT,
+        price      TEXT,
+        sent_at    TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS app_posts (
+        id         SERIAL PRIMARY KEY,
+        title      TEXT,
+        body       TEXT,
+        image_url  TEXT,
+        file_id    TEXT,
+        tag        TEXT DEFAULT 'АНАЛИТИКА',
+        sent_at    TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS users (
+        id                  BIGINT PRIMARY KEY,
+        username            TEXT,
+        first_name          TEXT,
+        subscribed          BOOLEAN DEFAULT FALSE,
+        subscription_until  TIMESTAMP,
+        subscription_plan   TEXT,
+        ref_by              BIGINT,
+        ref_code            TEXT UNIQUE,
+        referral_count      INTEGER DEFAULT 0,
+        tradingview_username TEXT
+      );
+    `)
+    console.log('✅ Миграции выполнены')
+  } catch (err) {
+    console.error('Migration error:', err.message)
+  }
+}
+
 // ─── Настройки ────────────────────────────────────────────
 const CFG = {
   tf: {
@@ -327,6 +371,24 @@ app.post('/webhook', async (req, res) => {
     if (!msg) return res.sendStatus(400)
 
     await sendSignal(msg)
+
+    // Сохранить сигнал в БД для мини-апп
+    if (pool) {
+      const isBuy  = signal.includes('buy')
+      const isSell = signal.includes('sell')
+      const isStrong = signal.startsWith('strong_')
+      const actionLabel = isStrong
+        ? (isBuy ? 'STRONG BUY' : 'STRONG SELL')
+        : (isBuy ? 'BUY' : isSell ? 'SELL' : meta.title)
+      const sym = (data.ticker || '').toUpperCase().replace('USDT','').replace('USD','')
+      const pair = sym ? `${sym}/USDT` : data.ticker
+
+      pool.query(
+        `INSERT INTO app_signals (pair, action, tag, timeframe, price) VALUES ($1,$2,$3,$4,$5)`,
+        [pair, actionLabel, actionLabel, normalize(data.interval || ''), fmtPrice(data.price)]
+      ).catch(e => console.error('Signal save error:', e.message))
+    }
+
     res.sendStatus(200)
 
   } catch (err) {
@@ -338,36 +400,35 @@ app.post('/webhook', async (req, res) => {
 // ─── CORS для мини-апп ────────────────────────────────────
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'Content-Type')
+  res.header('Access-Control-Allow-Headers', 'Content-Type, X-API-Key')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  if (req.method === 'OPTIONS') return res.sendStatus(200)
   next()
 })
 
-// ─── API: данные пользователя для мини-апп ────────────────
+const API_KEY = process.env.API_KEY || 'indicator-secret-key'
+
+// ─── API: данные пользователя ─────────────────────────────
 app.get('/api/user/:id', async (req, res) => {
   const userId = parseInt(req.params.id)
   if (!userId || !pool) return res.json({ plan: null })
 
   try {
-    const { rows } = await pool.query(`
-      SELECT subscription_plan, subscription_until, referral_count
-      FROM users WHERE id = $1
-    `, [userId])
+    const { rows } = await pool.query(
+      `SELECT subscription_plan, subscription_until, referral_count FROM users WHERE id = $1`,
+      [userId]
+    )
 
     if (!rows.length) return res.json({ plan: null })
 
     const u = rows[0]
     const until = u.subscription_until ? new Date(u.subscription_until) : null
     const active = until && until > new Date()
-    const daysLeft = active
-      ? Math.ceil((until - new Date()) / (1000 * 60 * 60 * 24))
-      : null
+    const daysLeft = active ? Math.ceil((until - new Date()) / 86400000) : null
 
-    // Кол-во сигналов — считаем из истории если есть таблица
     let signalsCount = 0
     try {
-      const s = await pool.query(
-        `SELECT COUNT(*) FROM signals WHERE sent_at > NOW() - INTERVAL '30 days'`
-      )
+      const s = await pool.query(`SELECT COUNT(*) FROM app_signals WHERE sent_at > NOW() - INTERVAL '30 days'`)
       signalsCount = parseInt(s.rows[0].count) || 0
     } catch (_) {}
 
@@ -376,7 +437,6 @@ app.get('/api/user/:id', async (req, res) => {
       daysLeft,
       refs: u.referral_count || 0,
       signalsCount,
-      winRate: null,
     })
   } catch (err) {
     console.error('API /user error:', err.message)
@@ -384,47 +444,133 @@ app.get('/api/user/:id', async (req, res) => {
   }
 })
 
-// ─── API: последние сигналы ───────────────────────────────
-app.get('/api/signals', async (req, res) => {
-  if (!pool) return res.json([])
+// ─── API: синхронизация пользователя из основного бота ────
+app.post('/api/user/sync', async (req, res) => {
+  if (req.headers['x-api-key'] !== API_KEY) return res.sendStatus(401)
+  if (!pool) return res.sendStatus(503)
+
+  const { id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count } = req.body
+  if (!id) return res.sendStatus(400)
 
   try {
-    const { rows } = await pool.query(`
-      SELECT pair, action, timeframe, price, sent_at
-      FROM signals
-      ORDER BY sent_at DESC
-      LIMIT 20
-    `)
-
-    const signals = rows.map(r => {
-      const d = new Date(r.sent_at)
-      const now = new Date()
-      const diffH = (now - d) / 3600000
-
-      let timeLabel
-      if (diffH < 1)        timeLabel = Math.round(diffH * 60) + ' мин'
-      else if (diffH < 24)  timeLabel = Math.round(diffH) + ' ч'
-      else                  timeLabel = Math.round(diffH / 24) + ' дн'
-
-      const action = (r.action || '').toUpperCase()
-      const tag = action.includes('STRONG') ? action : action
-
-      return {
-        pair: r.pair || 'BTC/USDT',
-        action: action.replace('STRONG ', '').trim() || 'BUY',
-        tag: action,
-        tf: r.timeframe || '1H',
-        time: timeLabel,
-        price: r.price ? parseFloat(r.price).toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—',
-      }
-    })
-
-    res.json(signals)
+    await pool.query(`
+      INSERT INTO users (id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+      ON CONFLICT (id) DO UPDATE SET
+        username = EXCLUDED.username,
+        first_name = EXCLUDED.first_name,
+        subscribed = EXCLUDED.subscribed,
+        subscription_until = EXCLUDED.subscription_until,
+        subscription_plan = EXCLUDED.subscription_plan,
+        referral_count = EXCLUDED.referral_count
+    `, [id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count || 0])
+    res.json({ ok: true })
   } catch (err) {
-    console.error('API /signals error:', err.message)
-    res.json([])
+    console.error('User sync error:', err.message)
+    res.sendStatus(500)
   }
 })
+
+// ─── API: сигналы ─────────────────────────────────────────
+app.get('/api/signals', async (req, res) => {
+  if (!pool) return res.json(getDemoSignals())
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT pair, action, tag, timeframe, price, sent_at FROM app_signals ORDER BY sent_at DESC LIMIT 30`
+    )
+    res.json(rows.length ? rows.map(formatSignalRow) : getDemoSignals())
+  } catch (err) {
+    console.error('API /signals error:', err.message)
+    res.json(getDemoSignals())
+  }
+})
+
+function formatSignalRow(r) {
+  const diffH = (Date.now() - new Date(r.sent_at)) / 3600000
+  const time = diffH < 1
+    ? Math.round(diffH * 60) + ' мин'
+    : diffH < 24 ? Math.round(diffH) + ' ч'
+    : Math.round(diffH / 24) + ' дн'
+  const action = (r.action || '').toUpperCase()
+  return {
+    pair: r.pair || 'BTC/USDT',
+    action: action.includes('BUY') ? 'BUY' : 'SELL',
+    tag: r.tag || action,
+    tf: r.timeframe || '1H',
+    time,
+    price: r.price || '—',
+  }
+}
+
+function getDemoSignals() {
+  return [
+    { pair: 'BTC/USDT', action: 'BUY', tag: 'STRONG BUY', tf: '4H', time: 'только что', price: '96,240' },
+    { pair: 'ETH/USDT', action: 'BUY', tag: 'BUY', tf: '1H', time: '3 ч', price: '1,830' },
+    { pair: 'SOL/USDT', action: 'SELL', tag: 'SELL', tf: '4H', time: '1 дн', price: '142' },
+  ]
+}
+
+// ─── API: посты / аналитика ───────────────────────────────
+app.get('/api/posts', async (req, res) => {
+  if (!pool) return res.json(getDemoPosts())
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, title, body, image_url, file_id, tag, sent_at FROM app_posts ORDER BY sent_at DESC LIMIT 20`
+    )
+    res.json(rows.length ? rows : getDemoPosts())
+  } catch (err) {
+    console.error('API /posts error:', err.message)
+    res.json(getDemoPosts())
+  }
+})
+
+// Публикация поста из бота
+app.post('/api/posts', async (req, res) => {
+  if (req.headers['x-api-key'] !== API_KEY) return res.sendStatus(401)
+  if (!pool) return res.sendStatus(503)
+
+  const { title, body, image_url, file_id, tag } = req.body
+  if (!body && !image_url && !file_id) return res.sendStatus(400)
+
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO app_posts (title, body, image_url, file_id, tag) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
+      [title || null, body || null, image_url || null, file_id || null, tag || 'АНАЛИТИКА']
+    )
+    res.json({ ok: true, id: rows[0].id })
+  } catch (err) {
+    console.error('API POST /posts error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+function getDemoPosts() {
+  return [
+    {
+      id: 1,
+      title: 'BTC — Анализ недели',
+      body: 'Биткоин консолидируется у уровня $96K. Структура бычья — серия HH/HL сохраняется. Ключевая зона поддержки: $93,500–$94,800. Пока держимся выше — сетапы на покупку актуальны.',
+      tag: 'BTC · 1D',
+      sent_at: new Date(Date.now() - 86400000 * 1).toISOString(),
+    },
+    {
+      id: 2,
+      title: 'ETH — Накопление',
+      body: 'ETH формирует базу в диапазоне $1,780–$1,850. RSI на дневном выходит из зоны перепроданности. Ожидаем попытку теста $1,920.',
+      tag: 'ETH · 4H',
+      sent_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+    },
+    {
+      id: 3,
+      title: 'SOL — Слом структуры',
+      body: 'SOL сломал бычью структуру на 4H — сформировал LH после HH. Осторожно с лонгами. Ближайшая поддержка $135–$138.',
+      tag: 'SOL · 4H',
+      sent_at: new Date(Date.now() - 86400000 * 3).toISOString(),
+    },
+  ]
+}
 
 // ─── Health ───────────────────────────────────────────────
 app.get('/', (req, res) => {
@@ -458,9 +604,10 @@ app.get('/test/:signal?', async (req, res) => {
   res.json({ sent: true, preview: msg })
 })
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`\n🤖 Trading Signal Bot`)
   console.log(`📡 Port: ${PORT}`)
   console.log(`📬 Webhook: POST /webhook`)
   console.log(`🧪 Test:    GET  /test/buy100\n`)
+  await runMigrations()
 })

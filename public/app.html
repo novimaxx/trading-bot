@@ -9,983 +9,668 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0a0c;
-  --bg2: #111116;
-  --bg3: #16161d;
-  --card: #13131a;
-  --line: rgba(255,255,255,0.07);
-  --accent: #2ecc71;
-  --accent2: #ff3d7f;
-  --cyan: #4dc9f0;
-  --gold: #ffcc00;
-  --white: #ffffff;
-  --muted: rgba(255,255,255,0.35);
-  --muted2: rgba(255,255,255,0.15);
+  --bg:#0a0a0c; --bg2:#111116; --card:#13131a; --card2:#18181f;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+  --accent:#2ecc71; --accent2:#ff3d7f; --cyan:#4dc9f0; --gold:#ffcc00;
+  --white:#fff; --muted:rgba(255,255,255,.35); --muted2:rgba(255,255,255,.15);
 }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* ── screens ── */
+.screen{display:none;flex-direction:column;min-height:100vh;padding-bottom:80px}
+.screen.active{display:flex}
 
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+/* ── grid bg ── */
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(46,204,113,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(46,204,113,.025) 1px,transparent 1px);
+  background-size:32px 32px}
 
-/* ── Screens ── */
-.screen {
-  display: none;
-  flex-direction: column;
-  min-height: 100vh;
-  padding-bottom: 72px;
-}
-.screen.active { display: flex; }
+/* ── kicker ── */
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--accent2);display:inline-flex;align-items:center;gap:10px}
+.kicker::before,.kicker::after{content:'';width:16px;height:1.5px;background:var(--accent2);opacity:.7}
 
-/* ── Grid bg ── */
-.grid-bg {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background-image:
-    linear-gradient(rgba(46,204,113,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46,204,113,0.025) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
+/* ── hero ── */
+.hero{padding:28px 20px 20px;position:relative;z-index:1;border-bottom:1px solid var(--line)}
+.hero-title{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:.9;text-transform:uppercase;margin:12px 0 16px}
+.hero-title .grad{background:linear-gradient(180deg,#6FFFB2 0%,#2ecc71 50%,#126638 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.status-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.badge-live{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);color:var(--accent)}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.badge-pro{background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.3);color:var(--accent2)}
+.coin-pill{margin-left:auto;display:inline-flex;align-items:center;padding:5px 11px;border-radius:20px;
+  border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+  color:var(--muted);background:rgba(255,255,255,.03);letter-spacing:.12em}
 
-/* ── Hero ── */
-.hero {
-  padding: 32px 20px 24px;
-  position: relative; z-index: 1;
-  border-bottom: 1px solid var(--line);
-}
-.hero-kicker {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; font-weight: 700; letter-spacing: .28em;
-  text-transform: uppercase; color: var(--accent2);
-  margin-bottom: 12px;
-  display: inline-flex; align-items: center; gap: 10px;
-}
-.hero-kicker::before, .hero-kicker::after {
-  content: ''; width: 16px; height: 1.5px;
-  background: var(--accent2); opacity: .7;
-}
-.hero-title {
-  font-size: 52px; font-weight: 900;
-  letter-spacing: -.04em; line-height: .9;
-  text-transform: uppercase; margin-bottom: 16px;
-}
-.hero-title .grad {
-  background: linear-gradient(180deg, #6FFFB2 0%, #2ecc71 50%, #126638 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.status-row {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-}
-.badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 12px; border-radius: 20px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; font-weight: 700; letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.badge-live {
-  background: rgba(46,204,113,.1); border: 1px solid rgba(46,204,113,.3); color: var(--accent);
-}
-.badge-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--accent); box-shadow: 0 0 6px var(--accent);
-  animation: blink 2s infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-.badge-pro {
-  background: rgba(255,61,127,.1); border: 1px solid rgba(255,61,127,.3); color: var(--accent2);
-}
-.coin-pill {
-  margin-left: auto;
-  display: inline-flex; align-items: center;
-  padding: 5px 12px; border-radius: 20px;
-  border: 1px solid var(--line);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; font-weight: 700; color: var(--muted);
-  background: rgba(255,255,255,.03); letter-spacing: .15em;
-}
+/* ── section label ── */
+.slabel{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);padding:18px 20px 8px;position:relative;z-index:1}
 
-/* ── Section title ── */
-.section-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; font-weight: 700; letter-spacing: .2em;
-  text-transform: uppercase; color: var(--muted);
-  padding: 20px 20px 10px;
-  position: relative; z-index: 1;
-}
+/* ── signal card ── */
+.sig-card{margin:0 16px 8px;background:linear-gradient(135deg,#0d1810 0%,#0a0c0a 100%);
+  border:1px solid rgba(46,204,113,.2);border-radius:14px;padding:13px 15px;position:relative;overflow:hidden;z-index:1}
+.sig-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--accent);border-radius:3px 0 0 3px}
+.sig-card.sell-card{background:linear-gradient(135deg,#1a0a0d 0%,#0c0a0a 100%);border-color:rgba(255,61,127,.2)}
+.sig-card.sell-card::before{background:var(--accent2)}
+.sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.sc-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--accent);display:flex;align-items:center;gap:5px}
+.sc-tag.sell{color:var(--accent2)}
+.sc-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 5px var(--accent);animation:blink 2s infinite}
+.sc-dot.sell{background:var(--accent2);box-shadow:0 0 5px var(--accent2)}
+.sc-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.sc-body{display:flex;align-items:center;gap:8px}
+.sc-pair{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.sc-action{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:5px}
+.sc-buy{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.3);color:var(--accent)}
+.sc-sell-btn{background:rgba(255,61,127,.15);border:1px solid rgba(255,61,127,.3);color:var(--accent2)}
+.sc-tf{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);border:1px solid var(--muted2);padding:2px 6px;border-radius:4px}
+.sc-price{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700}
 
-/* ── Signal card ── */
-.signal-card {
-  margin: 0 16px 4px;
-  background: #0d1810;
-  border: 1px solid rgba(46,204,113,.2);
-  border-radius: 14px;
-  padding: 14px 16px;
-  position: relative; overflow: hidden;
-  z-index: 1;
-}
-.signal-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
-  background: var(--accent); border-radius: 3px 0 0 3px;
-}
-.sc-top {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 8px;
-}
-.sc-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; font-weight: 700; letter-spacing: .15em;
-  color: var(--accent); display: flex; align-items: center; gap: 5px;
-}
-.sc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 5px var(--accent); animation: blink 2s infinite; }
-.sc-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); }
-.sc-body { display: flex; align-items: center; gap: 8px; }
-.sc-pair { font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
-.sc-action {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; font-weight: 700; letter-spacing: .1em;
-  padding: 3px 8px; border-radius: 5px;
-}
-.sc-buy { background: rgba(46,204,113,.15); border: 1px solid rgba(46,204,113,.3); color: var(--accent); }
-.sc-sell { background: rgba(255,61,127,.15); border: 1px solid rgba(255,61,127,.3); color: var(--accent2); }
-.sc-tf { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); border: 1px solid var(--muted2); padding: 2px 6px; border-radius: 4px; }
-.sc-price { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+/* empty state */
+.empty{text-align:center;padding:40px 20px;position:relative;z-index:1}
+.empty-icon{font-size:36px;margin-bottom:10px}
+.empty-text{font-size:14px;color:var(--muted)}
+.empty-sub{font-size:11px;color:var(--muted2);margin-top:5px;font-family:'JetBrains Mono',monospace;letter-spacing:.05em}
 
-/* no-signal placeholder */
-.no-signal {
-  margin: 0 16px 4px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 20px 16px;
-  text-align: center;
-  z-index: 1; position: relative;
-}
-.no-signal-icon { font-size: 28px; margin-bottom: 8px; }
-.no-signal-text { font-size: 13px; color: var(--muted); }
+/* ── tiles ── */
+.tiles{padding:4px 16px 8px;display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative;z-index:1}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 14px;
+  cursor:pointer;position:relative;overflow:hidden;transition:opacity .15s,transform .15s}
+.tile:active{opacity:.7;transform:scale(.97)}
+.tile::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 0%,var(--glow,transparent) 0%,transparent 65%);pointer-events:none}
+.tile::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;
+  border-top:1.5px solid rgba(255,255,255,.12);border-right:1.5px solid rgba(255,255,255,.12)}
+.tile-icon{font-size:22px;margin-bottom:10px;display:block;line-height:1}
+.tile-label{font-size:13px;font-weight:700;margin-bottom:3px}
+.tile-desc{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.4}
+.tc{color:var(--tc)}
+.tile-wide{grid-column:1/-1}
+.tile-wide-inner{display:flex;align-items:center;gap:14px}
+.tile-wide-inner .tile-icon{margin:0;font-size:22px}
+.tile-wide-text{flex:1}
+.tile-arrow{color:var(--muted2);font-size:16px}
+.tile-badge{position:absolute;top:10px;right:10px;min-width:18px;height:18px;border-radius:9px;
+  background:var(--accent2);font-size:9px;font-weight:800;color:#fff;padding:0 5px;
+  display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace}
+.tile-green{--glow:rgba(46,204,113,.1);--tc:#2ecc71;border-color:rgba(46,204,113,.15)}
+.tile-pink{--glow:rgba(255,61,127,.1);--tc:#ff3d7f;border-color:rgba(255,61,127,.15)}
+.tile-cyan{--glow:rgba(77,201,240,.1);--tc:#4dc9f0;border-color:rgba(77,201,240,.15)}
+.tile-gold{--glow:rgba(255,204,0,.1);--tc:#ffcc00;border-color:rgba(255,204,0,.15)}
 
-/* ── Nav tiles ── */
-.tiles {
-  padding: 0 16px 8px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  position: relative; z-index: 1;
-}
-.tile {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px 14px;
-  cursor: pointer;
-  position: relative; overflow: hidden;
-  transition: opacity .15s, transform .15s;
-  -webkit-tap-highlight-color: transparent;
-}
-.tile:active { opacity: .7; transform: scale(.97); }
-.tile::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 0% 0%, var(--glow) 0%, transparent 65%);
-  pointer-events: none;
-}
-.tile::after {
-  content: '';
-  position: absolute; top: 8px; right: 8px;
-  width: 8px; height: 8px;
-  border-top: 1.5px solid rgba(255,255,255,.12);
-  border-right: 1.5px solid rgba(255,255,255,.12);
-}
-.tile-icon { font-size: 22px; margin-bottom: 10px; display: block; }
-.tile-label { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
-.tile-desc { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; line-height: 1.4; }
-.tile-color { color: var(--tc); }
+/* ── bottom nav ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,18,.97);
+  backdrop-filter:blur(24px);border-top:1px solid var(--line);display:flex;
+  padding:10px 0 max(env(safe-area-inset-bottom),10px);z-index:100}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  transition:opacity .15s;position:relative}
+.nav-item:active{opacity:.6}
+.nav-icon{font-size:21px;line-height:1}
+.nav-label{font-size:9px;font-weight:600;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;text-transform:uppercase}
+.nav-item.active .nav-label{color:var(--accent)}
+.nav-notif{position:absolute;top:0;right:calc(50% - 16px);width:7px;height:7px;
+  border-radius:50%;background:var(--accent2);border:1.5px solid var(--bg);display:none}
+.nav-notif.show{display:block}
 
-.tile-wide { grid-column: 1 / -1; }
-.tile-wide-inner { display: flex; align-items: center; gap: 14px; }
-.tile-wide-inner .tile-icon { margin: 0; font-size: 24px; }
-.tile-wide-text { flex: 1; }
-.tile-arrow { color: var(--muted2); font-size: 16px; }
-.tile-badge {
-  position: absolute; top: 10px; right: 10px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: var(--accent2);
-  font-size: 9px; font-weight: 800; color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-}
+/* ── screen header ── */
+.screen-header{padding:24px 20px 18px;border-bottom:1px solid var(--line);position:relative;z-index:1}
+.screen-h1{font-size:26px;font-weight:900;letter-spacing:-.02em;margin-top:6px}
 
-.tile-green { --glow: rgba(46,204,113,.1); --tc: #2ecc71; border-color: rgba(46,204,113,.15); }
-.tile-pink  { --glow: rgba(255,61,127,.1);  --tc: #ff3d7f; border-color: rgba(255,61,127,.15); }
-.tile-cyan  { --glow: rgba(77,201,240,.1);  --tc: #4dc9f0; border-color: rgba(77,201,240,.15); }
-.tile-gold  { --glow: rgba(255,204,0,.1);   --tc: #ffcc00; border-color: rgba(255,204,0,.15); }
+/* ── plan cards ── */
+.plans{padding:14px 16px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.plan-card{border-radius:16px;padding:18px;border:1px solid var(--line);background:var(--card);
+  position:relative;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .2s}
+.plan-card:active{transform:scale(.98)}
+.plan-card.selected{border-color:rgba(46,204,113,.5);box-shadow:0 0 0 1px rgba(46,204,113,.2)}
+.plan-card.plan-pro{background:linear-gradient(135deg,#0d1a14 0%,#0a0a0c 100%);border-color:rgba(46,204,113,.25)}
+.plan-card.plan-pro.selected{border-color:rgba(46,204,113,.6)}
+.plan-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 0%,var(--pc-glow,transparent) 0%,transparent 65%);pointer-events:none}
+.plan-card.plan-pro{--pc-glow:rgba(46,204,113,.07)}
+.plan-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.plan-name{font-size:19px;font-weight:900}
+.plan-name-pro{color:var(--accent)}
+.plan-price{font-size:24px;font-weight:900;font-family:'JetBrains Mono',monospace;text-align:right}
+.plan-period{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:right}
+.plan-divider{height:1px;background:var(--line);margin-bottom:12px}
+.plan-features{display:flex;flex-direction:column;gap:7px}
+.plan-feat{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.3}
+.feat-ico{font-size:13px;flex-shrink:0}
+.plan-badge{position:absolute;top:12px;right:12px;background:var(--accent);color:#000;
+  font-size:8px;font-weight:800;letter-spacing:.08em;font-family:'JetBrains Mono',monospace;
+  padding:3px 8px;border-radius:20px;text-transform:uppercase}
+.plan-select-indicator{position:absolute;bottom:12px;right:14px;
+  font-size:10px;color:var(--accent);font-family:'JetBrains Mono',monospace;
+  font-weight:700;letter-spacing:.1em;display:none}
+.plan-card.selected .plan-select-indicator{display:block}
 
-/* ── Bottom nav ── */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(17,17,22,.95);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--line);
-  display: flex;
-  padding: 10px 0 max(env(safe-area-inset-bottom), 10px);
-  z-index: 100;
-}
-.nav-item {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; gap: 4px; cursor: pointer;
-  transition: opacity .15s;
-}
-.nav-item:active { opacity: .6; }
-.nav-icon { font-size: 22px; line-height: 1; }
-.nav-label {
-  font-size: 9px; font-weight: 600;
-  color: var(--muted);
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: .05em; text-transform: uppercase;
-}
-.nav-item.active .nav-label { color: var(--accent); }
+/* payment block */
+.pay-block{margin:0 16px 16px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:16px;position:relative;z-index:1;
+  animation:slideIn .25s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.pay-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.pay-addr{background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.pay-addr:active{border-color:rgba(46,204,113,.4)}
+.pay-addr-net{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px;letter-spacing:.1em;display:flex;align-items:center;justify-content:space-between}
+.pay-copy-hint{font-size:9px;color:var(--accent);font-family:'JetBrains Mono',monospace;opacity:.7}
+.pay-addr-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white);word-break:break-all;line-height:1.5}
+.pay-note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
+.pay-btn{width:100%;margin-top:14px;background:var(--accent);color:#000;border:none;
+  border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;
+  font-family:'Inter',sans-serif;transition:opacity .15s,transform .15s;letter-spacing:-.01em}
+.pay-btn:active{opacity:.8;transform:scale(.98)}
 
-/* ── SCREEN: BUY ── */
-.screen-header {
-  padding: 28px 20px 20px;
-  border-bottom: 1px solid var(--line);
-  position: relative; z-index: 1;
-}
-.screen-kicker {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; font-weight: 700; letter-spacing: .28em;
-  text-transform: uppercase; color: var(--accent2);
-  margin-bottom: 6px;
-  display: inline-flex; align-items: center; gap: 10px;
-}
-.screen-kicker::before, .screen-kicker::after {
-  content: ''; width: 16px; height: 1.5px; background: var(--accent2); opacity: .7;
-}
-.screen-h1 { font-size: 28px; font-weight: 900; letter-spacing: -.02em; }
+/* ── posts ── */
+.posts{padding:4px 16px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.post-card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  overflow:hidden;position:relative;cursor:pointer;transition:opacity .15s}
+.post-card:active{opacity:.75}
+.post-tag-bar{padding:10px 14px 0;display:flex;align-items:center;justify-content:space-between}
+.post-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
+  display:flex;align-items:center;gap:5px}
+.post-tag::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.post-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.post-body{padding:10px 14px 14px}
+.post-title{font-size:15px;font-weight:800;margin-bottom:6px;line-height:1.25}
+.post-text{font-size:13px;color:rgba(255,255,255,.7);line-height:1.55;
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.post-card.featured{border-color:rgba(46,204,113,.25)}
+.post-card.featured .post-tag{color:var(--accent)}
 
-/* Plan cards */
-.plans { padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 1; }
+/* ── profile ── */
+.profile-header{padding:24px 20px 18px;border-bottom:1px solid var(--line);position:relative;z-index:1}
+.profile-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.avatar{width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent2) 0%,var(--accent) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:800;color:#fff;font-family:'JetBrains Mono',monospace;
+  border:2px solid rgba(46,204,113,.3);box-shadow:0 0 20px rgba(46,204,113,.12);flex-shrink:0}
+.profile-name{font-size:17px;font-weight:800;margin-bottom:3px}
+.profile-handle{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.07em}
+.sub-card{background:linear-gradient(135deg,#0d1a14 0%,#0a0a0c 100%);
+  border:1px solid rgba(46,204,113,.2);border-radius:14px;padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between}
+.sub-card.sub-none{background:var(--card);border-color:var(--line)}
+.sub-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.sub-plan{font-size:17px;font-weight:800}
+.sub-active{color:var(--accent)}
+.sub-none-text{color:var(--muted)}
+.sub-days-num{font-size:22px;font-weight:900;text-align:right}
+.sub-days-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-align:right}
 
-.plan-card {
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  position: relative; overflow: hidden;
-  cursor: pointer;
-  transition: transform .15s, opacity .15s;
-}
-.plan-card:active { transform: scale(.98); opacity: .85; }
-.plan-card.plan-pro {
-  background: linear-gradient(135deg, #0d1a14 0%, #0a0a0c 100%);
-  border-color: rgba(46,204,113,.3);
-}
-.plan-card.plan-pro::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 0% 0%, rgba(46,204,113,.08) 0%, transparent 60%);
-}
-.plan-top {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  margin-bottom: 16px;
-}
-.plan-name { font-size: 20px; font-weight: 900; }
-.plan-name-pro { color: var(--accent); }
-.plan-price-wrap { text-align: right; }
-.plan-price { font-size: 26px; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
-.plan-period { font-size: 11px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-.plan-divider { height: 1px; background: var(--line); margin-bottom: 14px; }
-.plan-features { display: flex; flex-direction: column; gap: 8px; }
-.plan-feature {
-  display: flex; align-items: flex-start; gap: 8px;
-  font-size: 13px; color: rgba(255,255,255,.8); line-height: 1.3;
-}
-.feat-check { font-size: 14px; flex-shrink: 0; margin-top: 0; }
-.plan-badge {
-  position: absolute; top: 14px; right: 14px;
-  background: var(--accent); color: #000;
-  font-size: 8px; font-weight: 800; letter-spacing: .1em;
-  font-family: 'JetBrains Mono', monospace;
-  padding: 3px 8px; border-radius: 20px;
-  text-transform: uppercase;
-}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:12px 16px 0;position:relative;z-index:1}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat-val{font-size:19px;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:2px}
+.sv-g{color:var(--accent)} .sv-p{color:var(--accent2)}
+.stat-key{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace}
 
-/* Payment section */
-.payment-section {
-  margin: 0 16px; padding: 16px;
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: 14px; position: relative; z-index: 1;
-}
-.pay-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; font-weight: 700; letter-spacing: .2em;
-  text-transform: uppercase; color: var(--muted);
-  margin-bottom: 12px;
-}
-.pay-addr {
-  background: rgba(0,0,0,.3); border: 1px solid var(--line);
-  border-radius: 8px; padding: 10px 12px;
-  margin-bottom: 8px;
-}
-.pay-addr-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; color: var(--muted); margin-bottom: 4px; letter-spacing: .1em;
-}
-.pay-addr-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; color: var(--white);
-  word-break: break-all; line-height: 1.4;
-  cursor: pointer;
-}
-.pay-addr-val:active { opacity: .6; }
-.copy-hint { font-size: 10px; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.menu{padding:12px 16px 4px;position:relative;z-index:1;display:flex;flex-direction:column;gap:6px}
+.menu-row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;transition:opacity .15s}
+.menu-row:active{opacity:.6}
+.menu-row-icon{font-size:17px}
+.menu-row-text{flex:1;font-size:13px;font-weight:600}
+.menu-row-r{color:var(--muted2);font-size:15px}
+.menu-tag{background:rgba(255,61,127,.12);border:1px solid rgba(255,61,127,.25);
+  color:var(--accent2);font-size:8px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  letter-spacing:.1em;padding:2px 7px;border-radius:4px}
+.menu-tag-g{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);color:var(--accent)}
 
-.pay-btn {
-  width: 100%; margin-top: 14px;
-  background: var(--accent); color: #000;
-  border: none; border-radius: 12px;
-  padding: 14px; font-size: 15px; font-weight: 800;
-  cursor: pointer; font-family: 'Inter', sans-serif;
-  transition: opacity .15s, transform .15s;
-  letter-spacing: -.01em;
-}
-.pay-btn:active { opacity: .8; transform: scale(.98); }
+/* ── toast ── */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:rgba(46,204,113,.95);color:#000;font-size:13px;font-weight:700;
+  padding:10px 20px;border-radius:30px;font-family:'JetBrains Mono',monospace;
+  opacity:0;transition:opacity .2s,transform .2s;z-index:200;white-space:nowrap;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── SCREEN: PROFILE ── */
-.profile-header {
-  padding: 28px 20px 20px;
-  border-bottom: 1px solid var(--line);
-  position: relative; z-index: 1;
-}
-.profile-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-.avatar {
-  width: 56px; height: 56px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; font-weight: 800; color: #fff;
-  font-family: 'JetBrains Mono', monospace;
-  border: 2px solid rgba(46,204,113,.3);
-  box-shadow: 0 0 20px rgba(46,204,113,.15);
-  flex-shrink: 0;
-}
-.profile-name { font-size: 18px; font-weight: 800; margin-bottom: 3px; }
-.profile-handle { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .08em; }
-
-.sub-card {
-  background: linear-gradient(135deg, #0d1a14 0%, #0a0a0c 100%);
-  border: 1px solid rgba(46,204,113,.25);
-  border-radius: 14px; padding: 16px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.sub-card.sub-none {
-  background: var(--card); border-color: var(--line);
-}
-.sub-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-.sub-plan { font-size: 18px; font-weight: 800; }
-.sub-plan-active { color: var(--accent); }
-.sub-plan-none { color: var(--muted); }
-.sub-days-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); text-align: right; }
-.sub-days { font-size: 22px; font-weight: 900; text-align: right; }
-
-/* Stats */
-.stats-row {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px; padding: 14px 16px 0;
-  position: relative; z-index: 1;
-}
-.stat {
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: 12px; padding: 12px;
-  text-align: center;
-}
-.stat-val { font-size: 20px; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
-.stat-val-g { color: var(--accent); }
-.stat-val-p { color: var(--accent2); }
-.stat-key { font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-
-/* Menu */
-.menu { padding: 14px 16px 4px; position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; }
-.menu-row {
-  background: var(--card); border: 1px solid var(--line);
-  border-radius: 12px; padding: 14px 14px;
-  display: flex; align-items: center; gap: 12px;
-  cursor: pointer; transition: opacity .15s;
-}
-.menu-row:active { opacity: .6; }
-.menu-row-icon { font-size: 18px; }
-.menu-row-text { flex: 1; font-size: 14px; font-weight: 600; }
-.menu-row-right { color: var(--muted2); font-size: 16px; }
-.menu-tag {
-  background: rgba(255,61,127,.15); border: 1px solid rgba(255,61,127,.3);
-  color: var(--accent2); font-size: 8px; font-weight: 700;
-  font-family: 'JetBrains Mono', monospace; letter-spacing: .1em;
-  padding: 2px 7px; border-radius: 4px;
-}
-.menu-tag-g {
-  background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.3);
-  color: var(--accent);
-}
-
-/* ── Toast ── */
-#toast {
-  position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: rgba(46,204,113,.9); color: #000;
-  font-size: 13px; font-weight: 700;
-  padding: 10px 20px; border-radius: 30px;
-  font-family: 'JetBrains Mono', monospace;
-  opacity: 0; transition: opacity .2s, transform .2s;
-  z-index: 200; white-space: nowrap;
-  pointer-events: none;
-}
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ── Loading ── */
-#loading {
-  position: fixed; inset: 0;
-  background: var(--bg);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 999;
-  flex-direction: column; gap: 16px;
-}
-.loader-title {
-  font-size: 36px; font-weight: 900; text-transform: uppercase;
-  background: linear-gradient(180deg, #6FFFB2 0%, #2ecc71 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  letter-spacing: -.03em;
-}
-.loader-sub {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; color: var(--muted); letter-spacing: .2em;
-  text-transform: uppercase;
-}
-.loader-dot-row { display: flex; gap: 6px; }
-.loader-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--accent); opacity: .3;
-  animation: ldot 1.2s infinite;
-}
-.loader-dot:nth-child(2) { animation-delay: .2s; }
-.loader-dot:nth-child(3) { animation-delay: .4s; }
-@keyframes ldot { 0%,80%,100%{opacity:.3} 40%{opacity:1} }
+/* ── loader ── */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;
+  justify-content:center;z-index:999;flex-direction:column;gap:14px}
+.loader-t{font-size:38px;font-weight:900;text-transform:uppercase;letter-spacing:-.03em;
+  background:linear-gradient(180deg,#6FFFB2 0%,#2ecc71 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.loader-s{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase}
+.loader-dots{display:flex;gap:6px}
+.ld{width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.3;animation:ldot 1.2s infinite}
+.ld:nth-child(2){animation-delay:.2s}.ld:nth-child(3){animation-delay:.4s}
+@keyframes ldot{0%,80%,100%{opacity:.3}40%{opacity:1}}
 </style>
 </head>
 <body>
 
 <div id="loading">
-  <div class="loader-title">IT V3</div>
-  <div class="loader-sub">ЗАГРУЗКА...</div>
-  <div class="loader-dot-row">
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-  </div>
+  <div class="loader-t">IT V3</div>
+  <div class="loader-s">загрузка...</div>
+  <div class="loader-dots"><div class="ld"></div><div class="ld"></div><div class="ld"></div></div>
 </div>
 
 <div class="grid-bg"></div>
 <div id="toast"></div>
 
-<!-- ═══════════════════ SCREEN: HOME ═══════════════════ -->
+<!-- ════════════ HOME ════════════ -->
 <div class="screen active" id="screen-home">
-
   <div class="hero">
-    <div class="hero-kicker">Индикатор</div>
+    <div class="kicker">Индикатор</div>
     <div class="hero-title"><span class="grad">IT v3</span></div>
     <div class="status-row">
       <div class="badge badge-live"><span class="badge-dot"></span>LIVE</div>
-      <div class="badge badge-pro">PRO</div>
+      <div class="badge badge-pro" id="hero-plan-badge" style="display:none">PRO</div>
       <div class="coin-pill">BTC · ETH · SOL</div>
     </div>
   </div>
 
-  <div class="section-title">ПОСЛЕДНИЙ СИГНАЛ</div>
+  <div class="slabel">ПОСЛЕДНИЙ СИГНАЛ</div>
+  <div id="last-signal-wrap"></div>
 
-  <div id="last-signal-wrap">
-    <!-- injected by JS -->
-  </div>
-
-  <div class="section-title">МЕНЮ</div>
-
+  <div class="slabel">МЕНЮ</div>
   <div class="tiles">
     <div class="tile tile-wide tile-green" onclick="navigate('signals')">
       <div class="tile-wide-inner">
         <span class="tile-icon">📡</span>
         <div class="tile-wide-text">
           <div class="tile-label">Мои сигналы</div>
-          <div class="tile-desc"><span class="tile-color">BTC · ETH · SOL</span> · 1D / 4H / 1H</div>
+          <div class="tile-desc"><span class="tc">BTC · ETH · SOL</span> · 1D / 4H / 1H</div>
         </div>
         <div class="tile-arrow">›</div>
       </div>
+      <div class="tile-badge" id="sig-count-badge" style="display:none">0</div>
     </div>
 
-    <div class="tile tile-cyan" onclick="openExternal('guide')">
-      <span class="tile-icon">📖</span>
-      <div class="tile-label">О индикаторе</div>
-      <div class="tile-desc">Что такое<br><span class="tile-color">IT v3</span></div>
-    </div>
-
-    <div class="tile tile-pink" onclick="openExternal('install')">
-      <span class="tile-icon">⚙️</span>
-      <div class="tile-label">Установка</div>
-      <div class="tile-desc">Пошаговая<br><span class="tile-color">инструкция</span></div>
-    </div>
-
-    <div class="tile tile-gold" onclick="openExternal('analytics')">
+    <div class="tile tile-gold" onclick="navigate('posts')">
       <span class="tile-icon">📊</span>
       <div class="tile-label">Аналитика</div>
-      <div class="tile-desc">Обзоры<br><span class="tile-color">BTC · рынок</span></div>
+      <div class="tile-desc">Обзоры и посты<br><span class="tc">от команды</span></div>
     </div>
 
-    <div class="tile tile-green" onclick="navigate('buy')">
+    <div class="tile tile-pink" onclick="navigate('buy')">
       <span class="tile-icon">💳</span>
       <div class="tile-label">Тарифы</div>
-      <div class="tile-desc">STANDARD · <span class="tile-color">PRO</span></div>
+      <div class="tile-desc">STANDARD · <span class="tc">PRO</span></div>
+    </div>
+
+    <div class="tile tile-cyan" onclick="openExt('guide')">
+      <span class="tile-icon">📖</span>
+      <div class="tile-label">Гайд</div>
+      <div class="tile-desc">О индикаторе<br><span class="tc">IT v3</span></div>
+    </div>
+
+    <div class="tile tile-green" onclick="openExt('install')">
+      <span class="tile-icon">⚙️</span>
+      <div class="tile-label">Установка</div>
+      <div class="tile-desc">Пошаговая<br><span class="tc">инструкция</span></div>
     </div>
   </div>
-
 </div>
 
-<!-- ═══════════════════ SCREEN: SIGNALS ═══════════════════ -->
+<!-- ════════════ SIGNALS ════════════ -->
 <div class="screen" id="screen-signals">
-
   <div class="screen-header">
-    <div class="screen-kicker">Сигналы</div>
+    <div class="kicker">Сигналы</div>
     <div class="screen-h1">История сигналов</div>
   </div>
-
-  <div id="signals-list" style="padding: 12px 16px; display:flex; flex-direction:column; gap:10px; position:relative; z-index:1;">
-    <!-- injected by JS -->
-  </div>
-
+  <div class="slabel">BTC · ETH · SOL · 1D / 4H / 1H</div>
+  <div id="signals-list" style="padding:0 16px 8px;display:flex;flex-direction:column;gap:8px;position:relative;z-index:1"></div>
 </div>
 
-<!-- ═══════════════════ SCREEN: BUY ═══════════════════ -->
-<div class="screen" id="screen-buy">
-
+<!-- ════════════ POSTS ════════════ -->
+<div class="screen" id="screen-posts">
   <div class="screen-header">
-    <div class="screen-kicker">Тарифы</div>
+    <div class="kicker">Аналитика</div>
+    <div class="screen-h1">Обзоры и посты</div>
+  </div>
+  <div class="slabel">ОТ КОМАНДЫ · ОБНОВЛЯЕТСЯ</div>
+  <div class="posts" id="posts-list"></div>
+</div>
+
+<!-- ════════════ BUY ════════════ -->
+<div class="screen" id="screen-buy">
+  <div class="screen-header">
+    <div class="kicker">Тарифы</div>
     <div class="screen-h1">Выбери план</div>
   </div>
 
   <div class="plans">
-
-    <!-- STANDARD -->
-    <div class="plan-card" onclick="selectPlan('STANDARD')">
+    <div class="plan-card" id="plan-std" onclick="selectPlan('STANDARD')">
+      <div class="plan-select-indicator">✓ ВЫБРАН</div>
       <div class="plan-top">
         <div class="plan-name">STANDARD</div>
-        <div class="plan-price-wrap">
-          <div class="plan-price">30 <span style="font-size:16px;color:var(--muted)">USDT</span></div>
+        <div>
+          <div class="plan-price">30 <span style="font-size:14px;color:var(--muted)">USDT</span></div>
           <div class="plan-period">/ месяц</div>
         </div>
       </div>
       <div class="plan-divider"></div>
       <div class="plan-features">
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Индикатор IT v3 для TradingView</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Пошаговая инструкция</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>2+ обзора в неделю</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Крипто-дайджест</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Поддержка</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Индикатор IT v3 для TradingView</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Пошаговая инструкция</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>2+ обзора в неделю</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Крипто-дайджест</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Поддержка</span></div>
       </div>
     </div>
 
-    <!-- PRO -->
-    <div class="plan-card plan-pro" onclick="selectPlan('PRO')">
+    <div class="plan-card plan-pro" id="plan-pro" onclick="selectPlan('PRO')">
       <div class="plan-badge">POPULAR</div>
+      <div class="plan-select-indicator">✓ ВЫБРАН</div>
       <div class="plan-top">
         <div class="plan-name plan-name-pro">💎 PRO</div>
-        <div class="plan-price-wrap">
-          <div class="plan-price">50 <span style="font-size:16px;color:var(--muted)">USDT</span></div>
+        <div>
+          <div class="plan-price">50 <span style="font-size:14px;color:var(--muted)">USDT</span></div>
           <div class="plan-period">/ месяц</div>
         </div>
       </div>
       <div class="plan-divider"></div>
       <div class="plan-features">
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Индикатор IT v3 для TradingView</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Пошаговая инструкция</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>4+ обзора в неделю</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Глубокая аналитика по крипто</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Обучающие материалы</span></div>
-        <div class="plan-feature"><span class="feat-check">✅</span><span>Крипто-дайджест</span></div>
-        <div class="plan-feature" style="color:var(--accent)"><span class="feat-check">🔔</span><span><b>Сигналы BTC · ETH · SOL</b><br><span style="color:var(--muted);font-size:12px">BUY/SELL · STRONG · 1D/4H/1H</span></span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Индикатор IT v3 для TradingView</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>4+ обзора в неделю</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Глубокая аналитика по крипто</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Обучающие материалы</span></div>
+        <div class="plan-feat"><span class="feat-ico">✅</span><span>Крипто-дайджест + Поддержка</span></div>
+        <div class="plan-feat" style="color:var(--accent)"><span class="feat-ico">🔔</span>
+          <span><b>Сигналы BTC · ETH · SOL</b><br>
+          <span style="color:var(--muted);font-size:12px">BUY/SELL · STRONG · 1D/4H/1H</span></span>
+        </div>
       </div>
     </div>
-
   </div>
 
-  <!-- Payment -->
-  <div class="section-title" id="pay-section-title" style="display:none">РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ</div>
-  <div class="payment-section" id="pay-section" style="display:none">
-    <div class="pay-title" id="pay-plan-label">ОПЛАТА ТАРИФА PRO — 50 USDT</div>
-    <div class="pay-addr" onclick="copyAddr('usdt')">
-      <div class="pay-addr-label">USDT TRC20 (Tron)</div>
-      <div class="pay-addr-val" id="addr-usdt">TUb7AnC3oV6AotS312iU9ociBKzowcVi4o</div>
-      <div class="copy-hint">нажми чтобы скопировать</div>
+  <div id="pay-section" style="display:none">
+    <div class="slabel" id="pay-section-label">РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ PRO — 50 USDT</div>
+    <div class="pay-block">
+      <div class="pay-addr" onclick="copyText('usdt-addr')">
+        <div class="pay-addr-net">USDT TRC20 (Tron)<span class="pay-copy-hint">нажми чтобы скопировать</span></div>
+        <div class="pay-addr-val" id="usdt-addr">TUb7AnC3oV6AotS312iU9ociBKzowcVi4o</div>
+      </div>
+      <div class="pay-addr" onclick="copyText('usdc-addr')">
+        <div class="pay-addr-net">USDC BEP20 (BSC)<span class="pay-copy-hint">нажми чтобы скопировать</span></div>
+        <div class="pay-addr-val" id="usdc-addr">0x1D01B8bF333270903AD23b5F08334dBF11E52441</div>
+      </div>
+      <div class="pay-note">После оплаты отправь боту <b style="color:var(--white)">тариф, ссылку на транзакцию и username TradingView</b></div>
+      <button class="pay-btn" onclick="paidConfirm()">✅ Я оплатил</button>
     </div>
-    <div class="pay-addr" onclick="copyAddr('usdc')">
-      <div class="pay-addr-label">USDC BEP20 (BSC)</div>
-      <div class="pay-addr-val" id="addr-usdc">0x1D01B8bF333270903AD23b5F08334dBF11E52441</div>
-      <div class="copy-hint">нажми чтобы скопировать</div>
-    </div>
-    <div style="margin-top:12px; font-size:12px; color:var(--muted); line-height:1.5;">
-      После оплаты отправь боту <b style="color:var(--white)">тариф, ссылку на транзакцию и username TradingView</b>
-    </div>
-    <button class="pay-btn" onclick="paidConfirm()">✅ Я оплатил</button>
   </div>
-  <div style="height:16px"></div>
-
+  <div style="height:8px"></div>
 </div>
 
-<!-- ═══════════════════ SCREEN: PROFILE ═══════════════════ -->
+<!-- ════════════ PROFILE ════════════ -->
 <div class="screen" id="screen-profile">
-
   <div class="profile-header">
-    <div class="screen-kicker">Профиль</div>
-    <div class="profile-row">
-      <div class="avatar" id="avatar-letter">M</div>
+    <div class="kicker">Профиль</div>
+    <div class="profile-row" style="margin-top:14px">
+      <div class="avatar" id="av-letter">?</div>
       <div>
-        <div class="profile-name" id="profile-name">Загрузка...</div>
-        <div class="profile-handle" id="profile-handle">@username</div>
+        <div class="profile-name" id="p-name">—</div>
+        <div class="profile-handle" id="p-handle">—</div>
       </div>
     </div>
-    <div class="sub-card" id="sub-card">
+    <div class="sub-card sub-none" id="sub-card">
       <div>
         <div class="sub-label">ТАРИФ</div>
-        <div class="sub-plan sub-plan-none" id="sub-plan">Нет подписки</div>
+        <div class="sub-plan sub-none-text" id="sub-plan-txt">Нет подписки</div>
       </div>
-      <div>
-        <div class="sub-days-label" id="sub-days-label" style="display:none">дней осталось</div>
-        <div class="sub-days" id="sub-days" style="display:none">—</div>
+      <div id="sub-days-block" style="display:none">
+        <div class="sub-days-num" id="sub-days-num">—</div>
+        <div class="sub-days-lbl">дней осталось</div>
       </div>
     </div>
   </div>
 
   <div class="stats-row">
-    <div class="stat">
-      <div class="stat-val stat-val-g" id="stat-signals">—</div>
-      <div class="stat-key">Сигналов</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val" id="stat-wr">—</div>
-      <div class="stat-key">Win Rate</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val stat-val-p" id="stat-refs">0</div>
-      <div class="stat-key">Рефералов</div>
-    </div>
+    <div class="stat"><div class="stat-val sv-g" id="st-sigs">—</div><div class="stat-key">Сигналов</div></div>
+    <div class="stat"><div class="stat-val" id="st-wr">—</div><div class="stat-key">Win Rate</div></div>
+    <div class="stat"><div class="stat-val sv-p" id="st-refs">0</div><div class="stat-key">Рефералов</div></div>
   </div>
 
-  <div class="section-title" style="position:relative;z-index:1">УПРАВЛЕНИЕ</div>
-
+  <div class="slabel">УПРАВЛЕНИЕ</div>
   <div class="menu">
     <div class="menu-row" onclick="navigate('buy')">
       <span class="menu-row-icon">💳</span>
-      <div class="menu-row-text" id="menu-sub-text">Купить подписку</div>
-      <span class="menu-row-right">›</span>
+      <div class="menu-row-text" id="menu-sub-lbl">Купить подписку</div>
+      <span class="menu-row-r">›</span>
     </div>
     <div class="menu-row" onclick="copyRefLink()">
       <span class="menu-row-icon">👥</span>
       <div class="menu-row-text">Реферальная программа</div>
-      <span class="menu-tag menu-tag-g" id="ref-count-badge">0 друзей</span>
+      <span class="menu-tag menu-tag-g" id="ref-badge">0 друзей</span>
     </div>
-    <div class="menu-row" onclick="openExternal('install')">
+    <div class="menu-row" onclick="openExt('install')">
       <span class="menu-row-icon">⚙️</span>
       <div class="menu-row-text">Установка индикатора</div>
-      <span class="menu-row-right">›</span>
+      <span class="menu-row-r">›</span>
     </div>
-    <div class="menu-row" onclick="openExternal('guide')">
+    <div class="menu-row" onclick="openExt('guide')">
       <span class="menu-row-icon">📖</span>
       <div class="menu-row-text">Руководство</div>
-      <span class="menu-row-right">›</span>
+      <span class="menu-row-r">›</span>
     </div>
     <div class="menu-row" onclick="openSupport()">
       <span class="menu-row-icon">💬</span>
       <div class="menu-row-text">Поддержка</div>
-      <span class="menu-row-right">›</span>
+      <span class="menu-row-r">›</span>
     </div>
   </div>
-
 </div>
 
-<!-- ═══════════════════ BOTTOM NAV ═══════════════════ -->
+<!-- ════════════ BOTTOM NAV ════════════ -->
 <nav class="bottom-nav">
   <div class="nav-item active" id="nav-home" onclick="navigate('home')">
-    <span class="nav-icon">🏠</span>
-    <span class="nav-label">Главная</span>
+    <span class="nav-icon">🏠</span><span class="nav-label">Главная</span>
   </div>
   <div class="nav-item" id="nav-signals" onclick="navigate('signals')">
-    <span class="nav-icon">📡</span>
-    <span class="nav-label">Сигналы</span>
+    <span class="nav-icon">📡</span><span class="nav-label">Сигналы</span>
+    <div class="nav-notif" id="nav-notif-signals"></div>
   </div>
-  <div class="nav-item" id="nav-buy" onclick="navigate('buy')">
-    <span class="nav-icon">💳</span>
-    <span class="nav-label">Тарифы</span>
+  <div class="nav-item" id="nav-posts" onclick="navigate('posts')">
+    <span class="nav-icon">📊</span><span class="nav-label">Аналитика</span>
+    <div class="nav-notif" id="nav-notif-posts"></div>
   </div>
   <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
-    <span class="nav-icon">👤</span>
-    <span class="nav-label">Профиль</span>
+    <span class="nav-icon">👤</span><span class="nav-label">Профиль</span>
   </div>
 </nav>
 
 <script>
-// ── Telegram WebApp init ──
 const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  tg.setHeaderColor('#0a0a0c');
-  tg.setBackgroundColor('#0a0a0c');
-}
+if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0c'); tg.setBackgroundColor('#0a0a0c'); }
 
-const BASE_URL = 'https://trading-bot-production-7d20.up.railway.app';
-
-// ── User data from Telegram ──
+const BASE = 'https://trading-bot-production-7d20.up.railway.app';
 const tgUser = tg?.initDataUnsafe?.user || {};
 const userId = tgUser.id || null;
 const userName = tgUser.first_name || 'Пользователь';
 const userUsername = tgUser.username ? '@' + tgUser.username : '';
 const userInitial = (userName[0] || 'U').toUpperCase();
 
-// ── Stub subscription data (будет заменено API) ──
-let userData = {
-  plan: null,        // 'STANDARD' | 'PRO' | null
-  daysLeft: null,
-  signalsCount: 0,
-  winRate: null,
-  refs: 0,
-};
+let userData = { plan: null, daysLeft: null, refs: 0, signalsCount: 0 };
+let allSignals = [];
+let allPosts = [];
+let selectedPlan = null;
+let cur = 'home';
 
-// ── Navigation ──
-let currentScreen = 'home';
-
+// ── navigation ──
 function navigate(screen) {
-  document.getElementById('screen-' + currentScreen).classList.remove('active');
+  document.getElementById('screen-' + cur).classList.remove('active');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  currentScreen = screen;
+  cur = screen;
   document.getElementById('screen-' + screen).classList.add('active');
-
-  const navEl = document.getElementById('nav-' + screen);
-  if (navEl) navEl.classList.add('active');
-
+  const nav = document.getElementById('nav-' + screen);
+  if (nav) nav.classList.add('active');
+  // clear notif dot on visit
+  const notif = document.getElementById('nav-notif-' + screen);
+  if (notif) notif.classList.remove('show');
   window.scrollTo(0, 0);
 }
 
-// ── External links ──
-function openExternal(type) {
-  const urls = {
-    guide: BASE_URL + '/guide.html',
-    install: BASE_URL + '/install.html',
-    analytics: 'https://t.me/indicatortovaricha',
-  };
-  if (tg && urls[type]) {
-    tg.openLink(urls[type]);
-  }
+// ── external ──
+function openExt(type) {
+  const map = { guide: BASE+'/guide.html', install: BASE+'/install.html' };
+  if (tg && map[type]) tg.openLink(map[type]);
+}
+function openSupport() { if (tg) tg.openTelegramLink('https://t.me/indicatortovaricha'); }
+
+// ── toast ──
+function toast(msg, err) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = err ? 'rgba(255,61,127,.95)' : 'rgba(46,204,113,.95)';
+  el.style.color = '#000';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
 }
 
-function openSupport() {
-  if (tg) tg.openTelegramLink('https://t.me/indicatortovaricha');
+// ── copy ──
+function copyText(id) {
+  const val = document.getElementById(id)?.textContent?.trim();
+  if (!val) return;
+  if (navigator.clipboard) navigator.clipboard.writeText(val).then(() => toast('📋 Скопировано!'));
+  else { const t=document.createElement('textarea');t.value=val;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('📋 Скопировано!'); }
 }
-
-// ── Toast ──
-function showToast(msg, color) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = color || 'rgba(46,204,113,.9)';
-  t.style.color = color ? '#fff' : '#000';
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-// ── Copy address ──
-function copyAddr(type) {
-  const el = document.getElementById('addr-' + type);
-  if (!el) return;
-  const val = el.textContent.trim();
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(val).then(() => showToast('📋 Скопировано!'));
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = val; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('📋 Скопировано!');
-  }
-}
-
-// ── Copy ref link ──
 function copyRefLink() {
-  const link = `https://t.me/NoviYTBot?start=ref_${userId || 'user'}`;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(link).then(() => showToast('🔗 Ссылка скопирована!'));
-  } else {
-    showToast('🔗 Реф-ссылка скопирована!');
-  }
+  const link = `https://t.me/NoviYTBot?start=ref_${userId||'user'}`;
+  if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => toast('🔗 Ссылка скопирована!'));
+  else toast('🔗 Скопировано!');
 }
 
-// ── Plan selection ──
-let selectedPlan = null;
+// ── plan select ──
 function selectPlan(plan) {
   selectedPlan = plan;
-  const payTitle = document.getElementById('pay-section-title');
-  const paySection = document.getElementById('pay-section');
-  const payLabel = document.getElementById('pay-plan-label');
+  document.getElementById('plan-std').classList.toggle('selected', plan === 'STANDARD');
+  document.getElementById('plan-pro').classList.toggle('selected', plan === 'PRO');
+  const payBlock = document.getElementById('pay-section');
+  const payLabel = document.getElementById('pay-section-label');
   const price = plan === 'PRO' ? '50' : '30';
-  payLabel.textContent = `ОПЛАТА ТАРИФА ${plan} — ${price} USDT`;
-  paySection.style.display = 'block';
-  payTitle.style.display = 'block';
-  paySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  // Highlight selected
-  document.querySelectorAll('.plan-card').forEach(c => c.style.opacity = '0.5');
-  const idx = plan === 'STANDARD' ? 0 : 1;
-  document.querySelectorAll('.plan-card')[idx].style.opacity = '1';
+  payLabel.textContent = `РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ ${plan} — ${price} USDT`;
+  payBlock.style.display = 'block';
+  setTimeout(() => payBlock.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
 }
 
-// ── Paid confirm ──
 function paidConfirm() {
-  if (!selectedPlan) return;
-  if (tg) {
-    tg.sendData(JSON.stringify({ action: 'paid_confirm', plan: selectedPlan }));
-  }
-  showToast('✅ Отправлено! Проверим в течение 24ч');
+  if (!selectedPlan) { toast('Выбери тариф выше', true); return; }
+  if (tg) tg.sendData(JSON.stringify({ action:'paid_confirm', plan: selectedPlan }));
+  toast('✅ Отправлено! Проверим в течение 24ч');
 }
 
-// ── Render last signal ──
-function renderLastSignal(signal) {
-  const wrap = document.getElementById('last-signal-wrap');
-  if (!signal) {
-    wrap.innerHTML = `
-      <div class="no-signal" style="z-index:1;position:relative">
-        <div class="no-signal-icon">📡</div>
-        <div class="no-signal-text">Пока нет активных сигналов</div>
-      </div>`;
-    return;
-  }
-  const isBuy = signal.action === 'BUY' || signal.action === 'STRONG BUY';
-  wrap.innerHTML = `
-    <div class="signal-card">
-      <div class="sc-top">
-        <div class="sc-tag"><span class="sc-dot"></span>${signal.tag || 'STRONG BUY'}</div>
-        <div class="sc-time">${signal.tf || '1H'} · ${signal.time || ''}</div>
-      </div>
-      <div class="sc-body">
-        <div class="sc-pair">${signal.pair || 'BTC/USDT'}</div>
-        <div class="sc-action ${isBuy ? 'sc-buy' : 'sc-sell'}">${signal.action || 'BUY'}</div>
-        <div class="sc-tf">${signal.tf || '1H'}</div>
-        <div class="sc-price">$${signal.price || '—'}</div>
-      </div>
-    </div>`;
+// ── render signal card ──
+function sigCard(s) {
+  const isBuy = s.action === 'BUY' || (s.tag||'').includes('BUY');
+  const tagClass = isBuy ? '' : 'sell';
+  const dotClass = isBuy ? '' : 'sell';
+  const btnClass = isBuy ? 'sc-buy' : 'sc-sell-btn';
+  const cardClass = isBuy ? '' : 'sell-card';
+  return `<div class="sig-card ${cardClass}">
+    <div class="sc-top">
+      <div class="sc-tag ${tagClass}"><span class="sc-dot ${dotClass}"></span>${s.tag || s.action}</div>
+      <div class="sc-time">${s.tf} · ${s.time}</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-pair">${s.pair}</div>
+      <div class="sc-action ${btnClass}">${s.action}</div>
+      <div class="sc-tf">${s.tf}</div>
+      <div class="sc-price">${s.price !== '—' ? '$'+s.price : '—'}</div>
+    </div>
+  </div>`;
 }
 
-// ── Render signals list ──
-function renderSignalsList(signals) {
-  const list = document.getElementById('signals-list');
-  if (!signals || signals.length === 0) {
-    list.innerHTML = `
-      <div style="text-align:center;padding:40px 20px">
-        <div style="font-size:32px;margin-bottom:12px">📡</div>
-        <div style="color:var(--muted);font-size:14px">Сигналов пока нет</div>
-        <div style="color:var(--muted);font-size:12px;margin-top:6px;font-family:'JetBrains Mono',monospace">Они появятся здесь при подписке PRO</div>
-      </div>`;
-    return;
-  }
-  list.innerHTML = signals.map(s => {
-    const isBuy = s.action === 'BUY' || s.action === 'STRONG BUY';
-    return `
-      <div class="signal-card">
-        <div class="sc-top">
-          <div class="sc-tag"><span class="sc-dot" style="${isBuy?'':'background:var(--accent2);box-shadow:0 0 5px var(--accent2)'}"></span>${s.tag || s.action}</div>
-          <div class="sc-time">${s.tf || '1H'} · ${s.time || ''}</div>
-        </div>
-        <div class="sc-body">
-          <div class="sc-pair">${s.pair}</div>
-          <div class="sc-action ${isBuy ? 'sc-buy' : 'sc-sell'}">${s.action}</div>
-          <div class="sc-tf">${s.tf}</div>
-          <div class="sc-price">$${s.price}</div>
-        </div>
-      </div>`;
-  }).join('');
+// ── render post card ──
+function postCard(p, featured) {
+  const d = new Date(p.sent_at);
+  const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+  return `<div class="post-card ${featured?'featured':''}" onclick="openPostDetail(${p.id})">
+    <div class="post-tag-bar">
+      <div class="post-tag">${p.tag || 'АНАЛИТИКА'}</div>
+      <div class="post-date">${dateStr}</div>
+    </div>
+    <div class="post-body">
+      ${p.title ? `<div class="post-title">${p.title}</div>` : ''}
+      <div class="post-text">${p.body || ''}</div>
+    </div>
+  </div>`;
 }
 
-// ── Load user data from API ──
-async function loadUserData() {
-  if (!userId) return;
-  try {
-    const res = await fetch(`${BASE_URL}/api/user/${userId}`);
-    if (res.ok) {
-      const data = await res.json();
-      userData = { ...userData, ...data };
-    }
-  } catch (e) {
-    // API not ready yet — use defaults
-  }
+function openPostDetail(id) {
+  const p = allPosts.find(x => x.id === id);
+  if (!p || !tg) return;
+  // На будущее — показывать полный пост
+  // Пока просто открываем в канале если есть
 }
 
-// ── Load signals from API ──
-async function loadSignals() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/signals`);
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch (e) {}
-  // Demo data if API not ready
-  return [
-    { pair: 'BTC/USDT', action: 'BUY', tag: 'STRONG BUY', tf: '4H', time: '10:15', price: '96,240' },
-    { pair: 'ETH/USDT', action: 'BUY', tag: 'BUY', tf: '1H', time: 'вчера', price: '1,830' },
-    { pair: 'SOL/USDT', action: 'SELL', tag: 'SELL', tf: '4H', time: '2 дня назад', price: '142' },
-  ];
+// ── load data ──
+async function api(path) {
+  try { const r = await fetch(BASE + path); if (r.ok) return r.json(); } catch(_){}
+  return null;
 }
 
-// ── Init UI ──
-function initUI() {
-  // Profile
-  document.getElementById('avatar-letter').textContent = userInitial;
-  document.getElementById('profile-name').textContent = userName;
-  document.getElementById('profile-handle').textContent = userUsername || ('ID ' + (userId || '—'));
-
-  // Subscription
-  if (userData.plan) {
-    const subCard = document.getElementById('sub-card');
-    subCard.classList.remove('sub-none');
-    document.getElementById('sub-plan').textContent = (userData.plan === 'PRO' ? '💎 ' : '') + userData.plan;
-    document.getElementById('sub-plan').className = 'sub-plan sub-plan-active';
-    if (userData.daysLeft != null) {
-      document.getElementById('sub-days-label').style.display = 'block';
-      document.getElementById('sub-days').style.display = 'block';
-      document.getElementById('sub-days').textContent = userData.daysLeft;
-    }
-    document.getElementById('menu-sub-text').textContent = 'Продлить подписку';
-  }
-
-  // Stats
-  if (userData.signalsCount) document.getElementById('stat-signals').textContent = userData.signalsCount;
-  if (userData.winRate) document.getElementById('stat-wr').textContent = userData.winRate + '%';
-  if (userData.refs) {
-    document.getElementById('stat-refs').textContent = userData.refs;
-    document.getElementById('ref-count-badge').textContent = userData.refs + ' друзей';
-  }
-}
-
-// ── Boot ──
 async function boot() {
-  await Promise.all([
-    loadUserData(),
-    new Promise(r => setTimeout(r, 800)) // min loading time
+  const [user, signals, posts] = await Promise.all([
+    userId ? api(`/api/user/${userId}`) : null,
+    api('/api/signals'),
+    api('/api/posts'),
+    new Promise(r => setTimeout(r, 700)),
   ]);
 
-  const signals = await loadSignals();
+  if (user) userData = { ...userData, ...user };
+  allSignals = signals || [];
+  allPosts = posts || [];
 
-  initUI();
-  renderLastSignal(signals[0]);
-  renderSignalsList(signals);
+  // ── profile UI ──
+  document.getElementById('av-letter').textContent = userInitial;
+  document.getElementById('p-name').textContent = userName;
+  document.getElementById('p-handle').textContent = userUsername || (userId ? 'ID ' + userId : '—');
 
-  document.getElementById('loading').style.opacity = '0';
-  document.getElementById('loading').style.transition = 'opacity .3s';
-  setTimeout(() => document.getElementById('loading').style.display = 'none', 300);
+  if (userData.plan) {
+    const sc = document.getElementById('sub-card');
+    sc.classList.remove('sub-none');
+    document.getElementById('sub-plan-txt').textContent = (userData.plan === 'PRO' ? '💎 ' : '') + userData.plan;
+    document.getElementById('sub-plan-txt').className = 'sub-plan sub-active';
+    if (userData.daysLeft != null) {
+      document.getElementById('sub-days-block').style.display = 'block';
+      document.getElementById('sub-days-num').textContent = userData.daysLeft;
+    }
+    document.getElementById('menu-sub-lbl').textContent = 'Продлить подписку';
+    document.getElementById('hero-plan-badge').style.display = 'inline-flex';
+    document.getElementById('hero-plan-badge').textContent = userData.plan;
+  }
+  if (userData.signalsCount) document.getElementById('st-sigs').textContent = userData.signalsCount;
+  if (userData.refs) {
+    document.getElementById('st-refs').textContent = userData.refs;
+    document.getElementById('ref-badge').textContent = userData.refs + ' друзей';
+  }
+
+  // ── signals UI ──
+  const sigList = document.getElementById('signals-list');
+  const lastWrap = document.getElementById('last-signal-wrap');
+  if (allSignals.length) {
+    lastWrap.innerHTML = '<div style="padding:0 16px 0">' + sigCard(allSignals[0]) + '</div>';
+    sigList.innerHTML = allSignals.map(s => sigCard(s)).join('');
+    if (allSignals.length > 0) {
+      document.getElementById('sig-count-badge').style.display = 'flex';
+      document.getElementById('sig-count-badge').textContent = allSignals.length;
+      document.getElementById('nav-notif-signals').classList.add('show');
+    }
+  } else {
+    lastWrap.innerHTML = `<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">Нет активных сигналов</div><div class="empty-sub">Появятся здесь при подписке PRO</div></div>`;
+    sigList.innerHTML = lastWrap.innerHTML;
+  }
+
+  // ── posts UI ──
+  const postsList = document.getElementById('posts-list');
+  if (allPosts.length) {
+    postsList.innerHTML = allPosts.map((p, i) => postCard(p, i === 0)).join('');
+    document.getElementById('nav-notif-posts').classList.add('show');
+  } else {
+    postsList.innerHTML = `<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Постов пока нет</div><div class="empty-sub">Аналитика появится здесь</div></div>`;
+  }
+
+  // ── hide loader ──
+  const loader = document.getElementById('loading');
+  loader.style.transition = 'opacity .3s';
+  loader.style.opacity = '0';
+  setTimeout(() => loader.style.display = 'none', 300);
 }
 
 boot();
