@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT v3 — Глобальное обновление</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0c; --bg2: #0e0e12; --card: #0e0e12; --card2: #121216;
+    --line: #1c1c22; --line2: #252530; --muted: #6b6b78; --lg: #a0a0b0;
+    --white: #e8e8f0; --accent: #2ecc71; --accent2: #ff3d7f;
+    --cyan: #4dc9f0; --blue: #4f8ef7; --orange: #f5a623;
+    --yellow: #fbbf24; --green: #2ecc71; --green2: #6fffb2; --pink: #ff3d7f;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
+  .page { max-width: 880px; margin: 0 auto; padding: 56px 28px 80px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--bg); border: 1px solid var(--line2);
+    border-radius: 28px; padding: 72px 48px 56px;
+    text-align: center; margin-bottom: 48px;
+    position: relative; overflow: hidden;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 30%, transparent 95%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 30%, transparent 95%);
+    opacity: .5; pointer-events: none; z-index: 1;
+  }
+  .hero-glow {
+    position: absolute; width: 70%; height: 280px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,204,113,.2) 0%, transparent 65%);
+    left: 50%; bottom: -140px; transform: translateX(-50%);
+    filter: blur(50px); pointer-events: none; z-index: 1;
+  }
+  .hero-glow2 {
+    position: absolute; width: 40%; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,61,127,.12) 0%, transparent 65%);
+    right: -5%; top: -60px; filter: blur(40px); pointer-events: none; z-index: 1;
+  }
+  .bk { position: absolute; width: 18px; height: 18px; border: 2px solid var(--accent); z-index: 6; }
+  .bk.tl { top:22px; left:22px; border-right:none; border-bottom:none; }
+  .bk.tr { top:22px; right:22px; border-left:none; border-bottom:none; }
+  .bk.bl { bottom:22px; left:22px; border-right:none; border-top:none; }
+  .bk.br { bottom:22px; right:22px; border-left:none; border-top:none; }
+
+  .hero-topbar {
+    position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 2.5px; color: rgba(255,255,255,.55); white-space: nowrap; z-index: 6;
+  }
+  .hero-topbar-live { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; letter-spacing: 2.8px; }
+  .hero-topbar-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(255,61,127,.22); animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+  /* Update badge */
+  .hero-update-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 18px; border-radius: 100px;
+    background: rgba(255,61,127,.1); border: 1px solid rgba(255,61,127,.3);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: .2em; color: var(--pink); margin-bottom: 20px;
+    position: relative; z-index: 5;
+  }
+  .hero-update-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--pink); box-shadow: 0 0 6px var(--pink);
+    animation: pulse-dot 1.8s infinite;
+  }
+
+  .hero-kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700;
+    letter-spacing: .28em; text-transform: uppercase; color: var(--accent2);
+    margin-bottom: 20px; display: inline-flex; align-items: center; gap: 14px;
+    position: relative; z-index: 5;
+  }
+  .hero-kicker::before, .hero-kicker::after { content: ''; width: 22px; height: 2px; background: var(--accent2); }
+
+  .hero h1 {
+    font-size: 80px; font-weight: 900; letter-spacing: -.04em; line-height: .95;
+    color: var(--white); margin-bottom: 24px; position: relative; z-index: 5; text-transform: uppercase;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(180deg, #6FFFB2 0%, #2ecc71 50%, #126638 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero h1 .pink {
+    background: linear-gradient(180deg, #ff8fb3 0%, #ff3d7f 50%, #8b0035 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .hero-tagline { font-size: 15px; color: var(--lg); margin-bottom: 6px; font-weight: 500; position: relative; z-index: 5; }
+  .hero-sub { font-size: 12px; color: var(--muted); margin-bottom: 32px; position: relative; z-index: 5; }
+
+  .hero-date {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 28px; border-radius: 100px;
+    background: rgba(255,61,127,.08); border: 1px solid rgba(255,61,127,.25);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    color: var(--pink); position: relative; z-index: 5; margin-bottom: 20px;
+    letter-spacing: .1em;
+  }
+
+  .hero-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; position: relative; z-index: 5; }
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 16px; border-radius: 100px;
+    border: 1px solid var(--line2); background: var(--card2);
+    font-size: 12px; font-weight: 600; color: var(--lg);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .1em;
+  }
+  .hero-footer {
+    position: absolute; bottom: 28px; left: 40px; right: 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.3); z-index: 6;
+  }
+  .hero-footer-r { display: flex; align-items: center; gap: 8px; }
+  .hero-footer-r::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 56px; }
+  .sec-label {
+    display: flex; align-items: center; gap: 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .sec-title { font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 8px; line-height: 1.2; }
+  .sec-desc { font-size: 15px; color: var(--lg); margin-bottom: 24px; }
+
+  /* ─── GRIDS ─── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+  /* ─── FEATURE CARD ─── */
+  .fcard {
+    background: var(--card); border: 1px solid var(--line2);
+    border-radius: 16px; padding: 24px 22px 20px; position: relative; overflow: hidden;
+  }
+  .fcard-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
+  .fcard-icon { font-size: 32px; margin-bottom: 14px; display: block; }
+  .fcard-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+  .fcard-text { font-size: 13px; color: var(--lg); line-height: 1.6; }
+  .fcard ul { margin-top: 10px; padding-left: 0; list-style: none; }
+  .fcard li { font-size: 13px; color: var(--lg); padding: 4px 0; display: flex; gap: 8px; }
+  .fcard li::before { content: '—'; color: var(--muted); flex-shrink: 0; }
+
+  /* ─── BIG FEATURE (horizontal) ─── */
+  .big-feature {
+    background: var(--card); border: 1px solid var(--line2);
+    border-radius: 20px; padding: 32px; display: grid;
+    grid-template-columns: 1fr 1fr; gap: 32px; align-items: center;
+    margin-bottom: 14px; position: relative; overflow: hidden;
+  }
+  .big-feature.reverse { direction: rtl; }
+  .big-feature.reverse > * { direction: ltr; }
+  .bf-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .25em; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .bf-title { font-size: 24px; font-weight: 900; margin-bottom: 10px; line-height: 1.2; }
+  .bf-desc { font-size: 14px; color: var(--lg); line-height: 1.7; margin-bottom: 16px; }
+  .bf-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .bf-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: var(--lg); line-height: 1.5;
+  }
+  .bf-list li::before { content: '✓'; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+  .bf-visual {
+    background: var(--card2); border: 1px solid var(--line2);
+    border-radius: 14px; padding: 20px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 180px; font-size: 60px;
+    flex-direction: column; gap: 10px;
+  }
+  .bf-visual-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .2em; color: var(--muted); text-transform: uppercase;
+  }
+
+  /* ─── ARCH (pipeline) ─── */
+  .arch {
+    display: grid; grid-template-columns: 1fr 32px 1fr 32px 1fr 32px 1fr;
+    align-items: center; background: var(--card); border: 1px solid var(--line2);
+    border-radius: 20px; padding: 28px 24px;
+  }
+  .arch-step { text-align: center; padding: 0 8px; }
+  .arch-ico {
+    width: 52px; height: 52px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 10px;
+  }
+  .arch-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .arch-note { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .arch-arr { text-align: center; color: var(--line2); font-size: 20px; }
+
+  /* ─── APP MOCKUP ─── */
+  .app-mockup-wrap {
+    display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: center;
+    background: var(--card); border: 1px solid var(--line2); border-radius: 20px; padding: 32px;
+  }
+  .phone {
+    width: 220px; border-radius: 36px; border: 2px solid var(--line2);
+    background: #08080e; padding: 18px 12px; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    margin: 0 auto; position: relative;
+  }
+  .phone::before {
+    content: ''; display: block; width: 60px; height: 6px;
+    background: var(--line2); border-radius: 3px; margin: 0 auto 14px;
+  }
+  .phone-screen {
+    background: #0a0a0c; border-radius: 24px; overflow: hidden; padding: 0;
+  }
+  .phone-hero {
+    background: linear-gradient(180deg, #0d1810 0%, #0a0a0c 100%);
+    padding: 16px 14px 12px; border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .phone-kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 700;
+    letter-spacing: .2em; color: var(--pink); margin-bottom: 4px;
+  }
+  .phone-title {
+    font-size: 22px; font-weight: 900; letter-spacing: -.03em; line-height: .95;
+    text-transform: uppercase;
+  }
+  .phone-title .g {
+    background: linear-gradient(180deg, #6FFFB2, #2ecc71);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .phone-badges { display: flex; gap: 5px; margin-top: 8px; }
+  .phone-badge {
+    padding: 2px 7px; border-radius: 10px; font-size: 7px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .08em;
+  }
+  .pb-green { background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.3); color: var(--accent); }
+  .pb-pink  { background: rgba(255,61,127,.12); border: 1px solid rgba(255,61,127,.3); color: var(--pink); }
+  .phone-section { padding: 10px 14px 6px; }
+  .phone-slabel {
+    font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 700;
+    letter-spacing: .18em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .phone-sig {
+    background: linear-gradient(135deg, #0d1810, #0a0c0a); border: 1px solid rgba(46,204,113,.2);
+    border-radius: 10px; padding: 8px 10px; margin-bottom: 5px; border-left: 2px solid var(--accent);
+  }
+  .phone-sig-top { display: flex; justify-content: space-between; margin-bottom: 3px; }
+  .phone-sig-tag { font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 700; color: var(--accent); }
+  .phone-sig-time { font-family: 'JetBrains Mono', monospace; font-size: 7px; color: var(--muted); }
+  .phone-sig-pair { font-size: 13px; font-weight: 800; }
+  .phone-sig-action {
+    display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 7px; font-weight: 700;
+    background: rgba(46,204,113,.15); border: 1px solid rgba(46,204,113,.3); color: var(--accent);
+    margin-left: 5px; vertical-align: middle;
+  }
+  .phone-nav {
+    display: flex; border-top: 1px solid rgba(255,255,255,.06); padding: 8px 0 4px;
+  }
+  .phone-nav-item {
+    flex: 1; text-align: center; font-size: 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .phone-nav-label { font-size: 6px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .phone-nav-item.active .phone-nav-label { color: var(--accent); }
+
+  /* App features list */
+  .app-features { display: flex; flex-direction: column; gap: 16px; }
+  .app-feat {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 18px; border-radius: 12px;
+    background: rgba(255,255,255,.025); border: 1px solid var(--line);
+  }
+  .app-feat-ico {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .app-feat-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .app-feat-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ─── NEW badge ─── */
+  .new-badge {
+    display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 6px;
+    background: rgba(255,61,127,.15); border: 1px solid rgba(255,61,127,.35);
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 800;
+    color: var(--pink); letter-spacing: .1em; margin-left: 8px; vertical-align: middle;
+  }
+
+  /* ─── Timeline ─── */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item { display: flex; gap: 20px; position: relative; }
+  .tl-item:not(:last-child)::before {
+    content: ''; position: absolute; left: 19px; top: 44px; bottom: -12px;
+    width: 2px; background: var(--line);
+  }
+  .tl-dot {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; background: var(--card2); border: 1px solid var(--line2);
+  }
+  .tl-body { padding-bottom: 28px; }
+  .tl-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .tl-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ─── CTA ─── */
+  .cta-block {
+    background: linear-gradient(135deg, rgba(46,204,113,.08) 0%, rgba(46,204,113,.03) 100%);
+    border: 1px solid rgba(46,204,113,.25); border-radius: 24px;
+    padding: 48px 40px; text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-glow {
+    position: absolute; width: 60%; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,204,113,.15) 0%, transparent 70%);
+    left: 50%; bottom: -100px; transform: translateX(-50%);
+    filter: blur(40px); pointer-events: none;
+  }
+  .cta-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .3em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px;
+  }
+  .cta-title { font-size: 36px; font-weight: 900; color: var(--white); margin-bottom: 10px; line-height: 1.1; }
+  .cta-title .g {
+    background: linear-gradient(180deg, #6FFFB2, #2ecc71);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .cta-sub { font-size: 15px; color: var(--lg); margin-bottom: 32px; }
+  .cta-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; position: relative; z-index: 2; }
+  .cta-btn-primary {
+    padding: 16px 40px; border-radius: 14px; border: none;
+    background: var(--accent); color: #000; font-size: 16px; font-weight: 800;
+    cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: opacity .15s, transform .1s;
+  }
+  .cta-btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+  .cta-btn-secondary {
+    padding: 16px 32px; border-radius: 14px;
+    border: 1px solid var(--line2); background: var(--card2);
+    color: var(--lg); font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: opacity .15s;
+  }
+  .cta-btn-secondary:hover { opacity: .75; }
+  .cta-pro-note {
+    margin-top: 20px; font-size: 12px; color: var(--muted); position: relative; z-index: 2;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .05em;
+  }
+  .cta-pro-note strong { color: var(--yellow); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center; padding: 32px 0 0;
+    border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--muted); line-height: 1.8;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 56px 24px 44px; }
+    .hero h1 { font-size: 52px; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .arch { grid-template-columns: 1fr; }
+    .arch-arr { display: none; }
+    .big-feature { grid-template-columns: 1fr; }
+    .big-feature.reverse { direction: ltr; }
+    .app-mockup-wrap { grid-template-columns: 1fr; }
+    .phone { display: none; }
+    .cta-title { font-size: 26px; }
+    .cta-block { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="bk tl"></div><div class="bk tr"></div>
+    <div class="bk bl"></div><div class="bk br"></div>
+    <div class="hero-topbar">
+      <div class="hero-topbar-live"><div class="hero-topbar-dot"></div>LIVE · PRO SIGNALS</div>
+      <span>07 МАЯ 2025</span>
+    </div>
+
+    <div class="hero-kicker">Обновление</div>
+
+    <h1><span class="accent">IT v3</span><br><span style="font-size:.55em;letter-spacing:-.02em">НОВАЯ<br><span class="pink">ВЕРСИЯ</span></span></h1>
+
+    <div class="hero-tagline">Мы переписали всё с нуля. Встречайте.</div>
+    <div class="hero-sub">Автосигналы 24/7 · Мини-апп в Telegram · Улучшенный индикатор</div>
+
+    <div class="hero-date">⏰ &nbsp;07 МАЯ 2025 — ГЛОБАЛЬНЫЙ ЗАПУСК</div>
+
+    <div class="hero-pills">
+      <div class="hero-pill">📊 Новый индикатор</div>
+      <div class="hero-pill">⚡️ Сигналы 24/7</div>
+      <div class="hero-pill">📱 Мини-апп</div>
+    </div>
+
+    <div class="hero-footer">
+      <div>IT V3</div>
+      <div class="hero-footer-r">TRADINGVIEW · TELEGRAM</div>
+    </div>
+  </div>
+
+  <!-- ЧТО НОВОГО -->
+  <div class="section">
+    <div class="sec-label">Обзор</div>
+    <div class="sec-title">Три главных изменения</div>
+    <div class="sec-desc">IT v3 — это теперь не просто индикатор. Это система: от сигнала на графике до уведомления в кармане.</div>
+
+    <div class="grid3">
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#2ecc71,#6fffb2)"></div>
+        <span class="fcard-icon">📊</span>
+        <div class="fcard-title" style="color:var(--green)">Улучшенный индикатор <span class="new-badge">NEW</span></div>
+        <div class="fcard-text">Новые слои аналитики прямо на графике. Больше данных — чище картина. Видишь всё что нужно с первого взгляда.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#ff3d7f,#ff8fb3)"></div>
+        <span class="fcard-icon">⚡️</span>
+        <div class="fcard-title" style="color:var(--pink)">Автосигналы 24/7 <span class="new-badge">NEW</span></div>
+        <div class="fcard-text">Индикатор сам отслеживает рынок и присылает сигнал в момент входа. Больше не нужно сидеть за графиком.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#4dc9f0,#4f8ef7)"></div>
+        <span class="fcard-icon">📱</span>
+        <div class="fcard-title" style="color:var(--cyan)">Мини-апп в Telegram <span class="new-badge">NEW</span></div>
+        <div class="fcard-text">Все сигналы, аналитика и обновления прямо в мессенджере. Один тап — и ты в рынке.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ИНДИКАТОР -->
+  <div class="section">
+    <div class="sec-label">Индикатор</div>
+    <div class="sec-title">Больше данных. Точнее сигналы.</div>
+    <div class="sec-desc">Обновлённый IT v3 показывает то, что раньше приходилось искать вручную на нескольких инструментах.</div>
+
+    <div class="big-feature">
+      <div>
+        <div class="bf-tag" style="color:var(--green)">📊 Индикатор v3</div>
+        <div class="bf-title">Новые слои аналитики</div>
+        <div class="bf-desc">На графике теперь видно не только уровни — индикатор показывает структуру рынка, зоны ликвидности и контекст в одном месте. Никаких лишних инструментов.</div>
+        <ul class="bf-list" style="color:var(--green)">
+          <li style="color:var(--lg)">Автоуровни под каждый актив и таймфрейм</li>
+          <li style="color:var(--lg)">Структура рынка: HH / HL / LH / LL</li>
+          <li style="color:var(--lg)">Зоны ликвидности в реальном времени</li>
+          <li style="color:var(--lg)">Улучшенный алгоритм определения точек входа</li>
+        </ul>
+      </div>
+      <div class="bf-visual" style="background:linear-gradient(135deg,#0d1810,#0a0c0a);border-color:rgba(46,204,113,.2)">
+        <span style="font-size:52px">📈</span>
+        <div style="text-align:center">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.15em;font-weight:700">TRADINGVIEW</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">IT v3 · Pro Indicator</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <div style="padding:3px 10px;border-radius:8px;background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.3);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--accent)">1D</div>
+          <div style="padding:3px 10px;border-radius:8px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--orange)">4H</div>
+          <div style="padding:3px 10px;border-radius:8px;background:rgba(77,201,240,.1);border:1px solid rgba(77,201,240,.3);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:var(--cyan)">1H</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- АВТОСИГНАЛЫ -->
+  <div class="section">
+    <div class="sec-label">Автосигналы</div>
+    <div class="sec-title">IT v3 работает пока ты спишь</div>
+    <div class="sec-desc">Индикатор подключён к серверу 24/7. Когда срабатывает условие — сигнал моментально летит тебе в Telegram. Не нужно сидеть за графиком.</div>
+
+    <!-- Architecture -->
+    <div class="arch" style="margin-bottom:20px">
+      <div class="arch-step">
+        <div class="arch-ico" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25)">📊</div>
+        <div class="arch-name">Индикатор</div>
+        <div class="arch-note">Замечает точку входа на графике</div>
+      </div>
+      <div class="arch-arr">→</div>
+      <div class="arch-step">
+        <div class="arch-ico" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.25)">⚡️</div>
+        <div class="arch-name">Сервер</div>
+        <div class="arch-note">Анализирует сигнал 24/7</div>
+      </div>
+      <div class="arch-arr">→</div>
+      <div class="arch-step">
+        <div class="arch-ico" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.25)">🤖</div>
+        <div class="arch-name">Бот</div>
+        <div class="arch-note">Формирует уведомление</div>
+      </div>
+      <div class="arch-arr">→</div>
+      <div class="arch-step">
+        <div class="arch-ico" style="background:rgba(77,201,240,.1);border:1px solid rgba(77,201,240,.25)">📱</div>
+        <div class="arch-name">Ты</div>
+        <div class="arch-note">Получаешь сигнал в Telegram</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#ff3d7f,#ff8fb3)"></div>
+        <span class="fcard-icon">🔔</span>
+        <div class="fcard-title">Мгновенные уведомления</div>
+        <div class="fcard-text">Сигнал приходит в момент, когда индикатор фиксирует точку входа. Никаких задержек.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#4f8ef7,#4dc9f0)"></div>
+        <span class="fcard-icon">🌙</span>
+        <div class="fcard-title">Работает круглосуточно</div>
+        <div class="fcard-text">Сервер следит за рынком 24/7, включая ночь и выходные. Ни одной точки входа не пропустишь.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#2ecc71,#6fffb2)"></div>
+        <span class="fcard-icon">🎯</span>
+        <div class="fcard-title">Точки входа по алгоритму</div>
+        <div class="fcard-text">Только сигналы с высокой вероятностью. Алгоритм отфильтровывает шум — ты видишь только рабочие входы.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#f5a623,#fbbf24)"></div>
+        <span class="fcard-icon">📊</span>
+        <div class="fcard-title">BTC · ETH · SOL и другие</div>
+        <div class="fcard-text">Мониторинг всех ключевых активов. Все таймфреймы: 1H, 4H, 1D.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МИНИ-АПП -->
+  <div class="section">
+    <div class="sec-label">Мини-апп</div>
+    <div class="sec-title">Всё в одном — прямо в Telegram</div>
+    <div class="sec-desc">Больше не нужно переключаться между приложениями. Мини-апп IT v3 живёт прямо внутри Telegram.</div>
+
+    <div class="app-mockup-wrap">
+      <!-- Phone mockup -->
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-hero">
+            <div class="phone-kicker">— ИНДИКАТОР —</div>
+            <div class="phone-title"><span class="g">IT</span> v3</div>
+            <div class="phone-badges">
+              <div class="phone-badge pb-green">● LIVE</div>
+              <div class="phone-badge pb-pink">PRO</div>
+            </div>
+          </div>
+          <div class="phone-section">
+            <div class="phone-slabel">Последние сигналы</div>
+            <div class="phone-sig">
+              <div class="phone-sig-top">
+                <span class="phone-sig-tag">● BUY 100%</span>
+                <span class="phone-sig-time">2м назад</span>
+              </div>
+              <div>
+                <span class="phone-sig-pair">SOL/USDT</span>
+                <span class="phone-sig-action">BUY</span>
+              </div>
+            </div>
+            <div class="phone-sig" style="border-left-color:var(--pink);border-color:rgba(255,61,127,.2);background:linear-gradient(135deg,#1a0a0d,#0c0a0a)">
+              <div class="phone-sig-top">
+                <span class="phone-sig-tag" style="color:var(--pink)">● SELL</span>
+                <span class="phone-sig-time">1ч назад</span>
+              </div>
+              <div>
+                <span class="phone-sig-pair">BTC/USDT</span>
+                <span class="phone-sig-action" style="background:rgba(255,61,127,.15);border-color:rgba(255,61,127,.3);color:var(--pink)">SELL</span>
+              </div>
+            </div>
+          </div>
+          <div class="phone-nav">
+            <div class="phone-nav-item active">
+              <span>🏠</span>
+              <div class="phone-nav-label">Главная</div>
+            </div>
+            <div class="phone-nav-item">
+              <span>📊</span>
+              <div class="phone-nav-label">Сигналы</div>
+            </div>
+            <div class="phone-nav-item">
+              <span>📰</span>
+              <div class="phone-nav-label">Посты</div>
+            </div>
+            <div class="phone-nav-item">
+              <span>👤</span>
+              <div class="phone-nav-label">Профиль</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features list -->
+      <div class="app-features">
+        <div class="app-feat">
+          <div class="app-feat-ico" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.2)">🔔</div>
+          <div>
+            <div class="app-feat-title">Сигналы в реальном времени</div>
+            <div class="app-feat-desc">Все автосигналы от индикатора — прямо в ленте. Пуш-уведомления когда приходит новый сигнал.</div>
+          </div>
+        </div>
+        <div class="app-feat">
+          <div class="app-feat-ico" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.2)">📰</div>
+          <div>
+            <div class="app-feat-title">Аналитика и посты</div>
+            <div class="app-feat-desc">Разборы по BTC, ETH, SOL и другим активам. Понятно, структурировано, по делу.</div>
+          </div>
+        </div>
+        <div class="app-feat">
+          <div class="app-feat-ico" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2)">👤</div>
+          <div>
+            <div class="app-feat-title">Личный кабинет</div>
+            <div class="app-feat-desc">Управление подпиской, статус и история — всё в одном месте внутри Telegram.</div>
+          </div>
+        </div>
+        <div class="app-feat">
+          <div class="app-feat-ico" style="background:rgba(255,204,0,.1);border:1px solid rgba(255,204,0,.2)">💎</div>
+          <div>
+            <div class="app-feat-title">PRO-доступ</div>
+            <div class="app-feat-desc">PRO-подписчики получают расширенные сигналы и аналитику без ограничений.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <div class="cta-glow"></div>
+    <div class="cta-tag">07 МАЯ 2025 · ЗАПУСК</div>
+    <div class="cta-title">Готов к <span class="g">новому уровню?</span></div>
+    <div class="cta-sub">IT v3 работает пока ты спишь. Автосигналы, мини-апп, улучшенный индикатор — всё в одном.</div>
+    <div class="cta-btns">
+      <a href="https://t.me/NoviYTBot" class="cta-btn-primary">📱 Открыть мини-апп</a>
+      <a href="guide.html" class="cta-btn-secondary">📖 Документация</a>
+    </div>
+    <div class="cta-pro-note">💎 <strong>PRO-подписчики</strong> получают доступ первыми · 07 мая 2025</div>
+  </div>
+
+  <div class="footer">
+    <div>IT v3 · Индикатор · Автосигналы · Мини-апп</div>
+    <div style="margin-top:4px">© 2025 IT v3 — Индикатор от Товарища</div>
+  </div>
+
+</div>
+</body>
+</html>
