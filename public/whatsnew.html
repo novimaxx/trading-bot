@@ -676,8 +676,14 @@
 <script>
 async function heroDl() {
   const btn = document.getElementById('hero-dl-btn');
-  btn.disabled = true;
-  btn.style.display = 'none'; // скрыть кнопку чтобы не попала на баннер
+  btn.style.display = 'none';
+
+  // html2canvas не умеет background-clip:text — временно ставим solid цвет
+  const accent = document.querySelector('.hero h1 .accent');
+  const pink   = document.querySelector('.hero h1 .pink');
+  accent.style.cssText = 'display:inline-block;color:#2ecc71;background:none;-webkit-background-clip:unset;background-clip:unset;';
+  if (pink) pink.style.cssText = 'display:inline-block;color:#ff3d7f;background:none;-webkit-background-clip:unset;background-clip:unset;';
+
   try {
     const hero = document.querySelector('.hero');
     const canvas = await html2canvas(hero, {
@@ -694,7 +700,11 @@ async function heroDl() {
     }, 'image/png');
   } catch(e) { alert('Ошибка: ' + e.message); }
   finally {
-    btn.style.display = ''; btn.disabled = false; btn.textContent = '⬇ Скачать баннер';
+    // восстанавливаем градиентный текст
+    accent.style.cssText = '';
+    if (pink) pink.style.cssText = '';
+    btn.style.display = '';
+    btn.textContent = '⬇ Скачать баннер';
   }
 }
 </script>
