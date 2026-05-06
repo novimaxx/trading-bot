@@ -152,12 +152,21 @@
   /* ─── FEATURE CARD ─── */
   .fcard {
     background: var(--card); border: 1px solid var(--line2);
-    border-radius: 16px; padding: 24px 22px 20px; position: relative; overflow: hidden;
+    border-radius: 16px; padding: 22px 20px 18px; position: relative; overflow: hidden;
   }
   .fcard-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
+  .fcard-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+  .fcard-icon-wrap {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .fcard-metric {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800;
+    letter-spacing: .04em; opacity: .7;
+  }
   .fcard-icon { font-size: 32px; margin-bottom: 14px; display: block; }
-  .fcard-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; }
-  .fcard-text { font-size: 13px; color: var(--lg); line-height: 1.6; }
+  .fcard-title { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+  .fcard-text { font-size: 12px; color: var(--lg); line-height: 1.6; }
   .fcard ul { margin-top: 10px; padding-left: 0; list-style: none; }
   .fcard li { font-size: 13px; color: var(--lg); padding: 4px 0; display: flex; gap: 8px; }
   .fcard li::before { content: '—'; color: var(--muted); flex-shrink: 0; }
@@ -545,25 +554,33 @@
     <!-- Architecture -->
     <div class="arch" style="margin-bottom:20px">
       <div class="arch-step">
-        <div class="arch-ico" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25)">📊</div>
+        <div class="arch-ico" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="4" height="14" rx="1" fill="#2ecc71" opacity=".4"/><rect x="10" y="7" width="4" height="10" rx="1" fill="#2ecc71" opacity=".7"/><rect x="17" y="5" width="4" height="12" rx="1" fill="#2ecc71"/><path d="M3 20h18" stroke="#2ecc71" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
         <div class="arch-name">Индикатор</div>
         <div class="arch-note">Замечает точку входа на графике</div>
       </div>
       <div class="arch-arr">→</div>
       <div class="arch-step">
-        <div class="arch-ico" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.25)">⚡️</div>
+        <div class="arch-ico" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.25)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#ff3d7f" stroke-width="1.5"/><path d="M12 7v5l3 3" stroke="#ff3d7f" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
         <div class="arch-name">Сервер</div>
         <div class="arch-note">Анализирует сигнал 24/7</div>
       </div>
       <div class="arch-arr">→</div>
       <div class="arch-step">
-        <div class="arch-ico" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.25)">🤖</div>
+        <div class="arch-ico" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.25)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="3" stroke="#4f8ef7" stroke-width="1.5"/><circle cx="8" cy="11" r="2" fill="#4f8ef7"/><path d="M12 9h5M12 13h3" stroke="#4f8ef7" stroke-width="1.5" stroke-linecap="round"/><path d="M8 18v2M16 18v2" stroke="#4f8ef7" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
         <div class="arch-name">Бот</div>
         <div class="arch-note">Формирует уведомление</div>
       </div>
       <div class="arch-arr">→</div>
       <div class="arch-step">
-        <div class="arch-ico" style="background:rgba(77,201,240,.1);border:1px solid rgba(77,201,240,.25)">📱</div>
+        <div class="arch-ico" style="background:rgba(77,201,240,.1);border:1px solid rgba(77,201,240,.25)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="2" width="14" height="20" rx="3" stroke="#4dc9f0" stroke-width="1.5"/><rect x="8" y="5" width="8" height="1.5" rx=".75" fill="#4dc9f0" opacity=".5"/><rect x="8" y="8.5" width="8" height="5" rx="1.5" fill="#4dc9f0" opacity=".2" stroke="#4dc9f0" stroke-width=".8"/><circle cx="12" cy="18" r="1.5" fill="#4dc9f0"/></svg>
+        </div>
         <div class="arch-name">Ты</div>
         <div class="arch-note">Получаешь сигнал в Telegram</div>
       </div>
@@ -572,25 +589,45 @@
     <div class="grid2">
       <div class="fcard">
         <div class="fcard-accent" style="background:linear-gradient(90deg,#ff3d7f,#ff8fb3)"></div>
-        <span class="fcard-icon">🔔</span>
+        <div class="fcard-header">
+          <div class="fcard-icon-wrap" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.2)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C10.3 2 9 3.3 9 5v1.1C6.7 7 5 9.3 5 12v4l-1.7 1.7C3 18 3.3 19 4 19h16c.7 0 1-.9.7-1.3L19 16v-4c0-2.7-1.7-5-4-5.9V5c0-1.7-1.3-3-3-3zm0 20c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" fill="#ff3d7f"/></svg>
+          </div>
+          <div class="fcard-metric" style="color:#ff3d7f">&lt; 1 сек</div>
+        </div>
         <div class="fcard-title">Мгновенные уведомления</div>
         <div class="fcard-text">Сигнал приходит в момент, когда индикатор фиксирует точку входа. Никаких задержек.</div>
       </div>
       <div class="fcard">
         <div class="fcard-accent" style="background:linear-gradient(90deg,#4f8ef7,#4dc9f0)"></div>
-        <span class="fcard-icon">🌙</span>
+        <div class="fcard-header">
+          <div class="fcard-icon-wrap" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#4f8ef7" stroke-width="1.5"/><path d="M12 7v5l3 3" stroke="#4f8ef7" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="fcard-metric" style="color:#4f8ef7">24 / 7</div>
+        </div>
         <div class="fcard-title">Работает круглосуточно</div>
         <div class="fcard-text">Сервер следит за рынком 24/7, включая ночь и выходные. Ни одной точки входа не пропустишь.</div>
       </div>
       <div class="fcard">
         <div class="fcard-accent" style="background:linear-gradient(90deg,#2ecc71,#6fffb2)"></div>
-        <span class="fcard-icon">🎯</span>
+        <div class="fcard-header">
+          <div class="fcard-icon-wrap" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.2)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2ecc71" stroke-width="1.5" opacity=".4"/><circle cx="12" cy="12" r="5" stroke="#2ecc71" stroke-width="1.5" opacity=".7"/><circle cx="12" cy="12" r="2" fill="#2ecc71"/></svg>
+          </div>
+          <div class="fcard-metric" style="color:#2ecc71">68% win</div>
+        </div>
         <div class="fcard-title">Точки входа по алгоритму</div>
         <div class="fcard-text">Только сигналы с высокой вероятностью. Алгоритм отфильтровывает шум — ты видишь только рабочие входы.</div>
       </div>
       <div class="fcard">
         <div class="fcard-accent" style="background:linear-gradient(90deg,#f5a623,#fbbf24)"></div>
-        <span class="fcard-icon">📊</span>
+        <div class="fcard-header">
+          <div class="fcard-icon-wrap" style="background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.2)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 17l4-6 4 3 4-8 4 5" stroke="#f5a623" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="fcard-metric" style="color:#f5a623">1H·4H·1D</div>
+        </div>
         <div class="fcard-title">BTC · ETH · SOL и другие</div>
         <div class="fcard-text">Мониторинг всех ключевых активов. Все таймфреймы: 1H, 4H, 1D.</div>
       </div>
