@@ -363,29 +363,6 @@
   }
   .cta-pro-note strong { color: var(--yellow); }
 
-  /* ─── BANNER SECTION ─── */
-  .banner-section {
-    margin-bottom: 48px;
-    display: flex; flex-direction: column; align-items: center; gap: 16px;
-  }
-  .banner-section-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
-    letter-spacing: .3em; color: var(--muted); text-transform: uppercase;
-  }
-  .banner-preview-wrap {
-    width: 100%; border-radius: 14px; overflow: hidden;
-    border: 1px solid var(--line2);
-    box-shadow: 0 16px 48px rgba(0,0,0,.7);
-  }
-  .banner-preview-wrap canvas { width: 100%; display: block; }
-  .banner-dl-btn {
-    background: var(--accent); color: #000; border: none;
-    padding: 13px 40px; border-radius: 10px;
-    font-size: 14px; font-weight: 800; cursor: pointer;
-    font-family: 'Inter', sans-serif; transition: opacity .15s;
-  }
-  .banner-dl-btn:hover { opacity: .85; }
-
   /* ─── FOOTER ─── */
   .footer {
     text-align: center; padding: 32px 0 0;
@@ -441,16 +418,6 @@
       <div>IT V3</div>
       <div class="hero-footer-r">TRADINGVIEW</div>
     </div>
-  </div>
-
-  <!-- BANNER -->
-  <div class="banner-section">
-    <div class="banner-section-label">— Баннер для поста —</div>
-    <div class="banner-preview-wrap">
-      <canvas id="wn-preview"></canvas>
-    </div>
-    <canvas id="wn-export" style="display:none"></canvas>
-    <button class="banner-dl-btn" onclick="wnDownload()">⬇ Скачать PNG (1280×720)</button>
   </div>
 
   <!-- ЧТО НОВОГО -->
@@ -691,140 +658,5 @@
 
 </div>
 
-<script>
-function wnRR(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
-}
-
-function wnDraw(ctx, W, H) {
-  // ── Background ──────────────────────────────────────────────
-  ctx.fillStyle = '#0a0a0c'; ctx.fillRect(0,0,W,H);
-
-  // Green glow bottom-center
-  const g1 = ctx.createRadialGradient(W*.5,H*1.1,0, W*.5,H*1.1,W*.62);
-  g1.addColorStop(0,'rgba(46,204,113,.26)'); g1.addColorStop(1,'rgba(46,204,113,0)');
-  ctx.fillStyle=g1; ctx.fillRect(0,0,W,H);
-
-  // Pink glow top-right
-  const g2 = ctx.createRadialGradient(W*.95,H*-.1,0, W*.95,H*-.1,W*.44);
-  g2.addColorStop(0,'rgba(255,61,127,.14)'); g2.addColorStop(1,'rgba(255,61,127,0)');
-  ctx.fillStyle=g2; ctx.fillRect(0,0,W,H);
-
-  // Grid
-  ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1;
-  for(let x=0;x<W;x+=56){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<H;y+=56){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
-
-  // Grid radial fade (edges darker)
-  const gm=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*.72);
-  gm.addColorStop(0,'rgba(10,10,12,0)'); gm.addColorStop(1,'rgba(10,10,12,.82)');
-  ctx.fillStyle=gm; ctx.fillRect(0,0,W,H);
-
-  // ── Corner brackets ─────────────────────────────────────────
-  const bs=22, bp=22;
-  ctx.strokeStyle='#2ecc71'; ctx.lineWidth=2; ctx.globalAlpha=.9;
-  ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(W-bp-bs,bp); ctx.lineTo(W-bp,bp); ctx.lineTo(W-bp,bp+bs); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(bp+bs,H-bp); ctx.lineTo(bp,H-bp); ctx.lineTo(bp,H-bp-bs); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(W-bp-bs,H-bp); ctx.lineTo(W-bp,H-bp); ctx.lineTo(W-bp,H-bp-bs); ctx.stroke();
-  ctx.globalAlpha=1;
-
-  // ── LIVE · PRO SIGNALS (top-center) ─────────────────────────
-  ctx.font='700 12px "JetBrains Mono",monospace';
-  ctx.textAlign='center';
-  const liveTxt='LIVE · PRO SIGNALS';
-  const lw=ctx.measureText(liveTxt).width;
-  ctx.beginPath(); ctx.arc(W/2-lw/2-11,42,5,0,Math.PI*2);
-  ctx.fillStyle='#ff3d7f'; ctx.shadowColor='#ff3d7f'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
-  ctx.fillStyle='#fff'; ctx.fillText(liveTxt,W/2+5,46);
-
-  // ── Kicker ───────────────────────────────────────────────────
-  ctx.font='700 14px "JetBrains Mono",monospace';
-  const kt='ОБНОВЛЕНИЕ'; const kw=ctx.measureText(kt).width;
-  ctx.strokeStyle='#ff3d7f'; ctx.lineWidth=2; ctx.globalAlpha=.9;
-  ctx.beginPath(); ctx.moveTo(W/2-kw/2-34,118); ctx.lineTo(W/2-kw/2-8,118); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(W/2+kw/2+8,118); ctx.lineTo(W/2+kw/2+34,118); ctx.stroke();
-  ctx.fillStyle='#ff3d7f'; ctx.globalAlpha=1;
-  ctx.fillText(kt,W/2,123);
-
-  // ── IT v3 (giant, green gradient) ────────────────────────────
-  ctx.font='900 172px Inter,sans-serif';
-  const tg=ctx.createLinearGradient(0,140,0,H*.56);
-  tg.addColorStop(0,'#7fffb8'); tg.addColorStop(.5,'#2ecc71'); tg.addColorStop(1,'#126638');
-  ctx.fillStyle=tg; ctx.textAlign='center';
-  ctx.fillText('IT v3',W/2,H*.53);
-
-  // ── Tagline ──────────────────────────────────────────────────
-  ctx.font='500 20px Inter,sans-serif';
-  ctx.fillStyle='rgba(232,232,240,.88)';
-  ctx.fillText('Мы переписали всё с нуля. Встречайте.',W/2,H*.625);
-
-  // ── Sub ──────────────────────────────────────────────────────
-  ctx.font='400 14px Inter,sans-serif';
-  ctx.fillStyle='rgba(160,160,176,.8)';
-  ctx.fillText('Автосигналы 24/7 · Мини-апп в Telegram · Улучшенный индикатор',W/2,H*.665);
-
-  // ── Date pill ────────────────────────────────────────────────
-  const dt='⏰  07 МАЯ 2026 — ГЛОБАЛЬНЫЙ ЗАПУСК';
-  ctx.font='700 14px "JetBrains Mono",monospace';
-  const dw=ctx.measureText(dt).width+56, dh=44;
-  const dx=W/2-dw/2, dy=H*.705;
-  ctx.fillStyle='rgba(255,61,127,.1)'; wnRR(ctx,dx,dy,dw,dh,22); ctx.fill();
-  ctx.strokeStyle='rgba(255,61,127,.38)'; ctx.lineWidth=1; wnRR(ctx,dx,dy,dw,dh,22); ctx.stroke();
-  ctx.fillStyle='#ff3d7f'; ctx.fillText(dt,W/2,dy+28);
-
-  // ── Feature pills ────────────────────────────────────────────
-  const pills=['📊  Новый индикатор','⚡️  Сигналы 24/7','📱  Мини-апп'];
-  ctx.font='600 13px "JetBrains Mono",monospace';
-  const ph=34, pg=12;
-  const pws=pills.map(l=>ctx.measureText(l).width+32);
-  const ptotal=pws.reduce((a,b)=>a+b,0)+pg*(pills.length-1);
-  let px=W/2-ptotal/2; const py=H*.825;
-  pills.forEach((label,i)=>{
-    const pw=pws[i];
-    ctx.fillStyle='rgba(255,255,255,.06)'; wnRR(ctx,px,py,pw,ph,17); ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.13)'; ctx.lineWidth=1; wnRR(ctx,px,py,pw,ph,17); ctx.stroke();
-    ctx.fillStyle='rgba(232,232,240,.72)'; ctx.textAlign='left';
-    ctx.fillText(label,px+16,py+22); px+=pw+pg;
-  });
-
-  // ── Footer ───────────────────────────────────────────────────
-  ctx.font='700 10px "JetBrains Mono",monospace';
-  ctx.fillStyle='rgba(255,255,255,.28)'; ctx.textAlign='left';
-  ctx.fillText('IT V3',bp+4,H-bp-4);
-  const tvTxt='TRADINGVIEW';
-  const tvW=ctx.measureText(tvTxt).width;
-  ctx.beginPath(); ctx.arc(W-bp-tvW-14,H-bp-9,4,0,Math.PI*2);
-  ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=6; ctx.fill(); ctx.shadowBlur=0;
-  ctx.fillStyle='rgba(255,255,255,.28)'; ctx.textAlign='right';
-  ctx.fillText(tvTxt,W-bp-4,H-bp-4);
-}
-
-function wnRender() {
-  const c=document.getElementById('wn-preview');
-  c.width=1280; c.height=720;
-  document.fonts.ready.then(()=>{ wnDraw(c.getContext('2d'),1280,720); });
-}
-
-function wnDownload() {
-  const c=document.getElementById('wn-export');
-  c.width=1280; c.height=720;
-  wnDraw(c.getContext('2d'),1280,720);
-  c.toBlob(blob=>{
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url; a.download='IT_v3_banner.png';
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
-  },'image/png');
-}
-
-wnRender();
-</script>
 </body>
 </html>
