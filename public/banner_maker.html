@@ -161,6 +161,25 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
   backdrop-filter:blur(8px);
 }
 
+/* IT V3 badge */
+.itv3-badge {
+  position:absolute; top:14px; right:14px;
+  display:flex; align-items:center; gap:5px;
+  padding:4px 10px 4px 8px; border-radius:20px;
+  background:rgba(46,204,113,.15);
+  border:1px solid rgba(46,204,113,.4);
+  backdrop-filter:blur(8px);
+}
+.itv3-dot {
+  width:5px; height:5px; border-radius:50%;
+  background:#2ecc71; box-shadow:0 0 6px #2ecc71;
+  animation:pulse 2s infinite; flex-shrink:0;
+}
+.itv3-text {
+  font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700;
+  letter-spacing:.2em; color:#2ecc71; text-transform:uppercase;
+}
+
 /* Upload hint */
 .upload-hint {
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -226,6 +245,11 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
   <div class="corner c-tr"></div>
   <div class="corner c-bl"></div>
   <div class="corner c-br"></div>
+
+  <div class="itv3-badge">
+    <div class="itv3-dot"></div>
+    <span class="itv3-text">IT V3</span>
+  </div>
 
   <div class="kicker" id="b-kicker">Индикатор</div>
 
@@ -352,9 +376,33 @@ function drawOverlay(ctx, W, H) {
   ctx.textAlign = 'left';
   ctx.fillText('LIVE · PRO SIGNALS', 74, 42);
 
-  // V3
-  ctx.textAlign = 'right';
-  ctx.fillText('V3', W-28, 42);
+  // IT V3 badge (top-right)
+  const badgeText = 'IT V3';
+  ctx.font = 'bold 12px JetBrains Mono, monospace';
+  const badgeTW = ctx.measureText(badgeText).width;
+  const badgeW = badgeTW + 30; const badgeH = 26;
+  const badgeX = W - badgeW - 20; const badgeY = 16;
+  // pill bg
+  ctx.fillStyle = 'rgba(46,204,113,0.15)';
+  roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 13);
+  ctx.fill();
+  // pill border
+  ctx.strokeStyle = 'rgba(46,204,113,0.5)';
+  ctx.lineWidth = 1;
+  roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 13);
+  ctx.stroke();
+  // dot
+  ctx.beginPath();
+  ctx.arc(badgeX + 13, badgeY + badgeH/2, 3.5, 0, Math.PI*2);
+  ctx.fillStyle = '#2ecc71';
+  ctx.shadowColor = '#2ecc71';
+  ctx.shadowBlur = 8;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  // text
+  ctx.fillStyle = '#2ecc71';
+  ctx.textAlign = 'left';
+  ctx.fillText(badgeText, badgeX + 22, badgeY + 17);
 
   // Bottom gradient extra
   const botGrad = ctx.createLinearGradient(0, H*0.55, 0, H);
