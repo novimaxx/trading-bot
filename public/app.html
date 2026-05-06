@@ -622,7 +622,7 @@ function sigCard(s) {
 function postCard(p, featured) {
   const d = new Date(p.sent_at);
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
-  const imgUrl = p.file_id ? `${BASE}/api/image/${p.file_id}` : null;
+  const imgUrl = p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null);
   return `<div class="post-card ${featured?'featured':''}" onclick="openPostDetail(${p.id})">
     ${imgUrl ? `<div class="post-img-wrap"><img class="post-img" src="${imgUrl}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
     <div class="post-tag-bar">
@@ -657,8 +657,9 @@ function openPostDetail(id) {
   document.getElementById('po-body').textContent = p.body || '';
 
   const img = document.getElementById('po-img');
-  if (p.file_id) {
-    img.src = `${BASE}/api/image/${p.file_id}`;
+  const imgSrc = p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null);
+  if (imgSrc) {
+    img.src = imgSrc;
     img.style.display = 'block';
   } else {
     img.style.display = 'none';
