@@ -146,13 +146,14 @@
   .sec-desc { font-size: 15px; color: var(--lg); margin-bottom: 24px; }
 
   /* ─── GRIDS ─── */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; align-items: stretch; }
 
   /* ─── FEATURE CARD ─── */
   .fcard {
     background: var(--card); border: 1px solid var(--line2);
     border-radius: 16px; padding: 22px 20px 18px; position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
   }
   .fcard-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
   .fcard-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
@@ -615,7 +616,7 @@
           <div class="fcard-icon-wrap" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.2)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#2ecc71" stroke-width="1.5" opacity=".4"/><circle cx="12" cy="12" r="5" stroke="#2ecc71" stroke-width="1.5" opacity=".7"/><circle cx="12" cy="12" r="2" fill="#2ecc71"/></svg>
           </div>
-          <div class="fcard-metric" style="color:#2ecc71">68% win</div>
+          <div class="fcard-metric" style="color:#2ecc71">92% win</div>
         </div>
         <div class="fcard-title">Точки входа по алгоритму</div>
         <div class="fcard-text">Только сигналы с высокой вероятностью. Алгоритм отфильтровывает шум — ты видишь только рабочие входы.</div>
