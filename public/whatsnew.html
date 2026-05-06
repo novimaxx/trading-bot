@@ -212,12 +212,12 @@
 
   /* ─── APP MOCKUP ─── */
   .app-mockup-wrap {
-    display: grid; grid-template-columns: 260px 1fr; gap: 40px; align-items: center;
+    display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center;
     background: var(--card); border: 1px solid var(--line2); border-radius: 20px; padding: 32px;
   }
   .phone {
-    width: 230px; border-radius: 40px; border: 2px solid #1e1e28;
-    background: #070709; padding: 18px 10px 10px;
+    width: 280px; border-radius: 40px; border: 2px solid #1e1e28;
+    background: #070709; padding: 18px 12px 12px;
     box-shadow: 0 32px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.04);
     margin: 0 auto; position: relative;
   }
@@ -252,10 +252,10 @@
     font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 600;
     letter-spacing: .18em; color: rgba(255,255,255,.3); margin-bottom: 10px;
   }
-  .phone-badges { display: flex; gap: 6px; align-items: center; }
+  .phone-badges { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; }
   .phone-badge {
-    padding: 3px 9px; border-radius: 20px; font-size: 8px; font-weight: 700;
-    font-family: 'JetBrains Mono', monospace; letter-spacing: .06em;
+    padding: 3px 10px; border-radius: 20px; font-size: 8px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .06em; white-space: nowrap;
   }
   .pb-green { background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.35); color: var(--accent); }
   .pb-pink  { background: rgba(255,61,127,.12); border: 1px solid rgba(255,61,127,.35); color: var(--pink); }
@@ -275,8 +275,8 @@
   .phone-sig-tag { font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700; color: var(--accent); }
   .phone-sig-time { font-family: 'JetBrains Mono', monospace; font-size: 7px; color: var(--muted); }
   .phone-sig-row { display: flex; align-items: center; justify-content: space-between; }
-  .phone-sig-pair { font-size: 15px; font-weight: 800; }
-  .phone-sig-right { display: flex; align-items: center; gap: 5px; }
+  .phone-sig-pair { font-size: 14px; font-weight: 800; white-space: nowrap; }
+  .phone-sig-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
   .phone-sig-action {
     display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 8px; font-weight: 700;
     font-family: 'JetBrains Mono', monospace;
@@ -290,7 +290,7 @@
   .phone-sig-price { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: var(--accent); }
   /* ── Menu row ── */
   .phone-menu-row {
-    margin: 6px 12px; padding: 10px 12px;
+    margin: 6px 12px; padding: 12px 14px;
     background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
     border-radius: 10px; display: flex; align-items: center; justify-content: space-between;
   }
@@ -302,17 +302,17 @@
     font-family: 'JetBrains Mono', monospace; padding: 2px 6px; border-radius: 20px;
   }
   /* ── 2×2 grid ── */
-  .phone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 12px 10px; }
+  .phone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 6px 12px 12px; }
   .phone-grid-card {
     background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
-    border-radius: 10px; padding: 10px 10px 8px; position: relative;
+    border-radius: 12px; padding: 12px 12px 10px; position: relative;
   }
   .phone-grid-card::after {
     content:'›'; position: absolute; top: 8px; right: 9px;
     font-size: 10px; color: rgba(255,255,255,.2);
   }
   .phone-grid-ico { font-size: 16px; margin-bottom: 6px; }
-  .phone-grid-title { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+  .phone-grid-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; white-space: nowrap; }
   .phone-grid-sub { font-size: 8px; color: var(--muted); line-height: 1.3; }
   .phone-grid-sub .hl { font-weight: 700; }
   /* ── Nav ── */
