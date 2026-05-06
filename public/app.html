@@ -674,8 +674,10 @@ const tg = window.Telegram?.WebApp;
 if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0a0a0c'); tg.setBackgroundColor('#0a0a0c'); }
 
 const BASE = 'https://trading-bot-production-7d20.up.railway.app';
+const ADMIN_IDS = ['562914492'];
 const tgUser = tg?.initDataUnsafe?.user || {};
 const userId = tgUser.id || null;
+const isAdmin = ADMIN_IDS.includes(String(userId));
 const userName = tgUser.first_name || 'Пользователь';
 const userUsername = tgUser.username ? '@' + tgUser.username : '';
 const userInitial = (userName[0] || 'U').toUpperCase();
@@ -902,23 +904,9 @@ async function boot() {
   }
 
   // ── admin check ──
-  if (userId) {
-    const statsCheck = await adminApi('/api/admin/stats');
-    if (statsCheck !== null) {
-      document.getElementById('nav-admin').style.display = 'flex';
-      adminData.stats = statsCheck;
-      document.getElementById('adm-total').textContent = statsCheck.total_users ?? '—';
-      document.getElementById('adm-active').textContent = statsCheck.active_subs ?? '—';
-      document.getElementById('adm-sigs').textContent = statsCheck.total_signals ?? '—';
-      document.getElementById('adm-posts').textContent = statsCheck.total_posts ?? '—';
-      if (statsCheck.pending_payments > 0) {
-        document.getElementById('pay-count-badge').textContent = statsCheck.pending_payments;
-        document.getElementById('pay-count-badge').style.display = 'inline';
-        document.getElementById('adm-pay-badge').textContent = statsCheck.pending_payments + ' новых';
-        document.getElementById('adm-pay-badge').style.display = 'inline-block';
-        document.getElementById('nav-notif-admin').classList.add('show');
-      }
-    }
+  if (isAdmin) {
+    document.getElementById('nav-admin').style.display = 'flex';
+    loadAdminStats();
   }
 
   // ── hide loader ──
