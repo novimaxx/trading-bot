@@ -328,17 +328,20 @@
   .phone-nav-item.active .phone-nav-label { color: var(--accent); }
 
   /* App features list */
-  .app-features { display: flex; flex-direction: column; gap: 16px; }
+  .app-features { display: flex; flex-direction: column; gap: 12px; }
   .app-feat {
-    display: flex; align-items: flex-start; gap: 14px;
-    padding: 16px 18px; border-radius: 12px;
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 18px; border-radius: 14px;
     background: rgba(255,255,255,.025); border: 1px solid var(--line);
+    transition: border-color .2s;
   }
+  .app-feat:hover { border-color: var(--line2); }
   .app-feat-ico {
-    width: 42px; height: 42px; border-radius: 12px;
+    width: 44px; height: 44px; border-radius: 14px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px; flex-shrink: 0;
+    flex-shrink: 0;
   }
+  .app-feat-ico svg { display: block; }
   .app-feat-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
   .app-feat-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
 
@@ -695,28 +698,50 @@
       <!-- Features list -->
       <div class="app-features">
         <div class="app-feat">
-          <div class="app-feat-ico" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.2)">🔔</div>
+          <div class="app-feat-ico" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.2)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C10.3 2 9 3.3 9 5v1.1C6.7 7 5 9.3 5 12v4l-1.7 1.7C3 18 3.3 19 4 19h16c.7 0 1-.9.7-1.3L19 16v-4c0-2.7-1.7-5-4-5.9V5c0-1.7-1.3-3-3-3zm0 20c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2z" fill="#2ecc71"/>
+            </svg>
+          </div>
           <div>
             <div class="app-feat-title">Сигналы в реальном времени</div>
             <div class="app-feat-desc">Все автосигналы от индикатора — прямо в ленте. Пуш-уведомления когда приходит новый сигнал.</div>
           </div>
         </div>
         <div class="app-feat">
-          <div class="app-feat-ico" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.2)">📰</div>
+          <div class="app-feat-ico" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.2)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="4" height="14" rx="1" fill="#ff3d7f" opacity=".4"/>
+              <rect x="10" y="7" width="4" height="10" rx="1" fill="#ff3d7f" opacity=".7"/>
+              <rect x="17" y="5" width="4" height="12" rx="1" fill="#ff3d7f"/>
+              <path d="M3 20h18" stroke="#ff3d7f" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
           <div>
             <div class="app-feat-title">Аналитика и посты</div>
             <div class="app-feat-desc">Разборы по BTC, ETH, SOL и другим активам. Понятно, структурировано, по делу.</div>
           </div>
         </div>
         <div class="app-feat">
-          <div class="app-feat-ico" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2)">👤</div>
+          <div class="app-feat-ico" style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="4" fill="#4f8ef7" opacity=".8"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#4f8ef7" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
           <div>
             <div class="app-feat-title">Личный кабинет</div>
             <div class="app-feat-desc">Управление подпиской, статус и история — всё в одном месте внутри Telegram.</div>
           </div>
         </div>
         <div class="app-feat">
-          <div class="app-feat-ico" style="background:rgba(255,204,0,.1);border:1px solid rgba(255,204,0,.2)">💎</div>
+          <div class="app-feat-ico" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L8 7H4l2.5 7L4 20h16l-2.5-6L20 7h-4L12 2z" fill="#fbbf24" opacity=".15" stroke="#fbbf24" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M8 7h8M4 20h16" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/>
+              <circle cx="12" cy="13" r="2.5" fill="#fbbf24"/>
+            </svg>
+          </div>
           <div>
             <div class="app-feat-title">PRO-доступ</div>
             <div class="app-feat-desc">PRO-подписчики получают расширенные сигналы и аналитику без ограничений.</div>
