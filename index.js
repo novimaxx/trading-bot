@@ -68,6 +68,19 @@ async function runMigrations() {
         referral_count      INTEGER DEFAULT 0,
         tradingview_username TEXT
       );
+
+      CREATE TABLE IF NOT EXISTS payment_requests (
+        id          SERIAL PRIMARY KEY,
+        user_id     BIGINT NOT NULL,
+        username    TEXT,
+        first_name  TEXT,
+        plan        TEXT,
+        tx_link     TEXT,
+        tv_username TEXT,
+        note        TEXT,
+        status      TEXT DEFAULT 'pending',
+        created_at  TIMESTAMP NOT NULL DEFAULT NOW()
+      );
     `)
     console.log('✅ Миграции выполнены')
   } catch (err) {
@@ -600,6 +613,183 @@ app.get('/api/image/:fileId', async (req, res) => {
     res.send(Buffer.from(buf))
   } catch (err) {
     console.error('Image proxy error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+// ─── Admin middleware ─────────────────────────────────────
+function adminOnly(req, res, next) {
+  const tgId = String(req.query.tg_id || req.body?.tg_id || '')
+  if (!process.env.ADMIN_ID || tgId !== String(process.env.ADMIN_ID)) return res.sendStatus(403)
+  next()
+}
+
+// ─── API: Admin stats ─────────────────────────────────────
+app.get('/api/admin/stats', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  try {
+    const [users, active, newToday, signals, posts, payments] = await Promise.all([
+      pool.query(`SELECT COUNT(*) FROM users`),
+      pool.query(`SELECT COUNT(*) FROM users WHERE subscribed = TRUE AND subscription_until > NOW()`),
+      pool.query(`SELECT COUNT(*) FROM users WHERE id IN (SELECT id FROM users WHERE TRUE) AND (subscription_until > NOW() - INTERVAL '1 day' OR TRUE) AND created_at::date = CURRENT_DATE`).catch(() => ({ rows: [{ count: 0 }] })),
+      pool.query(`SELECT COUNT(*) FROM app_signals`),
+      pool.query(`SELECT COUNT(*) FROM app_posts`),
+      pool.query(`SELECT COUNT(*) FROM payment_requests WHERE status = 'pending'`),
+    ])
+    res.json({
+      total_users:    parseInt(users.rows[0].count),
+      active_subs:    parseInt(active.rows[0].count),
+      total_signals:  parseInt(signals.rows[0].count),
+      total_posts:    parseInt(posts.rows[0].count),
+      pending_payments: parseInt(payments.rows[0].count),
+    })
+  } catch (err) {
+    console.error('Admin stats error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+// ─── API: Admin users list ────────────────────────────────
+app.get('/api/admin/users', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  const search = req.query.search || ''
+  const limit  = parseInt(req.query.limit) || 50
+  const offset = parseInt(req.query.offset) || 0
+  try {
+    const query = search
+      ? `SELECT id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count
+         FROM users WHERE username ILIKE $1 OR first_name ILIKE $1 OR id::text = $2
+         ORDER BY subscription_until DESC NULLS LAST, id DESC LIMIT $3 OFFSET $4`
+      : `SELECT id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count
+         FROM users ORDER BY subscription_until DESC NULLS LAST, id DESC LIMIT $1 OFFSET $2`
+    const params = search ? [`%${search}%`, search, limit, offset] : [limit, offset]
+    const { rows } = await pool.query(query, params)
+    const result = rows.map(u => {
+      const until = u.subscription_until ? new Date(u.subscription_until) : null
+      const active = until && until > new Date()
+      const daysLeft = active ? Math.ceil((until - new Date()) / 86400000) : null
+      return { ...u, active, daysLeft }
+    })
+    res.json(result)
+  } catch (err) {
+    console.error('Admin users error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+// ─── API: Admin activate subscription ────────────────────
+app.post('/api/admin/user/:id/activate', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  const userId = parseInt(req.params.id)
+  const { plan = 'PRO', days = 30 } = req.body
+  try {
+    await pool.query(`
+      UPDATE users SET
+        subscribed = TRUE,
+        subscription_plan = $1,
+        subscription_until = NOW() + ($2 || ' days')::INTERVAL
+      WHERE id = $3
+    `, [plan, days, userId])
+
+    // Отправить уведомление пользователю через бота
+    if (BOT_TOKEN) {
+      const planName = plan === 'PRO' ? '💎 PRO' : '📊 STANDARD'
+      const msg = `✅ Подписка активирована!\n\n${planName} — ${days} дней\n\nДобро пожаловать в IT v3! 🚀`
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: userId, text: msg })
+      }).catch(() => {})
+    }
+
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Admin activate error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+// ─── API: Admin deactivate subscription ──────────────────
+app.post('/api/admin/user/:id/deactivate', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  const userId = parseInt(req.params.id)
+  try {
+    await pool.query(`UPDATE users SET subscribed = FALSE, subscription_until = NULL WHERE id = $1`, [userId])
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Admin deactivate error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+// ─── API: Admin payment requests ─────────────────────────
+app.get('/api/admin/payments', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  try {
+    const { rows } = await pool.query(
+      `SELECT * FROM payment_requests ORDER BY created_at DESC LIMIT 50`
+    )
+    res.json(rows)
+  } catch (err) {
+    console.error('Admin payments error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+// ─── API: Save payment request (from bot) ────────────────
+app.post('/api/payment-request', async (req, res) => {
+  if (req.headers['x-api-key'] !== API_KEY) return res.sendStatus(401)
+  if (!pool) return res.sendStatus(503)
+  const { user_id, username, first_name, plan, tx_link, tv_username, note } = req.body
+  if (!user_id) return res.sendStatus(400)
+  try {
+    await pool.query(
+      `INSERT INTO payment_requests (user_id, username, first_name, plan, tx_link, tv_username, note)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      [user_id, username, first_name, plan, tx_link, tv_username, note]
+    )
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Payment request save error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
+// ─── API: Approve payment request ────────────────────────
+app.post('/api/admin/payments/:id/approve', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  const reqId = parseInt(req.params.id)
+  const { days = 30 } = req.body
+  try {
+    const { rows } = await pool.query(`SELECT * FROM payment_requests WHERE id = $1`, [reqId])
+    if (!rows.length) return res.sendStatus(404)
+    const pr = rows[0]
+
+    // Activate subscription
+    await pool.query(`
+      UPDATE users SET subscribed = TRUE, subscription_plan = $1,
+        subscription_until = NOW() + ($2 || ' days')::INTERVAL
+      WHERE id = $3
+    `, [pr.plan || 'PRO', days, pr.user_id])
+
+    await pool.query(`UPDATE payment_requests SET status = 'approved' WHERE id = $1`, [reqId])
+
+    // Notify user
+    if (BOT_TOKEN) {
+      const planName = (pr.plan || 'PRO') === 'PRO' ? '💎 PRO' : '📊 STANDARD'
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: pr.user_id,
+          text: `✅ Оплата подтверждена!\n\n${planName} — ${days} дней активировано 🚀`
+        })
+      }).catch(() => {})
+    }
+
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Approve payment error:', err.message)
     res.sendStatus(500)
   }
 })

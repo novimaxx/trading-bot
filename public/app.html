@@ -250,6 +250,74 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   letter-spacing:.1em;padding:2px 7px;border-radius:4px}
 .menu-tag-g{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);color:var(--accent)}
 
+/* ── admin ── */
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--line);position:relative;z-index:1}
+.atab{flex:1;padding:12px 0;text-align:center;font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.atab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.atab-content{display:none;flex-direction:column}
+.atab-content.active{display:flex}
+
+.admin-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;position:relative;z-index:1}
+.ast{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+.ast-val{font-size:26px;font-weight:900;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
+.ast-key{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.ast-green{color:var(--accent)}.ast-pink{color:var(--accent2)}.ast-cyan{color:var(--cyan)}.ast-gold{color:var(--gold)}
+
+.search-wrap{padding:12px 16px 4px;position:relative;z-index:1}
+.search-inp{width:100%;background:var(--card);border:1px solid var(--line);color:#fff;
+  padding:10px 14px 10px 36px;border-radius:10px;font-size:13px;outline:none;font-family:'Inter',sans-serif}
+.search-inp:focus{border-color:rgba(46,204,113,.4)}
+.search-ico{position:absolute;left:28px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none}
+
+.user-row{margin:0 16px 6px;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.ur-ava{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0}
+.ur-info{flex:1;min-width:0}
+.ur-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ur-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px}
+.ur-sub.active{color:var(--accent)}
+.ur-btns{display:flex;gap:5px;flex-shrink:0}
+.ur-btn{border:none;border-radius:7px;padding:5px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:opacity .15s}
+.ur-btn:active{opacity:.7}
+.ur-btn-on{background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.3);color:var(--accent)}
+.ur-btn-off{background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.25);color:var(--accent2)}
+
+.pay-req{margin:0 16px 8px;background:var(--card);border:1px solid rgba(255,204,0,.15);
+  border-radius:14px;padding:13px;position:relative;z-index:1}
+.pr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pr-user{font-size:13px;font-weight:700}
+.pr-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.pr-plan{display:inline-block;background:rgba(255,204,0,.1);border:1px solid rgba(255,204,0,.3);
+  color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+  padding:2px 8px;border-radius:5px;letter-spacing:.08em;margin-bottom:7px}
+.pr-link{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);
+  word-break:break-all;margin-bottom:8px;line-height:1.4}
+.pr-note{font-size:12px;color:var(--muted);margin-bottom:10px}
+.pr-approve{width:100%;background:var(--accent);color:#000;border:none;border-radius:9px;
+  padding:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s}
+.pr-approve:active{opacity:.8}
+
+.act-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;
+  display:none;align-items:flex-end;justify-content:center}
+.act-modal.open{display:flex}
+.act-sheet{background:var(--bg2);border-radius:20px 20px 0 0;padding:24px 20px 40px;
+  width:100%;max-width:480px;border-top:1px solid var(--line)}
+.act-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.act-sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.act-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.act-label{font-size:13px;font-weight:600;flex:1}
+.act-select{background:var(--card);border:1px solid var(--line);color:#fff;
+  padding:8px 10px;border-radius:8px;font-size:13px;outline:none}
+.act-days{background:var(--card);border:1px solid var(--line);color:#fff;
+  padding:8px 10px;border-radius:8px;font-size:13px;outline:none;width:80px;text-align:center}
+.act-do{width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;
+  padding:13px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px}
+.act-cancel{width:100%;background:transparent;color:var(--muted);border:none;
+  padding:12px;font-size:13px;cursor:pointer;margin-top:4px}
+
 /* ── toast ── */
 #toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(12px);
   background:rgba(46,204,113,.95);color:#000;font-size:13px;font-weight:700;
@@ -484,6 +552,86 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   </div>
 </div>
 
+<!-- ════════════ ADMIN ════════════ -->
+<div class="screen" id="screen-admin">
+  <div class="screen-header">
+    <div class="kicker">Управление</div>
+    <div class="screen-h1">⚙️ Админ панель</div>
+  </div>
+
+  <div class="admin-tabs">
+    <div class="atab active" id="atab-stats" onclick="adminTab('stats')">Статистика</div>
+    <div class="atab" id="atab-users" onclick="adminTab('users')">Пользователи</div>
+    <div class="atab" id="atab-payments" onclick="adminTab('payments')">
+      Заявки <span id="pay-count-badge" style="display:none;background:var(--accent2);color:#fff;font-size:8px;padding:1px 5px;border-radius:8px;margin-left:4px">0</span>
+    </div>
+  </div>
+
+  <!-- Stats tab -->
+  <div class="atab-content active" id="acontent-stats">
+    <div class="admin-stats">
+      <div class="ast"><div class="ast-val ast-cyan" id="adm-total">—</div><div class="ast-key">Всего юзеров</div></div>
+      <div class="ast"><div class="ast-val ast-green" id="adm-active">—</div><div class="ast-key">Активных</div></div>
+      <div class="ast"><div class="ast-val ast-gold" id="adm-sigs">—</div><div class="ast-key">Сигналов</div></div>
+      <div class="ast"><div class="ast-val ast-pink" id="adm-posts">—</div><div class="ast-key">Постов</div></div>
+    </div>
+    <div class="slabel">БЫСТРЫЕ ДЕЙСТВИЯ</div>
+    <div class="menu" style="padding:0 16px 12px">
+      <div class="menu-row" onclick="openExt('banner')">
+        <span class="menu-row-icon">🎨</span>
+        <div class="menu-row-text">Banner Maker</div>
+        <span class="menu-row-r">›</span>
+      </div>
+      <div class="menu-row" onclick="adminTab('users')">
+        <span class="menu-row-icon">👥</span>
+        <div class="menu-row-text">Управление подписками</div>
+        <span class="menu-row-r">›</span>
+      </div>
+      <div class="menu-row" onclick="adminTab('payments')">
+        <span class="menu-row-icon">💳</span>
+        <div class="menu-row-text">Заявки на оплату</div>
+        <span id="adm-pay-badge" class="menu-tag" style="display:none">0 новых</span>
+        <span class="menu-row-r">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users tab -->
+  <div class="atab-content" id="acontent-users">
+    <div class="search-wrap" style="position:relative">
+      <span class="search-ico">🔍</span>
+      <input class="search-inp" id="user-search" placeholder="Поиск по имени или @username..." oninput="searchUsers(this.value)">
+    </div>
+    <div id="users-list" style="padding:4px 0 8px"></div>
+  </div>
+
+  <!-- Payments tab -->
+  <div class="atab-content" id="acontent-payments">
+    <div id="payments-list" style="padding:12px 0 8px"></div>
+  </div>
+</div>
+
+<!-- Activate modal -->
+<div class="act-modal" id="act-modal">
+  <div class="act-sheet">
+    <div class="act-title" id="act-modal-title">Активировать подписку</div>
+    <div class="act-sub" id="act-modal-sub">Выбери тариф и срок</div>
+    <div class="act-row">
+      <div class="act-label">Тариф</div>
+      <select class="act-select" id="act-plan">
+        <option value="PRO">💎 PRO</option>
+        <option value="STANDARD">📊 STANDARD</option>
+      </select>
+    </div>
+    <div class="act-row">
+      <div class="act-label">Дней</div>
+      <input class="act-days" id="act-days" type="number" value="30" min="1" max="365">
+    </div>
+    <button class="act-do" onclick="doActivate()">✅ Активировать</button>
+    <button class="act-cancel" onclick="closeActModal()">Отмена</button>
+  </div>
+</div>
+
 <!-- ════════════ POST DETAIL ════════════ -->
 <div id="post-overlay">
   <div class="po-header">
@@ -514,6 +662,10 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   </div>
   <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
     <span class="nav-icon">👤</span><span class="nav-label">Профиль</span>
+  </div>
+  <div class="nav-item" id="nav-admin" onclick="navigate('admin')" style="display:none">
+    <span class="nav-icon">⚙️</span><span class="nav-label">Админ</span>
+    <div class="nav-notif" id="nav-notif-admin"></div>
   </div>
 </nav>
 
@@ -550,8 +702,9 @@ function navigate(screen) {
 
 // ── external ──
 function openExt(type) {
-  const map = { guide: BASE+'/guide.html', install: BASE+'/install.html' };
+  const map = { guide: BASE+'/guide.html', install: BASE+'/install.html', banner: BASE+'/banner_maker.html' };
   if (tg && map[type]) tg.openLink(map[type]);
+  else if (map[type]) window.open(map[type], '_blank');
 }
 function openSupport() { if (tg) tg.openTelegramLink('https://t.me/indicatortovaricha'); }
 
@@ -748,12 +901,203 @@ async function boot() {
     postsList.innerHTML = `<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Постов пока нет</div><div class="empty-sub">Аналитика появится здесь</div></div>`;
   }
 
+  // ── admin check ──
+  if (userId) {
+    const statsCheck = await adminApi('/api/admin/stats');
+    if (statsCheck !== null) {
+      document.getElementById('nav-admin').style.display = 'flex';
+      adminData.stats = statsCheck;
+      document.getElementById('adm-total').textContent = statsCheck.total_users ?? '—';
+      document.getElementById('adm-active').textContent = statsCheck.active_subs ?? '—';
+      document.getElementById('adm-sigs').textContent = statsCheck.total_signals ?? '—';
+      document.getElementById('adm-posts').textContent = statsCheck.total_posts ?? '—';
+      if (statsCheck.pending_payments > 0) {
+        document.getElementById('pay-count-badge').textContent = statsCheck.pending_payments;
+        document.getElementById('pay-count-badge').style.display = 'inline';
+        document.getElementById('adm-pay-badge').textContent = statsCheck.pending_payments + ' новых';
+        document.getElementById('adm-pay-badge').style.display = 'inline-block';
+        document.getElementById('nav-notif-admin').classList.add('show');
+      }
+    }
+  }
+
   // ── hide loader ──
   const loader = document.getElementById('loading');
   loader.style.transition = 'opacity .3s';
   loader.style.opacity = '0';
   setTimeout(() => loader.style.display = 'none', 300);
 }
+
+// ══════════════════════════════════════
+// ── ADMIN PANEL ──
+// ══════════════════════════════════════
+let adminData = { stats: null, users: [], payments: [] };
+let activateTarget = null;
+
+async function adminApi(path, method = 'GET', body = null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify({ ...body, tg_id: userId });
+  const sep = path.includes('?') ? '&' : '?';
+  const url = BASE + path + sep + 'tg_id=' + userId;
+  try {
+    const r = await fetch(url, opts);
+    if (r.ok) return r.json();
+    return null;
+  } catch(_) { return null; }
+}
+
+async function loadAdminStats() {
+  const s = await adminApi('/api/admin/stats');
+  if (!s) return;
+  adminData.stats = s;
+  document.getElementById('adm-total').textContent = s.total_users ?? '—';
+  document.getElementById('adm-active').textContent = s.active_subs ?? '—';
+  document.getElementById('adm-sigs').textContent = s.total_signals ?? '—';
+  document.getElementById('adm-posts').textContent = s.total_posts ?? '—';
+  if (s.pending_payments > 0) {
+    document.getElementById('pay-count-badge').textContent = s.pending_payments;
+    document.getElementById('pay-count-badge').style.display = 'inline';
+    document.getElementById('adm-pay-badge').textContent = s.pending_payments + ' новых';
+    document.getElementById('adm-pay-badge').style.display = 'inline-block';
+    document.getElementById('nav-notif-admin').classList.add('show');
+  }
+}
+
+async function loadAdminUsers(search = '') {
+  const sep = search ? `&search=${encodeURIComponent(search)}` : '';
+  const users = await adminApi(`/api/admin/users?${sep}`);
+  if (!users) return;
+  adminData.users = users;
+  renderUsers(users);
+}
+
+function renderUsers(users) {
+  const el = document.getElementById('users-list');
+  if (!users.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Пользователи не найдены</div></div>`;
+    return;
+  }
+  el.innerHTML = users.map(u => {
+    const name = escHtml(u.first_name || u.username || 'ID ' + u.id);
+    const handle = u.username ? '@' + escHtml(u.username) : 'ID ' + u.id;
+    const letter = (u.first_name || u.username || '?')[0].toUpperCase();
+    const subText = u.active
+      ? `✅ ${u.subscription_plan} · ${u.daysLeft} дн`
+      : '— нет подписки';
+    const subCls = u.active ? 'active' : '';
+    return `<div class="user-row">
+      <div class="ur-ava">${letter}</div>
+      <div class="ur-info">
+        <div class="ur-name">${name}</div>
+        <div class="ur-sub ${subCls}">${handle} · ${subText}</div>
+      </div>
+      <div class="ur-btns">
+        <button class="ur-btn ur-btn-on" onclick="openActModal(${u.id},'${escHtml(name)}')">+</button>
+        ${u.active ? `<button class="ur-btn ur-btn-off" onclick="deactivateUser(${u.id})">✕</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let searchTimer;
+function searchUsers(val) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => loadAdminUsers(val), 400);
+}
+
+async function loadAdminPayments() {
+  const payments = await adminApi('/api/admin/payments');
+  if (!payments) return;
+  adminData.payments = payments;
+  renderPayments(payments);
+}
+
+function renderPayments(payments) {
+  const el = document.getElementById('payments-list');
+  const pending = payments.filter(p => p.status === 'pending');
+  if (!pending.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Новых заявок нет</div></div>`;
+    return;
+  }
+  el.innerHTML = pending.map(p => {
+    const d = new Date(p.created_at);
+    const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    const name = escHtml(p.first_name || p.username || 'ID ' + p.user_id);
+    const handle = p.username ? '@' + escHtml(p.username) : 'ID ' + p.user_id;
+    return `<div class="pay-req">
+      <div class="pr-top">
+        <div class="pr-user">${name} <span style="color:var(--muted);font-size:11px">${handle}</span></div>
+        <div class="pr-time">${dateStr}</div>
+      </div>
+      ${p.plan ? `<div class="pr-plan">${p.plan}</div>` : ''}
+      ${p.tx_link ? `<div class="pr-link">🔗 ${escHtml(p.tx_link)}</div>` : ''}
+      ${p.tv_username ? `<div class="pr-note">TradingView: <b>${escHtml(p.tv_username)}</b></div>` : ''}
+      ${p.note ? `<div class="pr-note">${escHtml(p.note)}</div>` : ''}
+      <button class="pr-approve" onclick="approvePayment(${p.id}, '${escHtml(p.plan || 'PRO')}', this)">✅ Одобрить и активировать</button>
+    </div>`;
+  }).join('');
+}
+
+async function approvePayment(id, plan, btn) {
+  btn.disabled = true; btn.textContent = '⏳ Активирую...';
+  const r = await adminApi(`/api/admin/payments/${id}/approve`, 'POST', { days: 30 });
+  if (r?.ok) {
+    btn.closest('.pay-req').style.opacity = '0.4';
+    btn.textContent = '✅ Активировано!';
+    toast('✅ Подписка активирована!');
+    loadAdminStats();
+  } else {
+    btn.disabled = false; btn.textContent = '✅ Одобрить и активировать';
+    toast('Ошибка', true);
+  }
+}
+
+function openActModal(userId, userName) {
+  activateTarget = userId;
+  document.getElementById('act-modal-title').textContent = 'Активировать: ' + userName;
+  document.getElementById('act-modal').classList.add('open');
+}
+function closeActModal() {
+  document.getElementById('act-modal').classList.remove('open');
+  activateTarget = null;
+}
+
+async function doActivate() {
+  if (!activateTarget) return;
+  const plan = document.getElementById('act-plan').value;
+  const days = parseInt(document.getElementById('act-days').value) || 30;
+  const r = await adminApi(`/api/admin/user/${activateTarget}/activate`, 'POST', { plan, days });
+  if (r?.ok) {
+    toast('✅ Подписка активирована!');
+    closeActModal();
+    loadAdminUsers(document.getElementById('user-search').value);
+    loadAdminStats();
+  } else { toast('Ошибка активации', true); }
+}
+
+async function deactivateUser(uid) {
+  if (!confirm('Отключить подписку?')) return;
+  const r = await adminApi(`/api/admin/user/${uid}/deactivate`, 'POST');
+  if (r?.ok) {
+    toast('Подписка отключена');
+    loadAdminUsers(document.getElementById('user-search').value);
+    loadAdminStats();
+  } else { toast('Ошибка', true); }
+}
+
+function adminTab(tab) {
+  document.querySelectorAll('.atab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.atab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('atab-' + tab).classList.add('active');
+  document.getElementById('acontent-' + tab).classList.add('active');
+  if (tab === 'users' && !adminData.users.length) loadAdminUsers();
+  if (tab === 'payments' && !adminData.payments.length) loadAdminPayments();
+}
+
+// close modal on backdrop click
+document.getElementById('act-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeActModal();
+});
 
 boot();
 </script>
