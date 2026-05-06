@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banner Maker — IT v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0a0c; color:#fff; font-family:'Inter',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:40px 20px; gap:32px; }
+
+h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; letter-spacing:.25em; color:rgba(255,255,255,.3); text-transform:uppercase; }
+
+/* ── Controls ── */
+.controls {
+  display:flex; flex-wrap:wrap; gap:12px; justify-content:center;
+  max-width:700px; width:100%;
+}
+.ctrl { display:flex; flex-direction:column; gap:6px; flex:1; min-width:140px; }
+.ctrl label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.4); }
+.ctrl input, .ctrl select, .ctrl textarea {
+  background:#13131a; border:1px solid rgba(255,255,255,.1); color:#fff;
+  padding:8px 12px; border-radius:8px; font-family:'JetBrains Mono',monospace;
+  font-size:12px; outline:none; transition:border-color .2s;
+}
+.ctrl input:focus, .ctrl select:focus, .ctrl textarea:focus { border-color:rgba(46,204,113,.4); }
+.ctrl textarea { resize:vertical; min-height:72px; line-height:1.5; }
+.ctrl select option { background:#13131a; }
+
+.upload-btn {
+  background:#13131a; border:1px dashed rgba(46,204,113,.4); color:#2ecc71;
+  padding:12px 24px; border-radius:10px; cursor:pointer; font-family:'JetBrains Mono',monospace;
+  font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  transition:all .2s; text-align:center;
+}
+.upload-btn:hover { background:rgba(46,204,113,.08); border-color:rgba(46,204,113,.7); }
+
+.gen-btn {
+  background:#2ecc71; color:#000; border:none; padding:13px 32px;
+  border-radius:10px; font-size:14px; font-weight:800; cursor:pointer;
+  font-family:'Inter',sans-serif; letter-spacing:-.01em; transition:opacity .15s;
+}
+.gen-btn:hover { opacity:.85; }
+
+.dl-btn {
+  background:#ff3d7f; color:#fff; border:none; padding:13px 32px;
+  border-radius:10px; font-size:14px; font-weight:800; cursor:pointer;
+  font-family:'Inter',sans-serif; letter-spacing:-.01em; transition:opacity .15s;
+  display:none;
+}
+.dl-btn:hover { opacity:.85; }
+
+/* ── Banner canvas ── */
+.banner-wrap {
+  position:relative; width:700px; height:394px; /* 16:9 */
+  border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 20px 60px rgba(0,0,0,.8);
+  cursor:pointer;
+}
+
+/* Chart bg */
+#chart-bg {
+  position:absolute; inset:0;
+  background:#0d0d0f;
+  background-size:cover; background-position:center;
+}
+
+/* Dark overlay */
+.overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.45) 0%,
+    rgba(0,0,0,.1) 40%,
+    rgba(0,0,0,.15) 60%,
+    rgba(0,0,0,.75) 100%
+  );
+}
+
+/* Grid */
+.grid-overlay {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(46,204,113,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(46,204,113,.04) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+
+/* Corner brackets */
+.corner {
+  position:absolute; width:18px; height:18px;
+  border-color:#ff3d7f; border-style:solid; opacity:.8;
+}
+.c-tl { top:14px; left:14px; border-width:2px 0 0 2px; }
+.c-tr { top:14px; right:14px; border-width:2px 2px 0 0; }
+.c-bl { bottom:14px; left:14px; border-width:0 0 2px 2px; }
+.c-br { bottom:14px; right:14px; border-width:0 2px 2px 0; }
+
+/* Top bar */
+.top-bar {
+  position:absolute; top:18px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:12px;
+}
+.live-dot {
+  width:7px; height:7px; border-radius:50%; background:#2ecc71;
+  box-shadow:0 0 8px #2ecc71;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+.live-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  letter-spacing:.2em; color:rgba(255,255,255,.5); text-transform:uppercase;
+}
+.v3-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  letter-spacing:.15em; color:rgba(255,255,255,.3);
+}
+
+/* Kicker */
+.kicker {
+  position:absolute; top:22px; left:50%; transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+  letter-spacing:.28em; color:#ff3d7f; text-transform:uppercase;
+  display:flex; align-items:center; gap:10px; white-space:nowrap;
+}
+.kicker::before, .kicker::after {
+  content:''; width:18px; height:1.5px; background:#ff3d7f; opacity:.7; flex-shrink:0;
+}
+
+/* Bottom content */
+.bottom {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:16px 20px 18px;
+}
+.banner-tag {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  letter-spacing:.18em; text-transform:uppercase; color:#2ecc71;
+  display:flex; align-items:center; gap:6px; margin-bottom:7px;
+}
+.banner-tag::before { content:''; width:4px; height:4px; border-radius:50%; background:#2ecc71; flex-shrink:0; }
+.banner-title {
+  font-size:22px; font-weight:900; letter-spacing:-.02em; line-height:1.2;
+  color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.8);
+  margin-bottom:6px;
+}
+.banner-sub {
+  font-size:13px; color:rgba(255,255,255,.55); line-height:1.4;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  text-shadow:0 1px 4px rgba(0,0,0,.9);
+}
+
+/* Coin pill */
+.coin-pill {
+  position:absolute; bottom:18px; right:20px;
+  display:flex; align-items:center; gap:5px;
+  padding:5px 12px; border-radius:20px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.5);
+  font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700;
+  color:rgba(255,255,255,.5); letter-spacing:.15em;
+  backdrop-filter:blur(8px);
+}
+
+/* Upload hint */
+.upload-hint {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:10px; cursor:pointer;
+}
+.upload-hint-icon { font-size:36px; opacity:.3; }
+.upload-hint-text {
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+  letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.25);
+}
+
+/* Hidden file input */
+#file-input { display:none; }
+
+/* Preview canvas */
+#export-canvas { display:none; }
+</style>
+</head>
+<body>
+
+<h1>— IT v3 · Banner Maker —</h1>
+
+<!-- Controls -->
+<div class="controls">
+  <div class="ctrl" style="flex:2;min-width:200px">
+    <label>Заголовок</label>
+    <input type="text" id="inp-title" value="💎 SOL — обновление по рынку" oninput="update()">
+  </div>
+  <div class="ctrl">
+    <label>Тег</label>
+    <input type="text" id="inp-tag" value="SOL · 1D" oninput="update()">
+  </div>
+  <div class="ctrl" style="flex:2;min-width:200px">
+    <label>Подзаголовок</label>
+    <textarea id="inp-sub" oninput="update()">Структура ослабла. Приоритет за коррекцией.</textarea>
+  </div>
+  <div class="ctrl">
+    <label>Монеты</label>
+    <input type="text" id="inp-coins" value="BTC · ETH · SOL" oninput="update()">
+  </div>
+</div>
+
+<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+  <label class="upload-btn" for="file-input">📂 Загрузить график</label>
+  <button class="gen-btn" onclick="exportBanner()">💾 Скачать баннер</button>
+  <button class="dl-btn" id="dl-btn">⬇ Скачать PNG</button>
+</div>
+
+<input type="file" id="file-input" accept="image/*" onchange="loadChart(this)">
+
+<!-- Banner Preview -->
+<div class="banner-wrap" id="banner" onclick="document.getElementById('file-input').click()">
+  <div id="chart-bg"></div>
+  <div class="grid-overlay"></div>
+  <div class="overlay"></div>
+
+  <div id="upload-hint" class="upload-hint">
+    <div class="upload-hint-icon">📈</div>
+    <div class="upload-hint-text">Нажми чтобы загрузить скрин графика</div>
+  </div>
+
+  <div class="corner c-tl"></div>
+  <div class="corner c-tr"></div>
+  <div class="corner c-bl"></div>
+  <div class="corner c-br"></div>
+
+  <div class="kicker" id="b-kicker">Индикатор</div>
+
+  <div class="bottom">
+    <div class="banner-tag" id="b-tag">SOL · 1D</div>
+    <div class="banner-title" id="b-title">💎 SOL — обновление по рынку</div>
+    <div class="banner-sub" id="b-sub">Структура ослабла. Приоритет за коррекцией.</div>
+  </div>
+
+  <div class="coin-pill" id="b-coins">BTC · ETH · SOL</div>
+</div>
+
+<canvas id="export-canvas"></canvas>
+
+<script>
+let chartImg = null;
+
+function update() {
+  document.getElementById('b-title').textContent = document.getElementById('inp-title').value;
+  document.getElementById('b-tag').childNodes[1] ? null : null;
+  const tagEl = document.getElementById('b-tag');
+  tagEl.textContent = document.getElementById('inp-tag').value;
+  tagEl.insertAdjacentHTML('afterbegin', '<span style="content:\'\';width:4px;height:4px;border-radius:50%;background:#2ecc71;display:inline-block;margin-right:6px;flex-shrink:0"></span>');
+  document.getElementById('b-sub').textContent = document.getElementById('inp-sub').value;
+  document.getElementById('b-coins').textContent = document.getElementById('inp-coins').value;
+}
+
+function loadChart(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    chartImg = e.target.result;
+    document.getElementById('chart-bg').style.backgroundImage = `url(${chartImg})`;
+    document.getElementById('chart-bg').style.backgroundSize = 'cover';
+    document.getElementById('chart-bg').style.backgroundPosition = 'center';
+    document.getElementById('upload-hint').style.display = 'none';
+    document.getElementById('banner').style.cursor = 'default';
+  };
+  reader.readAsDataURL(file);
+}
+
+function exportBanner() {
+  const W = 1280, H = 720;
+  const canvas = document.getElementById('export-canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const draw = () => {
+    // Background
+    ctx.fillStyle = '#0d0d0f';
+    ctx.fillRect(0, 0, W, H);
+
+    // Chart image
+    if (chartImg) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, W, H);
+        drawOverlay(ctx, W, H);
+      };
+      img.src = chartImg;
+    } else {
+      drawOverlay(ctx, W, H);
+    }
+  };
+
+  draw();
+}
+
+function drawOverlay(ctx, W, H) {
+  // Grid
+  ctx.strokeStyle = 'rgba(46,204,113,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+  // Gradient overlay
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(0,0,0,0.5)');
+  grad.addColorStop(0.4, 'rgba(0,0,0,0.1)');
+  grad.addColorStop(0.6, 'rgba(0,0,0,0.15)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.8)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Corner brackets
+  ctx.strokeStyle = '#ff3d7f';
+  ctx.lineWidth = 3;
+  ctx.globalAlpha = 0.8;
+  const bs = 28; const bp = 20;
+  // TL
+  ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
+  // TR
+  ctx.beginPath(); ctx.moveTo(W-bp-bs,bp); ctx.lineTo(W-bp,bp); ctx.lineTo(W-bp,bp+bs); ctx.stroke();
+  // BL
+  ctx.beginPath(); ctx.moveTo(bp+bs,H-bp); ctx.lineTo(bp,H-bp); ctx.lineTo(bp,H-bp-bs); ctx.stroke();
+  // BR
+  ctx.beginPath(); ctx.moveTo(W-bp-bs,H-bp); ctx.lineTo(W-bp,H-bp); ctx.lineTo(W-bp,H-bp-bs); ctx.stroke();
+  ctx.globalAlpha = 1;
+
+  // Kicker — ИНДИКАТОР —
+  const kickerY = 42;
+  ctx.font = 'bold 16px JetBrains Mono, monospace';
+  ctx.fillStyle = '#ff3d7f';
+  ctx.textAlign = 'center';
+  ctx.globalAlpha = 0.9;
+  const kickerText = '— ИНДИКАТОР —';
+  ctx.fillText(kickerText, W/2, kickerY);
+  ctx.globalAlpha = 1;
+
+  // Live dot
+  ctx.beginPath();
+  ctx.arc(60, 38, 5, 0, Math.PI*2);
+  ctx.fillStyle = '#2ecc71';
+  ctx.fill();
+  ctx.shadowColor = '#2ecc71';
+  ctx.shadowBlur = 10;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // LIVE · PRO SIGNALS
+  ctx.font = 'bold 11px JetBrains Mono, monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.textAlign = 'left';
+  ctx.fillText('LIVE · PRO SIGNALS', 74, 42);
+
+  // V3
+  ctx.textAlign = 'right';
+  ctx.fillText('V3', W-28, 42);
+
+  // Bottom gradient extra
+  const botGrad = ctx.createLinearGradient(0, H*0.55, 0, H);
+  botGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  botGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
+  ctx.fillStyle = botGrad;
+  ctx.fillRect(0, H*0.55, W, H*0.45);
+
+  // Tag
+  const tag = document.getElementById('inp-tag').value;
+  ctx.font = 'bold 14px JetBrains Mono, monospace';
+  ctx.fillStyle = '#2ecc71';
+  ctx.textAlign = 'left';
+  ctx.fillText('• ' + tag, 32, H - 110);
+
+  // Title
+  const title = document.getElementById('inp-title').value;
+  ctx.font = '900 36px Inter, sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'left';
+  ctx.fillText(title, 30, H - 72);
+
+  // Sub
+  const sub = document.getElementById('inp-sub').value.split('\n')[0];
+  ctx.font = '400 18px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  ctx.fillText(sub.substring(0, 80), 30, H - 38);
+
+  // Coin pill (right bottom)
+  const coins = document.getElementById('inp-coins').value;
+  ctx.font = 'bold 13px JetBrains Mono, monospace';
+  const pillW = ctx.measureText(coins).width + 30;
+  const pillX = W - pillW - 28;
+  const pillY = H - 54;
+
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  roundRect(ctx, pillX, pillY, pillW, 30, 15);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  roundRect(ctx, pillX, pillY, pillW, 30, 15);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.textAlign = 'center';
+  ctx.fillText(coins, pillX + pillW/2, pillY + 20);
+
+  // Download
+  const link = document.createElement('a');
+  link.download = `IT_v3_${tag.replace(/[^a-zа-я0-9]/gi,'_')}_banner.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+// Init
+update();
+</script>
+</body>
+</html>
