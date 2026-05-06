@@ -627,7 +627,7 @@ function adminOnly(req, res, next) {
 
 // ─── API: Admin stats ─────────────────────────────────────
 app.get('/api/admin/stats', adminOnly, async (req, res) => {
-  if (!pool) return res.sendStatus(503)
+  if (!pool) return res.json({ total_users:0, active_subs:0, total_signals:0, total_posts:0, pending_payments:0, no_db:true })
   try {
     const [users, active, newToday, signals, posts, payments] = await Promise.all([
       pool.query(`SELECT COUNT(*) FROM users`),
@@ -652,7 +652,7 @@ app.get('/api/admin/stats', adminOnly, async (req, res) => {
 
 // ─── API: Admin users list ────────────────────────────────
 app.get('/api/admin/users', adminOnly, async (req, res) => {
-  if (!pool) return res.sendStatus(503)
+  if (!pool) return res.json([])
   const search = req.query.search || ''
   const limit  = parseInt(req.query.limit) || 50
   const offset = parseInt(req.query.offset) || 0
@@ -725,7 +725,7 @@ app.post('/api/admin/user/:id/deactivate', adminOnly, async (req, res) => {
 
 // ─── API: Admin payment requests ─────────────────────────
 app.get('/api/admin/payments', adminOnly, async (req, res) => {
-  if (!pool) return res.sendStatus(503)
+  if (!pool) return res.json([])
   try {
     const { rows } = await pool.query(
       `SELECT * FROM payment_requests ORDER BY created_at DESC LIMIT 50`
