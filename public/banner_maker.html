@@ -196,6 +196,45 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
 
 /* Preview canvas */
 #export-canvas { display:none; }
+
+/* ── Post Composer ── */
+.post-composer {
+  width:700px; display:flex; flex-direction:column; gap:14px;
+}
+.composer-label {
+  font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700;
+  letter-spacing:.2em; color:rgba(255,255,255,.3); text-transform:uppercase;
+}
+.post-text {
+  width:100%; min-height:200px; background:#13131a;
+  border:1px solid rgba(255,255,255,.1); border-radius:12px;
+  color:#fff; padding:16px; font-family:'Inter',sans-serif;
+  font-size:14px; line-height:1.7; outline:none; resize:vertical;
+  transition:border-color .2s;
+}
+.post-text:focus { border-color:rgba(46,204,113,.4); }
+.post-text::placeholder { color:rgba(255,255,255,.2); }
+.composer-actions {
+  display:flex; gap:10px; flex-wrap:wrap;
+}
+.action-btn {
+  flex:1; min-width:160px; padding:13px 20px; border:none; border-radius:10px;
+  font-size:14px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition:opacity .15s, transform .1s;
+}
+.action-btn:hover { opacity:.85; }
+.action-btn:active { transform:scale(.97); }
+.download-btn { background:#1a1a24; color:#fff; border:1px solid rgba(255,255,255,.12); }
+.copy-btn { background:#1a1a24; color:#4dc9f0; border:1px solid rgba(77,201,240,.2); }
+.both-btn { background:#2ecc71; color:#000; }
+.copy-toast {
+  display:none; text-align:center;
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  color:#2ecc71; letter-spacing:.1em; padding:8px;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
 </style>
 </head>
 <body>
@@ -264,6 +303,36 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
 
 <canvas id="export-canvas"></canvas>
 
+<!-- Post Composer -->
+<div class="post-composer">
+  <div class="composer-label">📝 ТЕКСТ ПОСТА</div>
+  <textarea class="post-text" id="post-text" placeholder="Напиши аналитику сюда...
+
+Пример:
+💎 SOL — обновление по рынку
+
+📊 Структура ослабла. Приоритет за коррекцией.
+
+🔑 Ключевые уровни:
+• SELL 100% — 109.25
+• BUY 50% — 78.06
+• BUY 100% — 69.55
+
+📌 Индикатор IT v3 | @твой_канал"></textarea>
+  <div class="composer-actions">
+    <button class="action-btn download-btn" onclick="exportBanner()">
+      <span>⬇</span> Скачать баннер
+    </button>
+    <button class="action-btn copy-btn" onclick="copyText()">
+      <span>📋</span> Копировать текст
+    </button>
+    <button class="action-btn both-btn" onclick="saveAll()">
+      <span>🚀</span> Скачать + копировать
+    </button>
+  </div>
+  <div class="copy-toast" id="copy-toast">✅ Текст скопирован!</div>
+</div>
+
 <script>
 let chartImg = null;
 
@@ -275,6 +344,7 @@ function update() {
   tagEl.insertAdjacentHTML('afterbegin', '<span style="content:\'\';width:4px;height:4px;border-radius:50%;background:#2ecc71;display:inline-block;margin-right:6px;flex-shrink:0"></span>');
   document.getElementById('b-sub').textContent = document.getElementById('inp-sub').value;
   document.getElementById('b-coins').textContent = document.getElementById('inp-coins').value;
+  syncPostText();
 }
 
 function loadChart(input) {
@@ -476,8 +546,48 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+function copyText() {
+  const text = document.getElementById('post-text').value.trim();
+  if (!text) return showToast('⚠️ Текст пустой');
+  navigator.clipboard.writeText(text).then(() => showToast('✅ Текст скопирован!')).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); showToast('✅ Текст скопирован!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('copy-toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 2500);
+}
+
+function saveAll() {
+  exportBanner();
+  setTimeout(() => copyText(), 400);
+}
+
+// Auto-fill post text from fields
+function syncPostText() {
+  const title = document.getElementById('inp-title').value;
+  const tag = document.getElementById('inp-tag').value;
+  const sub = document.getElementById('inp-sub').value;
+  const coins = document.getElementById('inp-coins').value;
+  const pt = document.getElementById('post-text');
+  if (!pt.dataset.edited) {
+    pt.value = `${title}\n\n📊 ${sub}\n\n🏷 ${tag}  |  ${coins}\n\n📌 Индикатор IT v3`;
+  }
+}
+
+document.getElementById('post-text').addEventListener('input', function() {
+  this.dataset.edited = '1';
+});
+
 // Init
 update();
+syncPostText();
 </script>
 </body>
 </html>
