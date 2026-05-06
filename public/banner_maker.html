@@ -298,25 +298,27 @@ function exportBanner() {
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
 
-  const draw = () => {
-    // Background
-    ctx.fillStyle = '#0d0d0f';
-    ctx.fillRect(0, 0, W, H);
+  const btn = document.querySelector('.gen-btn');
+  btn.textContent = '⏳ Генерирую...';
+  btn.disabled = true;
 
-    // Chart image
-    if (chartImg) {
-      const img = new Image();
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, W, H);
-        drawOverlay(ctx, W, H);
-      };
-      img.src = chartImg;
-    } else {
-      drawOverlay(ctx, W, H);
-    }
+  const finish = () => {
+    drawOverlay(ctx, W, H);
+    btn.textContent = '💾 Скачать баннер';
+    btn.disabled = false;
   };
 
-  draw();
+  ctx.fillStyle = '#0d0d0f';
+  ctx.fillRect(0, 0, W, H);
+
+  if (chartImg) {
+    const img = new Image();
+    img.onload = () => { ctx.drawImage(img, 0, 0, W, H); finish(); };
+    img.onerror = () => finish();
+    img.src = chartImg;
+  } else {
+    finish();
+  }
 }
 
 function drawOverlay(ctx, W, H) {
@@ -450,11 +452,18 @@ function drawOverlay(ctx, W, H) {
   ctx.textAlign = 'center';
   ctx.fillText(coins, pillX + pillW/2, pillY + 20);
 
-  // Download
-  const link = document.createElement('a');
-  link.download = `IT_v3_${tag.replace(/[^a-zа-я0-9]/gi,'_')}_banner.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+  // Download via toBlob — most reliable cross-browser
+  const canvas = document.getElementById('export-canvas');
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `IT_v3_${tag.replace(/[^a-zа-я0-9]/gi,'_')}_banner.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, 'image/png');
 }
 
 function roundRect(ctx, x, y, w, h, r) {
