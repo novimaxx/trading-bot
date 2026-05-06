@@ -624,32 +624,66 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   <!-- Send tab -->
   <div class="atab-content" id="acontent-send">
     <div style="padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1">
+
+      <!-- Banner preview -->
+      <div class="ctrl">
+        <label>График (скрин с TradingView)</label>
+        <label class="upload-btn" for="bc-file" style="display:block;text-align:center;padding:10px;font-size:11px">📂 Загрузить график</label>
+        <input type="file" id="bc-file" accept="image/*" style="display:none" onchange="bcLoadChart(this)">
+      </div>
+
+      <div id="bc-banner-wrap" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0d0d0f;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="document.getElementById('bc-file').click()">
+        <div id="bc-chart-bg" style="position:absolute;inset:0;background-size:cover;background-position:center"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.75) 100%)"></div>
+        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(46,204,113,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(46,204,113,.04) 1px,transparent 1px);background-size:40px 40px"></div>
+        <!-- corners -->
+        <div style="position:absolute;top:8px;left:8px;width:14px;height:14px;border-top:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
+        <div style="position:absolute;top:8px;right:8px;width:14px;height:14px;border-top:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
+        <div style="position:absolute;bottom:8px;left:8px;width:14px;height:14px;border-bottom:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
+        <div style="position:absolute;bottom:8px;right:8px;width:14px;height:14px;border-bottom:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
+        <!-- IT V3 badge -->
+        <div style="position:absolute;top:10px;right:28px;display:flex;align-items:center;gap:4px;background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);border-radius:20px;padding:3px 9px">
+          <div style="width:4px;height:4px;border-radius:50%;background:#2ecc71;box-shadow:0 0 5px #2ecc71"></div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:#2ecc71;letter-spacing:.15em">IT V3</span>
+        </div>
+        <!-- kicker -->
+        <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.25em;color:#ff3d7f;white-space:nowrap">— ИНДИКАТОР —</div>
+        <!-- bottom -->
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 12px 12px" id="bc-banner-bottom">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.15em;color:#2ecc71;margin-bottom:4px" id="bc-b-tag">• АНАЛИТИКА</div>
+          <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:3px" id="bc-b-title">Заголовок поста</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.55)" id="bc-b-sub"></div>
+        </div>
+        <!-- upload hint -->
+        <div id="bc-upload-hint" style="position:relative;z-index:2;text-align:center;color:rgba(255,255,255,.25)">
+          <div style="font-size:28px;margin-bottom:6px">📈</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase">Нажми чтобы загрузить</div>
+        </div>
+      </div>
+
+      <canvas id="bc-canvas" style="display:none"></canvas>
+
       <div class="ctrl">
         <label>Заголовок</label>
-        <input type="text" id="bc-title" placeholder="💎 SOL — обновление по рынку">
+        <input type="text" id="bc-title" placeholder="💎 SOL — обновление по рынку" oninput="bcUpdatePreview()">
       </div>
       <div class="ctrl">
         <label>Тег</label>
-        <input type="text" id="bc-tag" placeholder="SOL · 1D" value="АНАЛИТИКА">
+        <input type="text" id="bc-tag" placeholder="SOL · 1D" value="АНАЛИТИКА" oninput="bcUpdatePreview()">
+      </div>
+      <div class="ctrl">
+        <label>Текст поста</label>
+        <textarea id="bc-body" style="min-height:140px;background:#13131a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;line-height:1.7;outline:none;resize:vertical;font-family:'Inter',sans-serif" placeholder="Напиши аналитику..." oninput="bcUpdatePreview()"></textarea>
       </div>
       <div class="ctrl">
         <label>Аудитория</label>
         <div style="display:flex;gap:8px">
           <button class="aud-btn active" id="aud-all" onclick="setAudience('all',this)">👥 Все</button>
-          <button class="aud-btn" id="aud-std" onclick="setAudience('STANDARD',this)">📊 STANDARD</button>
+          <button class="aud-btn" id="aud-std" onclick="setAudience('STANDARD',this)">📊 Standard</button>
           <button class="aud-btn" id="aud-pro" onclick="setAudience('PRO',this)">💎 PRO</button>
         </div>
       </div>
-      <div class="ctrl">
-        <label>Текст поста</label>
-        <textarea id="bc-body" style="min-height:180px;background:#13131a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;line-height:1.7;outline:none;resize:vertical;font-family:'Inter',sans-serif" placeholder="Напиши аналитику..."></textarea>
-      </div>
-      <div class="ctrl">
-        <label>Ссылка на картинку (необязательно)</label>
-        <input type="text" id="bc-img" placeholder="https://...">
-      </div>
-      <div id="bc-preview" style="display:none;background:#13131a;border:1px solid rgba(46,204,113,.2);border-radius:12px;padding:14px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);white-space:pre-wrap"></div>
-      <button style="background:#13131a;border:1px solid rgba(255,255,255,.1);color:var(--muted);border-radius:10px;padding:10px;font-size:13px;cursor:pointer" onclick="bcPreview()">👁 Превью</button>
+
       <button id="bc-send-btn" style="background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif" onclick="bcSend()">📤 Отправить подписчикам</button>
       <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);padding:8px"></div>
     </div>
@@ -1138,41 +1172,198 @@ function setAudience(val, el) {
   el.classList.add('active');
 }
 
-function bcPreview() {
+// ── Banner maker (Send tab) ──────────────────────────────────────
+let bcChartImg = null;
+
+function bcLoadChart(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    bcChartImg = e.target.result;
+    document.getElementById('bc-chart-bg').style.backgroundImage = `url(${bcChartImg})`;
+    document.getElementById('bc-upload-hint').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function bcUpdatePreview() {
   const title = document.getElementById('bc-title').value;
-  const body  = document.getElementById('bc-body').value;
   const tag   = document.getElementById('bc-tag').value;
-  const prev  = document.getElementById('bc-preview');
-  const text  = [title, body, tag ? '🏷 ' + tag : null].filter(Boolean).join('\n\n');
-  prev.textContent = text || '(пусто)';
-  prev.style.display = 'block';
+  const body  = document.getElementById('bc-body').value.split('\n')[0];
+  document.getElementById('bc-b-title').textContent = title || 'Заголовок поста';
+  document.getElementById('bc-b-tag').textContent   = '• ' + (tag || 'АНАЛИТИКА');
+  document.getElementById('bc-b-sub').textContent   = body;
+}
+
+function bcRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+function bcRenderCanvas() {
+  const W = 1280, H = 720;
+  const canvas = document.getElementById('bc-canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0d0d0f';
+  ctx.fillRect(0, 0, W, H);
+
+  return new Promise(resolve => {
+    const finish = () => {
+      // Grid
+      ctx.strokeStyle = 'rgba(46,204,113,0.04)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+      // Gradient overlay
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, 'rgba(0,0,0,0.5)');
+      grad.addColorStop(0.4, 'rgba(0,0,0,0.1)');
+      grad.addColorStop(0.6, 'rgba(0,0,0,0.15)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.8)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Corner brackets
+      ctx.strokeStyle = '#ff3d7f';
+      ctx.lineWidth = 5;
+      ctx.globalAlpha = 0.85;
+      const bs = 30, bp = 8;
+      ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W-bp-bs,bp); ctx.lineTo(W-bp,bp); ctx.lineTo(W-bp,bp+bs); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bp+bs,H-bp); ctx.lineTo(bp,H-bp); ctx.lineTo(bp,H-bp-bs); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W-bp-bs,H-bp); ctx.lineTo(W-bp,H-bp); ctx.lineTo(W-bp,H-bp-bs); ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      // Kicker
+      ctx.font = 'bold 16px JetBrains Mono, monospace';
+      ctx.fillStyle = '#ff3d7f';
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = 0.9;
+      ctx.fillText('— ИНДИКАТОР —', W/2, 42);
+      ctx.globalAlpha = 1;
+
+      // Live dot
+      ctx.beginPath();
+      ctx.arc(60, 38, 5, 0, Math.PI*2);
+      ctx.fillStyle = '#2ecc71';
+      ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 10;
+      ctx.fill(); ctx.shadowBlur = 0;
+
+      // LIVE label
+      ctx.font = 'bold 11px JetBrains Mono, monospace';
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.textAlign = 'left';
+      ctx.fillText('LIVE · PRO SIGNALS', 74, 42);
+
+      // IT V3 badge
+      const badgeText = 'IT V3';
+      ctx.font = 'bold 12px JetBrains Mono, monospace';
+      const badgeTW = ctx.measureText(badgeText).width;
+      const badgeW = badgeTW + 30, badgeH = 26;
+      const badgeX = W - badgeW - 28, badgeY = 22;
+      ctx.fillStyle = 'rgba(46,204,113,0.15)';
+      bcRoundRect(ctx, badgeX, badgeY, badgeW, badgeH, 13); ctx.fill();
+      ctx.strokeStyle = 'rgba(46,204,113,0.5)'; ctx.lineWidth = 1;
+      bcRoundRect(ctx, badgeX, badgeY, badgeW, badgeH, 13); ctx.stroke();
+      ctx.beginPath(); ctx.arc(badgeX+13, badgeY+badgeH/2, 3.5, 0, Math.PI*2);
+      ctx.fillStyle = '#2ecc71'; ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 8;
+      ctx.fill(); ctx.shadowBlur = 0;
+      ctx.fillStyle = '#2ecc71'; ctx.textAlign = 'left';
+      ctx.fillText(badgeText, badgeX+22, badgeY+17);
+
+      // Bottom extra gradient
+      const botGrad = ctx.createLinearGradient(0, H*0.55, 0, H);
+      botGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      botGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
+      ctx.fillStyle = botGrad;
+      ctx.fillRect(0, H*0.55, W, H*0.45);
+
+      // Tag
+      const tag = document.getElementById('bc-tag').value || 'АНАЛИТИКА';
+      ctx.font = 'bold 14px JetBrains Mono, monospace';
+      ctx.fillStyle = '#2ecc71'; ctx.textAlign = 'left';
+      ctx.fillText('• ' + tag, 32, H - 110);
+
+      // Title
+      const title = document.getElementById('bc-title').value || '';
+      ctx.font = '900 36px Inter, sans-serif';
+      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left';
+      ctx.fillText(title, 30, H - 72);
+
+      // Sub (first line of body)
+      const sub = (document.getElementById('bc-body').value || '').split('\n')[0];
+      ctx.font = '400 18px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.fillText(sub.substring(0, 80), 30, H - 38);
+
+      resolve(canvas.toDataURL('image/png'));
+    };
+
+    if (bcChartImg) {
+      const img = new Image();
+      img.onload = () => { ctx.drawImage(img, 0, 0, W, H); finish(); };
+      img.src = bcChartImg;
+    } else {
+      finish();
+    }
+  });
 }
 
 async function bcSend() {
   const title = document.getElementById('bc-title').value.trim();
   const body  = document.getElementById('bc-body').value.trim();
   const tag   = document.getElementById('bc-tag').value.trim();
-  const img   = document.getElementById('bc-img').value.trim();
+
   if (!body && !title) { toast('Напиши текст поста', true); return; }
+  if (!bcChartImg) { toast('Загрузи график!', true); return; }
 
   const btn = document.getElementById('bc-send-btn');
-  btn.disabled = true; btn.textContent = '⏳ Отправляю...';
+  btn.disabled = true; btn.textContent = '⏳ Рендерю баннер...';
 
-  const r = await adminApi('/api/admin/broadcast', 'POST', { title, body, tag, image_url: img || null, audience: bcAudience });
+  let image_b64;
+  try {
+    const dataUrl = await bcRenderCanvas();
+    image_b64 = dataUrl.replace(/^data:image\/png;base64,/, '');
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '📤 Отправить подписчикам';
+    toast('Ошибка рендера', true); return;
+  }
+
+  btn.textContent = '⏳ Отправляю...';
+
+  const r = await adminApi('/api/admin/broadcast-photo', 'POST', {
+    title, body, tag, image_b64, audience: bcAudience
+  });
 
   btn.disabled = false; btn.textContent = '📤 Отправить подписчикам';
 
   if (r?.ok) {
     const res = document.getElementById('bc-result');
-    res.textContent = `✅ Отправлено: ${r.sent} · Ошибок: ${r.failed} · Всего подписчиков: ${r.total}`;
+    res.textContent = `✅ Отправлено: ${r.sent} · Ошибок: ${r.failed} · Всего: ${r.total}`;
     res.style.display = 'block';
-    toast('✅ Пост отправлен!');
-    // Очистить форму
+    toast('✅ Пост с баннером отправлен!');
     document.getElementById('bc-title').value = '';
     document.getElementById('bc-body').value = '';
-    document.getElementById('bc-preview').style.display = 'none';
+    bcChartImg = null;
+    document.getElementById('bc-chart-bg').style.backgroundImage = '';
+    document.getElementById('bc-upload-hint').style.display = '';
+    bcUpdatePreview();
   } else {
-    toast('Ошибка отправки', true);
+    toast(r?.error || 'Ошибка отправки', true);
   }
 }
 

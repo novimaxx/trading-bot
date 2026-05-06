@@ -816,6 +816,69 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
   res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
 })
 
+// ─── API: Admin broadcast с фото ─────────────────────────
+app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
+  const { title, body, tag, audience, image_b64 } = req.body
+  if (!image_b64) return res.sendStatus(400)
+
+  const caption = [
+    title ? `*${title}*` : null,
+    body || null,
+    tag ? `\n🏷 ${tag}` : null,
+    '\n📱 _IT v3_'
+  ].filter(Boolean).join('\n\n')
+
+  // Сохранить пост в БД
+  let savedId = null
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `INSERT INTO app_posts (title, body, tag) VALUES ($1,$2,$3) RETURNING id`,
+        [title||null, body||null, tag||'АНАЛИТИКА']
+      )
+      savedId = rows[0].id
+    } catch (e) { console.error('Save post error:', e.message) }
+  }
+
+  // Получить подписчиков
+  const planFilter = !audience || audience === 'all' ? ''
+    : `AND subscription_plan = '${audience}'`
+  let subscribers = []
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() ${planFilter}`
+      )
+      subscribers = rows.map(r => r.id)
+    } catch (e) { console.error('Get subs error:', e.message) }
+  }
+
+  // Декодировать base64 → Buffer
+  const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
+  const imgBuf = Buffer.from(base64, 'base64')
+
+  let sent = 0, failed = 0
+  for (const chatId of subscribers) {
+    try {
+      // Отправить фото через multipart
+      const fd = new FormData()
+      fd.append('chat_id', String(chatId))
+      fd.append('caption', caption)
+      fd.append('parse_mode', 'Markdown')
+      fd.append('photo', new Blob([imgBuf], { type: 'image/png' }), 'banner.png')
+
+      const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+        method: 'POST', body: fd
+      })
+      const j = await r.json()
+      if (j.ok) sent++; else { failed++; console.error('sendPhoto error:', j.description) }
+      await new Promise(r => setTimeout(r, 60))
+    } catch (e) { failed++; console.error('sendPhoto exception:', e.message) }
+  }
+
+  res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
+})
+
 // ─── API: Approve payment request ────────────────────────
 app.post('/api/admin/payments/:id/approve', adminOnly, async (req, res) => {
   if (!pool) return res.sendStatus(503)
