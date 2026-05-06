@@ -212,70 +212,119 @@
 
   /* ─── APP MOCKUP ─── */
   .app-mockup-wrap {
-    display: grid; grid-template-columns: 260px 1fr; gap: 32px; align-items: center;
+    display: grid; grid-template-columns: 260px 1fr; gap: 40px; align-items: center;
     background: var(--card); border: 1px solid var(--line2); border-radius: 20px; padding: 32px;
   }
   .phone {
-    width: 220px; border-radius: 44px; border: 2px solid var(--line2);
-    background: #08080e; padding: 22px 12px 32px; box-shadow: 0 24px 72px rgba(0,0,0,.7);
+    width: 230px; border-radius: 40px; border: 2px solid #1e1e28;
+    background: #070709; padding: 18px 10px 10px;
+    box-shadow: 0 32px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.04);
     margin: 0 auto; position: relative;
   }
   .phone::before {
-    content: ''; display: block; width: 72px; height: 6px;
-    background: var(--line2); border-radius: 3px; margin: 0 auto 18px;
+    content: ''; display: block; width: 64px; height: 5px;
+    background: #1e1e28; border-radius: 3px; margin: 0 auto 14px;
   }
   .phone-screen {
-    background: #0a0a0c; border-radius: 28px; overflow: hidden; padding: 0;
+    background: #0c0c10; border-radius: 26px; overflow: hidden;
   }
-  .phone-hero {
-    background: linear-gradient(180deg, #0d1810 0%, #0a0a0c 100%);
-    padding: 24px 14px 18px; border-bottom: 1px solid rgba(255,255,255,.06);
+  /* ── Phone header ── */
+  .phone-header {
+    background: linear-gradient(180deg,#0d1810 0%,#0b0b0f 100%);
+    padding: 14px 14px 10px;
+    border-bottom: 1px solid rgba(255,255,255,.06);
   }
   .phone-kicker {
-    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
-    letter-spacing: .2em; color: var(--pink); margin-bottom: 5px;
+    font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700;
+    letter-spacing: .25em; color: var(--pink); margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
   }
+  .phone-kicker::before, .phone-kicker::after { content:'—'; opacity:.6; }
   .phone-title {
-    font-size: 28px; font-weight: 900; letter-spacing: -.03em; line-height: .95;
-    text-transform: uppercase;
+    font-size: 26px; font-weight: 900; letter-spacing: -.03em; line-height: .9;
+    text-transform: uppercase; margin-bottom: 3px;
   }
   .phone-title .g {
-    background: linear-gradient(180deg, #6FFFB2, #2ecc71);
+    background: linear-gradient(180deg,#6FFFB2,#2ecc71);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .phone-badges { display: flex; gap: 6px; margin-top: 10px; }
-  .phone-badge {
-    padding: 3px 10px; border-radius: 12px; font-size: 9px; font-weight: 700;
-    font-family: 'JetBrains Mono', monospace; letter-spacing: .08em;
+  .phone-subtitle {
+    font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 600;
+    letter-spacing: .18em; color: rgba(255,255,255,.3); margin-bottom: 10px;
   }
-  .pb-green { background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.3); color: var(--accent); }
-  .pb-pink  { background: rgba(255,61,127,.12); border: 1px solid rgba(255,61,127,.3); color: var(--pink); }
-  .phone-section { padding: 16px 14px 12px; }
+  .phone-badges { display: flex; gap: 6px; align-items: center; }
+  .phone-badge {
+    padding: 3px 9px; border-radius: 20px; font-size: 8px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .06em;
+  }
+  .pb-green { background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.35); color: var(--accent); }
+  .pb-pink  { background: rgba(255,61,127,.12); border: 1px solid rgba(255,61,127,.35); color: var(--pink); }
+  .pb-muted { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.45); }
+  /* ── Signal section ── */
+  .phone-section { padding: 12px 12px 6px; }
   .phone-slabel {
-    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
-    letter-spacing: .18em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 700;
+    letter-spacing: .2em; color: var(--muted); text-transform: uppercase; margin-bottom: 7px;
   }
   .phone-sig {
-    background: linear-gradient(135deg, #0d1810, #0a0c0a); border: 1px solid rgba(46,204,113,.2);
-    border-radius: 12px; padding: 14px 12px; margin-bottom: 8px; border-left: 2px solid var(--accent);
+    background: linear-gradient(135deg,#0c1a0e,#090d0a);
+    border: 1px solid rgba(46,204,113,.22); border-radius: 10px;
+    padding: 10px 11px; margin-bottom: 6px; border-left: 2px solid var(--accent);
   }
-  .phone-sig-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
-  .phone-sig-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--accent); }
-  .phone-sig-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); }
-  .phone-sig-pair { font-size: 16px; font-weight: 800; }
+  .phone-sig-top { display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center; }
+  .phone-sig-tag { font-family: 'JetBrains Mono', monospace; font-size: 8px; font-weight: 700; color: var(--accent); }
+  .phone-sig-time { font-family: 'JetBrains Mono', monospace; font-size: 7px; color: var(--muted); }
+  .phone-sig-row { display: flex; align-items: center; justify-content: space-between; }
+  .phone-sig-pair { font-size: 15px; font-weight: 800; }
+  .phone-sig-right { display: flex; align-items: center; gap: 5px; }
   .phone-sig-action {
-    display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 9px; font-weight: 700;
+    display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 8px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
     background: rgba(46,204,113,.15); border: 1px solid rgba(46,204,113,.3); color: var(--accent);
-    margin-left: 6px; vertical-align: middle;
   }
+  .phone-sig-tf {
+    display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 7px; font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.4);
+  }
+  .phone-sig-price { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; color: var(--accent); }
+  /* ── Menu row ── */
+  .phone-menu-row {
+    margin: 6px 12px; padding: 10px 12px;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .phone-menu-row-left { display: flex; align-items: center; gap: 8px; }
+  .phone-menu-row-ico { font-size: 15px; }
+  .phone-menu-row-label { font-size: 12px; font-weight: 600; }
+  .phone-menu-badge {
+    background: var(--pink); color: #fff; font-size: 7px; font-weight: 800;
+    font-family: 'JetBrains Mono', monospace; padding: 2px 6px; border-radius: 20px;
+  }
+  /* ── 2×2 grid ── */
+  .phone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 12px 10px; }
+  .phone-grid-card {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px; padding: 10px 10px 8px; position: relative;
+  }
+  .phone-grid-card::after {
+    content:'›'; position: absolute; top: 8px; right: 9px;
+    font-size: 10px; color: rgba(255,255,255,.2);
+  }
+  .phone-grid-ico { font-size: 16px; margin-bottom: 6px; }
+  .phone-grid-title { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+  .phone-grid-sub { font-size: 8px; color: var(--muted); line-height: 1.3; }
+  .phone-grid-sub .hl { font-weight: 700; }
+  /* ── Nav ── */
   .phone-nav {
-    display: flex; border-top: 1px solid rgba(255,255,255,.06); padding: 14px 0 10px;
+    display: flex; border-top: 1px solid rgba(255,255,255,.06); padding: 8px 0 6px;
+    background: #090910;
   }
   .phone-nav-item {
-    flex: 1; text-align: center; font-size: 18px;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    flex: 1; text-align: center; font-size: 16px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
   }
-  .phone-nav-label { font-size: 8px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .phone-nav-label { font-size: 7px; color: var(--muted); font-family: 'JetBrains Mono', monospace; letter-spacing: .05em; }
   .phone-nav-item.active .phone-nav-label { color: var(--accent); }
 
   /* App features list */
@@ -555,55 +604,91 @@
       <!-- Phone mockup -->
       <div class="phone">
         <div class="phone-screen">
-          <div class="phone-hero">
-            <div class="phone-kicker">— ИНДИКАТОР —</div>
-            <div class="phone-title"><span class="g">IT</span> v3</div>
+
+          <!-- Header -->
+          <div class="phone-header">
+            <div class="phone-kicker">ИНДИКАТОР</div>
+            <div class="phone-title"><span class="g">IT</span> V3</div>
+            <div class="phone-subtitle">TRADINGVIEW · SIGNALS</div>
             <div class="phone-badges">
               <div class="phone-badge pb-green">● LIVE</div>
               <div class="phone-badge pb-pink">PRO</div>
+              <div class="phone-badge pb-muted">BTC · ETH · SOL</div>
             </div>
           </div>
+
+          <!-- Last signal -->
           <div class="phone-section">
-            <div class="phone-slabel">Последние сигналы</div>
+            <div class="phone-slabel">Последний сигнал</div>
             <div class="phone-sig">
               <div class="phone-sig-top">
-                <span class="phone-sig-tag">● BUY 100%</span>
-                <span class="phone-sig-time">2м назад</span>
+                <span class="phone-sig-tag">● STRONG BUY</span>
+                <span class="phone-sig-time">1H · 14:32</span>
               </div>
-              <div>
-                <span class="phone-sig-pair">SOL/USDT</span>
-                <span class="phone-sig-action">BUY</span>
-              </div>
-            </div>
-            <div class="phone-sig" style="border-left-color:var(--pink);border-color:rgba(255,61,127,.2);background:linear-gradient(135deg,#1a0a0d,#0c0a0a)">
-              <div class="phone-sig-top">
-                <span class="phone-sig-tag" style="color:var(--pink)">● SELL</span>
-                <span class="phone-sig-time">1ч назад</span>
-              </div>
-              <div>
+              <div class="phone-sig-row">
                 <span class="phone-sig-pair">BTC/USDT</span>
-                <span class="phone-sig-action" style="background:rgba(255,61,127,.15);border-color:rgba(255,61,127,.3);color:var(--pink)">SELL</span>
+                <div class="phone-sig-right">
+                  <span class="phone-sig-action">BUY</span>
+                  <span class="phone-sig-tf">1H</span>
+                  <span class="phone-sig-price">$96,240</span>
+                </div>
               </div>
             </div>
           </div>
+
+          <!-- Мои сигналы row -->
+          <div class="phone-menu-row">
+            <div class="phone-menu-row-left">
+              <span class="phone-menu-row-ico">📡</span>
+              <span class="phone-menu-row-label">Мои сигналы</span>
+            </div>
+            <span class="phone-menu-badge">3</span>
+          </div>
+
+          <!-- 2×2 grid -->
+          <div class="phone-grid">
+            <div class="phone-grid-card">
+              <div class="phone-grid-ico">📖</div>
+              <div class="phone-grid-title">О индикаторе</div>
+              <div class="phone-grid-sub">Что такое <span class="hl" style="color:var(--accent)">IT v3</span></div>
+            </div>
+            <div class="phone-grid-card" style="border-color:rgba(255,61,127,.18)">
+              <div class="phone-grid-ico">⚙️</div>
+              <div class="phone-grid-title">Установка</div>
+              <div class="phone-grid-sub">Пошаговая <span class="hl" style="color:var(--pink)">инструкция</span></div>
+            </div>
+            <div class="phone-grid-card">
+              <div class="phone-grid-ico">📊</div>
+              <div class="phone-grid-title">Аналитика</div>
+              <div class="phone-grid-sub">Обзоры <span class="hl" style="color:var(--orange)">BTC · рынок</span></div>
+            </div>
+            <div class="phone-grid-card">
+              <div class="phone-grid-ico">💳</div>
+              <div class="phone-grid-title">Тарифы</div>
+              <div class="phone-grid-sub">STANDARD<br><span class="hl" style="color:var(--accent)">PRO · 50 USDT</span></div>
+            </div>
+          </div>
+
+          <!-- Nav -->
           <div class="phone-nav">
             <div class="phone-nav-item active">
               <span>🏠</span>
-              <div class="phone-nav-label">Главная</div>
+              <div class="phone-nav-label">ГЛАВНАЯ</div>
+            </div>
+            <div class="phone-nav-item">
+              <span>📡</span>
+              <div class="phone-nav-label">СИГНАЛЫ</div>
             </div>
             <div class="phone-nav-item">
               <span>📊</span>
-              <div class="phone-nav-label">Сигналы</div>
-            </div>
-            <div class="phone-nav-item">
-              <span>📰</span>
-              <div class="phone-nav-label">Посты</div>
+              <div class="phone-nav-label">ОБЗОРЫ</div>
             </div>
             <div class="phone-nav-item">
               <span>👤</span>
-              <div class="phone-nav-label">Профиль</div>
+              <div class="phone-nav-label">ПРОФИЛЬ</div>
             </div>
           </div>
+
         </div>
       </div>
 
