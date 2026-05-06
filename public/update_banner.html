@@ -417,215 +417,200 @@ function roundRect(ctx, x, y, w, h, r) {
 }
 
 function drawBanner(ctx, W, H) {
-  // Background
-  ctx.fillStyle = '#08080c';
+  const PAD = 62; // left/right padding (matches hero)
+
+  // ── Background ───────────────────────────────────────────────
+  ctx.fillStyle = '#070b09';
   ctx.fillRect(0, 0, W, H);
 
-  // Green glow bottom-left
-  const g1 = ctx.createRadialGradient(W*0.18, H*0.85, 0, W*0.18, H*0.85, W*0.55);
-  g1.addColorStop(0, 'rgba(46,204,113,0.22)');
+  // Green glow — bottom-left (matches hero .hero-glow)
+  const g1 = ctx.createRadialGradient(W*0.0, H*1.05, 0, W*0.0, H*1.05, W*0.55);
+  g1.addColorStop(0, 'rgba(46,204,113,0.28)');
   g1.addColorStop(1, 'rgba(46,204,113,0)');
-  ctx.fillStyle = g1; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
 
-  // Pink glow top-right
-  const g2 = ctx.createRadialGradient(W*0.88, H*0.12, 0, W*0.88, H*0.12, W*0.4);
+  // Pink glow — top-right (matches hero .hero-glow-tr)
+  const g2 = ctx.createRadialGradient(W*1.05, H*-0.1, 0, W*1.05, H*-0.1, W*0.45);
   g2.addColorStop(0, 'rgba(255,61,127,0.14)');
   g2.addColorStop(1, 'rgba(255,61,127,0)');
-  ctx.fillStyle = g2; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
 
-  // Grid
-  ctx.strokeStyle = 'rgba(46,204,113,0.04)'; ctx.lineWidth = 1;
-  for (let x=0; x<W; x+=50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let y=0; y<H; y+=50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  // Grid (50px green-tinted)
+  ctx.strokeStyle = 'rgba(46,204,113,0.045)'; ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
 
-  // ── CHART (right side) ──────────────────────────────────────
-  // Chart area: starts at ~42% width, occupies right 56%
-  // Candle data: [centerX_frac, wickTop_frac, wickBot_frac, bodyTop_frac, bodyBot_frac, bull]
-  // fractions are of chart height (top=0, bot=1)
-  const chX = W * 0.41;   // chart left edge
-  const chY = H * 0.07;   // chart top
-  const chW = W * 0.56;   // chart width
-  const chH = H * 0.78;   // chart height (leaves room for volumes)
-  const volY = chY + chH + H*0.02; // volume bar top
-  const volH = H * 0.08;  // volume bar max height
-  const bw  = chW * 0.048; // candle body half-width
+  // ── Candlestick chart — right side ──────────────────────────
+  const chX = W * 0.41;
+  const chY = H * 0.06;
+  const chW = W * 0.57;
+  const chH = H * 0.76;
+  const volMaxH = H * 0.07;
+  const volY = chY + chH + H * 0.02;
+  const cbw = chW * 0.046; // body half-width
 
-  // [x_frac, wt, wb, bt, bb, bull, vol_frac]
+  // [x_frac, wick_top, wick_bot, body_top, body_bot, bull, vol]
   const CD = [
-    [0.06, 0.74, 0.60, 0.63, 0.71, true,  0.38],
-    [0.15, 0.69, 0.53, 0.56, 0.67, true,  0.50],
-    [0.24, 0.58, 0.46, 0.47, 0.55, false, 0.33],
-    [0.33, 0.62, 0.40, 0.42, 0.58, true,  0.60],
-    [0.42, 0.52, 0.30, 0.33, 0.49, true,  0.68],
-    [0.51, 0.40, 0.18, 0.21, 0.37, true,  0.78],
-    [0.60, 0.34, 0.12, 0.15, 0.30, true,  0.85],
-    [0.69, 0.12, 0.28, 0.14, 0.26, false, 0.44],
-    [0.78, 0.24, 0.42, 0.26, 0.40, false, 0.65],
-    [0.87, 0.38, 0.58, 0.40, 0.55, false, 0.55],
-    [0.96, 0.53, 0.66, 0.55, 0.63, false, 0.38],
+    [0.05, 0.73, 0.59, 0.62, 0.70, true,  0.38],
+    [0.14, 0.67, 0.51, 0.55, 0.65, true,  0.50],
+    [0.23, 0.57, 0.45, 0.47, 0.54, false, 0.32],
+    [0.32, 0.60, 0.38, 0.41, 0.57, true,  0.60],
+    [0.41, 0.50, 0.28, 0.32, 0.47, true,  0.68],
+    [0.50, 0.38, 0.16, 0.20, 0.35, true,  0.80],
+    [0.59, 0.32, 0.10, 0.14, 0.29, true,  0.88],
+    [0.68, 0.10, 0.27, 0.13, 0.25, false, 0.44],
+    [0.77, 0.22, 0.42, 0.25, 0.39, false, 0.65],
+    [0.86, 0.36, 0.57, 0.39, 0.54, false, 0.54],
+    [0.95, 0.51, 0.65, 0.54, 0.62, false, 0.36],
   ];
 
-  // Faint horizontal grid lines
-  ctx.lineWidth = 1;
+  // Horizontal grid lines
   [0.2, 0.4, 0.6, 0.8].forEach(f => {
-    ctx.strokeStyle = 'rgba(255,255,255,0.055)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(chX, chY + f*chH); ctx.lineTo(chX+chW, chY + f*chH); ctx.stroke();
   });
 
   // SM dashed levels
-  ctx.setLineDash([6,6]);
+  ctx.setLineDash([6, 6]);
   ctx.strokeStyle = 'rgba(46,204,113,0.22)'; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(chX, chY+chH*0.25); ctx.lineTo(chX+chW, chY+chH*0.25); ctx.stroke();
-  ctx.strokeStyle = 'rgba(46,204,113,0.14)';
-  ctx.beginPath(); ctx.moveTo(chX, chY+chH*0.62); ctx.lineTo(chX+chW, chY+chH*0.62); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(chX, chY+chH*0.24); ctx.lineTo(chX+chW, chY+chH*0.24); ctx.stroke();
+  ctx.strokeStyle = 'rgba(46,204,113,0.13)';
+  ctx.beginPath(); ctx.moveTo(chX, chY+chH*0.60); ctx.lineTo(chX+chW, chY+chH*0.60); ctx.stroke();
   ctx.setLineDash([]);
 
   // Volume bars
-  CD.forEach(([xf,,,,, bull, vf]) => {
+  CD.forEach(([xf,,,,,bull,vf]) => {
     const bx = chX + xf * chW;
-    const color = bull ? 'rgba(46,204,113,0.18)' : 'rgba(255,61,127,0.14)';
-    ctx.fillStyle = color;
-    const vh = volH * vf;
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(bx-bw, volY + volH - vh, bw*2, vh, 2)
-                  : ctx.rect(bx-bw, volY + volH - vh, bw*2, vh);
-    ctx.fill();
+    ctx.fillStyle = bull ? 'rgba(46,204,113,0.18)' : 'rgba(255,61,127,0.14)';
+    const vh = volMaxH * vf;
+    ctx.fillRect(bx - cbw, volY + volMaxH - vh, cbw * 2, vh);
   });
 
-  // Candle bodies + wicks
+  // Candles
   CD.forEach(([xf, wt, wb, bt, bb, bull]) => {
     const bx = chX + xf * chW;
-    const color = bull ? '#2ecc71' : '#ff3d7f';
-    const alpha = bull ? 0.88 : 0.82;
-    ctx.globalAlpha = alpha;
-    // Wick
-    ctx.strokeStyle = color; ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(bx, chY + wt * chH);
-    ctx.lineTo(bx, chY + wb * chH);
-    ctx.stroke();
-    // Body
-    const by = chY + bt * chH;
-    const bh = (bb - bt) * chH || 3;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(bx-bw, by, bw*2, bh, 2)
-                  : ctx.fillRect(bx-bw, by, bw*2, bh);
-    ctx.fill();
+    const col = bull ? '#2ecc71' : '#ff3d7f';
+    ctx.globalAlpha = bull ? 0.88 : 0.82;
+    ctx.strokeStyle = col; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(bx, chY+wt*chH); ctx.lineTo(bx, chY+wb*chH); ctx.stroke();
+    ctx.fillStyle = col;
+    const by = chY + bt * chH, bh = Math.max((bb-bt)*chH, 3);
+    ctx.fillRect(bx - cbw, by, cbw*2, bh);
     ctx.globalAlpha = 1;
   });
 
-  // Smooth bezier trend line (through close prices)
-  // close = bull ? bodyTop : bodyBot
-  const tPts = CD.map(([xf,,,,bb,,, ] , i) => {
-    const [xf2, wt, wb, bt, bb2, bull] = CD[i];
-    return [chX + xf2 * chW, chY + (bull ? bt : bb2) * chH];
-  });
+  // Smooth bezier trend line
+  const tPts = CD.map(([xf,,,bt,bb,bull]) =>
+    [chX + xf*chW, chY + (bull ? bt : bb)*chH]
+  );
   ctx.beginPath();
   ctx.strokeStyle = '#ff3d7f'; ctx.lineWidth = 3.5;
   ctx.globalAlpha = 0.95; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   tPts.forEach(([px,py], i) => {
     if (i === 0) { ctx.moveTo(px, py); return; }
-    // smooth bezier using previous & next midpoints
     const [px0, py0] = tPts[i-1];
-    const cpx = (px0 + px) / 2;
+    const cpx = (px0+px)/2;
     ctx.bezierCurveTo(cpx, py0, cpx, py, px, py);
   });
   ctx.stroke(); ctx.globalAlpha = 1;
 
-  // Fade left over chart
-  const fadeL = ctx.createLinearGradient(chX-10, 0, chX + chW*0.28, 0);
-  fadeL.addColorStop(0,'rgba(8,8,12,1)');
-  fadeL.addColorStop(1,'rgba(8,8,12,0)');
-  ctx.fillStyle = fadeL; ctx.fillRect(chX-10, 0, chW*0.32, H);
+  // Fade left edge over chart
+  const fadeL = ctx.createLinearGradient(chX-10, 0, chX + chW*0.30, 0);
+  fadeL.addColorStop(0, 'rgba(7,11,9,1)');
+  fadeL.addColorStop(1, 'rgba(7,11,9,0)');
+  ctx.fillStyle = fadeL; ctx.fillRect(chX-10, 0, chW*0.34, H);
 
-  // Corner brackets
-  ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 5; ctx.globalAlpha = 0.85;
-  const bs=32, bp=10;
+  // ── Corner brackets ──────────────────────────────────────────
+  ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4; ctx.globalAlpha = 0.9;
+  const bs = 30, bp = 22;
   ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(W-bp-bs,bp); ctx.lineTo(W-bp,bp); ctx.lineTo(W-bp,bp+bs); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(bp+bs,H-bp); ctx.lineTo(bp,H-bp); ctx.lineTo(bp,H-bp-bs); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(W-bp-bs,H-bp); ctx.lineTo(W-bp,H-bp); ctx.lineTo(W-bp,H-bp-bs); ctx.stroke();
   ctx.globalAlpha = 1;
 
-  // IT V3 badge (top-right)
-  const bt='IT V3'; ctx.font='bold 13px JetBrains Mono,monospace';
-  const bw2=ctx.measureText(bt).width+32, bh2=28;
-  const bx2=W-bw2-28, by2=24;
-  ctx.fillStyle='rgba(46,204,113,0.12)'; roundRect(ctx,bx2,by2,bw2,bh2,14); ctx.fill();
-  ctx.strokeStyle='rgba(46,204,113,0.45)'; ctx.lineWidth=1; roundRect(ctx,bx2,by2,bw2,bh2,14); ctx.stroke();
-  ctx.beginPath(); ctx.arc(bx2+14,by2+bh2/2,3.5,0,Math.PI*2);
-  ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
-  ctx.fillStyle='#2ecc71'; ctx.textAlign='left'; ctx.fillText(bt,bx2+24,by2+19);
+  // ── Top bar ──────────────────────────────────────────────────
+  // LIVE dot
+  ctx.beginPath(); ctx.arc(PAD+8, 42, 5, 0, Math.PI*2);
+  ctx.fillStyle = '#ff3d7f'; ctx.shadowColor = '#ff3d7f'; ctx.shadowBlur = 10;
+  ctx.fill(); ctx.shadowBlur = 0;
+  ctx.font = 'bold 11px "JetBrains Mono",monospace';
+  ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left';
+  ctx.fillText('LIVE', PAD + 22, 46);
 
-  // LIVE dot + label (top-left)
-  ctx.beginPath(); ctx.arc(54,38,5,0,Math.PI*2);
-  ctx.fillStyle='#ff3d7f'; ctx.shadowColor='#ff3d7f'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
-  ctx.font='bold 11px JetBrains Mono,monospace';
-  ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.textAlign='left';
-  ctx.fillText('LIVE',70,42);
+  // PRO FIRST badge — top right
+  const proTxt = 'PRO FIRST';
+  ctx.font = 'bold 11px "JetBrains Mono",monospace';
+  const ptw = ctx.measureText(proTxt).width + 30, pth = 26;
+  const ptx = W - ptw - PAD, pty = 28;
+  ctx.fillStyle = 'rgba(255,204,0,0.1)'; roundRect(ctx,ptx,pty,ptw,pth,13); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,204,0,0.32)'; ctx.lineWidth = 1; roundRect(ctx,ptx,pty,ptw,pth,13); ctx.stroke();
+  ctx.beginPath(); ctx.arc(ptx+13, pty+pth/2, 3.5, 0, Math.PI*2);
+  ctx.fillStyle = '#ffcc00'; ctx.shadowColor = '#ffcc00'; ctx.shadowBlur = 6; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.fillStyle = '#ffcc00'; ctx.textAlign = 'left';
+  ctx.fillText(proTxt, ptx + 22, pty + 17);
 
-  // Kicker
-  ctx.font='bold 14px JetBrains Mono,monospace';
-  ctx.fillStyle='#ff3d7f'; ctx.textAlign='left'; ctx.globalAlpha=0.92;
-  ctx.fillText('— ИНДИКАТОР —',54,90); ctx.globalAlpha=1;
+  // ── Kicker ───────────────────────────────────────────────────
+  ctx.font = 'bold 13px "JetBrains Mono",monospace';
+  ctx.fillStyle = '#ff3d7f'; ctx.textAlign = 'left'; ctx.globalAlpha = 0.92;
+  ctx.fillText('— ИНДИКАТОР —', PAD, H * 0.22);
+  ctx.globalAlpha = 1;
 
-  // Main headline "IT v3"
-  ctx.font='900 130px Inter,sans-serif';
-  ctx.textAlign='left';
-  const tg=ctx.createLinearGradient(54,H*0.2,54,H*0.55);
-  tg.addColorStop(0,'#ffffff');
-  tg.addColorStop(0.6,'rgba(255,255,255,0.88)');
-  tg.addColorStop(1,'rgba(255,255,255,0.55)');
-  ctx.fillStyle=tg;
-  ctx.fillText('IT v3',54,H*0.52);
+  // ── Title "IT v3" ────────────────────────────────────────────
+  ctx.font = '900 148px Inter,sans-serif';
+  ctx.textAlign = 'left';
+  const tg = ctx.createLinearGradient(PAD, H*0.24, PAD, H*0.56);
+  tg.addColorStop(0, '#ffffff');
+  tg.addColorStop(0.7, 'rgba(255,255,255,0.85)');
+  tg.addColorStop(1, 'rgba(255,255,255,0.5)');
+  ctx.fillStyle = tg;
+  ctx.fillText('IT v3', PAD, H * 0.565);
 
-  // "ОТ ТОВАРИЩА" sub-headline
-  ctx.font='900 52px Inter,sans-serif';
-  const tg2=ctx.createLinearGradient(54,H*0.56,54,H*0.68);
-  tg2.addColorStop(0,'#7fffb8');
-  tg2.addColorStop(1,'#2ecc71');
-  ctx.fillStyle=tg2;
-  ctx.fillText('ГЛОБАЛЬНЫЙ АПДЕЙТ',54,H*0.64);
+  // ── Subtitle "АПДЕЙТ" ────────────────────────────────────────
+  ctx.font = '900 72px Inter,sans-serif';
+  const tg2 = ctx.createLinearGradient(PAD, H*0.58, PAD, H*0.70);
+  tg2.addColorStop(0, '#7fffb8');
+  tg2.addColorStop(1, '#2ecc71');
+  ctx.fillStyle = tg2;
+  ctx.fillText('АПДЕЙТ', PAD, H * 0.675);
 
-  // Date pill
-  const dateText='⏰  07 МАЯ — ЗАПУСК';
-  ctx.font='bold 13px JetBrains Mono,monospace';
-  const dpw=ctx.measureText(dateText).width+38, dph=36;
-  const dpx=54, dpy=H*0.7;
-  ctx.fillStyle='rgba(255,61,127,0.12)'; roundRect(ctx,dpx,dpy,dpw,dph,18); ctx.fill();
-  ctx.strokeStyle='rgba(255,61,127,0.4)'; ctx.lineWidth=1; roundRect(ctx,dpx,dpy,dpw,dph,18); ctx.stroke();
-  ctx.fillStyle='#ff3d7f'; ctx.textAlign='left';
-  ctx.fillText(dateText,dpx+19,dpy+24);
+  // ── Sub description ──────────────────────────────────────────
+  ctx.font = '400 16px Inter,sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.42)';
+  ctx.fillText('Новый индикатор · Автосигналы 24/7 · Мини-апп в Telegram', PAD, H * 0.735);
 
-  // Feature chips
-  const feats=[{i:'📊',l:'Новый индикатор'},{i:'⚡',l:'Сигналы 24/7'},{i:'📱',l:'Мини-апп'}];
-  ctx.font='bold 12px JetBrains Mono,monospace';
-  let fx=54; const fy=H*0.82, fh=32;
-  feats.forEach(f=>{
-    const label=f.i+'  '+f.l;
-    const fw=ctx.measureText(label).width+28;
-    ctx.fillStyle='rgba(255,255,255,0.06)'; roundRect(ctx,fx,fy,fw,fh,16); ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1; roundRect(ctx,fx,fy,fw,fh,16); ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,0.72)'; ctx.textAlign='left';
-    ctx.fillText(label,fx+14,fy+21);
-    fx+=fw+12;
+  // ── Date pill ────────────────────────────────────────────────
+  const dateTxt = '⏰  07 МАЯ — ГЛОБАЛЬНЫЙ ЗАПУСК';
+  ctx.font = 'bold 14px "JetBrains Mono",monospace';
+  const dpw = ctx.measureText(dateTxt).width + 52, dph = 40;
+  const dpx = PAD, dpy = H * 0.775;
+  ctx.fillStyle = 'rgba(255,61,127,0.12)'; roundRect(ctx,dpx,dpy,dpw,dph,20); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,61,127,0.4)'; ctx.lineWidth = 1; roundRect(ctx,dpx,dpy,dpw,dph,20); ctx.stroke();
+  ctx.fillStyle = '#ff3d7f'; ctx.letterSpacing = '0.12em';
+  ctx.fillText(dateTxt, dpx + 26, dpy + 26);
+
+  // ── Feature chips ────────────────────────────────────────────
+  const chips = ['📊  Новый индикатор', '⚡  Сигналы 24/7', '📱  Мини-апп'];
+  ctx.font = 'bold 12px "JetBrains Mono",monospace';
+  let fx = PAD; const fy = H * 0.875, fh = 32;
+  chips.forEach(label => {
+    const fw = ctx.measureText(label).width + 28;
+    ctx.fillStyle = 'rgba(255,255,255,0.06)'; roundRect(ctx,fx,fy,fw,fh,16); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1; roundRect(ctx,fx,fy,fw,fh,16); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText(label, fx + 14, fy + 21);
+    fx += fw + 10;
   });
 
-  // Bottom bar
-  ctx.font='400 14px Inter,sans-serif';
-  ctx.fillStyle='rgba(255,255,255,0.28)'; ctx.textAlign='left';
-  ctx.fillText('Подписчики PRO получают доступ первыми  💎',54,H-28);
-
-  // PRO pill
-  const proText='PRO FIRST';
-  ctx.font='bold 11px JetBrains Mono,monospace';
-  const ppw=ctx.measureText(proText).width+26, pph=26;
-  const ppx=W-ppw-28, ppy=H-48;
-  ctx.fillStyle='rgba(255,204,0,0.1)'; roundRect(ctx,ppx,ppy,ppw,pph,13); ctx.fill();
-  ctx.strokeStyle='rgba(255,204,0,0.35)'; ctx.lineWidth=1; roundRect(ctx,ppx,ppy,ppw,pph,13); ctx.stroke();
-  ctx.fillStyle='#ffcc00'; ctx.textAlign='left';
-  ctx.fillText(proText,ppx+13,ppy+17);
+  // ── Bottom bar ───────────────────────────────────────────────
+  ctx.font = 'bold 10px "JetBrains Mono",monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.textAlign = 'left';
+  ctx.fillText('IT V3', PAD, H - 28);
+  // green dot + TRADINGVIEW
+  ctx.beginPath(); ctx.arc(W - PAD - ctx.measureText('TRADINGVIEW').width - 16, H-32, 4, 0, Math.PI*2);
+  ctx.fillStyle = '#2ecc71'; ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 6; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.textAlign = 'right';
+  ctx.fillText('TRADINGVIEW', W - PAD, H - 28);
 }
 
 function renderPreview(){
