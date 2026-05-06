@@ -335,6 +335,97 @@ app.post('/webhook', async (req, res) => {
   }
 })
 
+// ─── CORS для мини-апп ────────────────────────────────────
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Headers', 'Content-Type')
+  next()
+})
+
+// ─── API: данные пользователя для мини-апп ────────────────
+app.get('/api/user/:id', async (req, res) => {
+  const userId = parseInt(req.params.id)
+  if (!userId || !pool) return res.json({ plan: null })
+
+  try {
+    const { rows } = await pool.query(`
+      SELECT subscription_plan, subscription_until, referral_count
+      FROM users WHERE id = $1
+    `, [userId])
+
+    if (!rows.length) return res.json({ plan: null })
+
+    const u = rows[0]
+    const until = u.subscription_until ? new Date(u.subscription_until) : null
+    const active = until && until > new Date()
+    const daysLeft = active
+      ? Math.ceil((until - new Date()) / (1000 * 60 * 60 * 24))
+      : null
+
+    // Кол-во сигналов — считаем из истории если есть таблица
+    let signalsCount = 0
+    try {
+      const s = await pool.query(
+        `SELECT COUNT(*) FROM signals WHERE sent_at > NOW() - INTERVAL '30 days'`
+      )
+      signalsCount = parseInt(s.rows[0].count) || 0
+    } catch (_) {}
+
+    res.json({
+      plan: active ? u.subscription_plan : null,
+      daysLeft,
+      refs: u.referral_count || 0,
+      signalsCount,
+      winRate: null,
+    })
+  } catch (err) {
+    console.error('API /user error:', err.message)
+    res.json({ plan: null })
+  }
+})
+
+// ─── API: последние сигналы ───────────────────────────────
+app.get('/api/signals', async (req, res) => {
+  if (!pool) return res.json([])
+
+  try {
+    const { rows } = await pool.query(`
+      SELECT pair, action, timeframe, price, sent_at
+      FROM signals
+      ORDER BY sent_at DESC
+      LIMIT 20
+    `)
+
+    const signals = rows.map(r => {
+      const d = new Date(r.sent_at)
+      const now = new Date()
+      const diffH = (now - d) / 3600000
+
+      let timeLabel
+      if (diffH < 1)        timeLabel = Math.round(diffH * 60) + ' мин'
+      else if (diffH < 24)  timeLabel = Math.round(diffH) + ' ч'
+      else                  timeLabel = Math.round(diffH / 24) + ' дн'
+
+      const action = (r.action || '').toUpperCase()
+      const tag = action.includes('STRONG') ? action : action
+
+      return {
+        pair: r.pair || 'BTC/USDT',
+        action: action.replace('STRONG ', '').trim() || 'BUY',
+        tag: action,
+        tf: r.timeframe || '1H',
+        time: timeLabel,
+        price: r.price ? parseFloat(r.price).toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—',
+      }
+    })
+
+    res.json(signals)
+  } catch (err) {
+    console.error('API /signals error:', err.message)
+    res.json([])
+  }
+})
+
 // ─── Health ───────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.json({
