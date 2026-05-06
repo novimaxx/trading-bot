@@ -212,70 +212,70 @@
 
   /* ─── APP MOCKUP ─── */
   .app-mockup-wrap {
-    display: grid; grid-template-columns: 280px 1fr; gap: 32px; align-items: center;
+    display: grid; grid-template-columns: 340px 1fr; gap: 32px; align-items: center;
     background: var(--card); border: 1px solid var(--line2); border-radius: 20px; padding: 32px;
   }
   .phone {
-    width: 220px; border-radius: 36px; border: 2px solid var(--line2);
-    background: #08080e; padding: 18px 12px; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    width: 280px; border-radius: 44px; border: 2px solid var(--line2);
+    background: #08080e; padding: 22px 16px; box-shadow: 0 24px 72px rgba(0,0,0,.7);
     margin: 0 auto; position: relative;
   }
   .phone::before {
-    content: ''; display: block; width: 60px; height: 6px;
-    background: var(--line2); border-radius: 3px; margin: 0 auto 14px;
+    content: ''; display: block; width: 72px; height: 6px;
+    background: var(--line2); border-radius: 3px; margin: 0 auto 18px;
   }
   .phone-screen {
-    background: #0a0a0c; border-radius: 24px; overflow: hidden; padding: 0;
+    background: #0a0a0c; border-radius: 28px; overflow: hidden; padding: 0;
   }
   .phone-hero {
     background: linear-gradient(180deg, #0d1810 0%, #0a0a0c 100%);
-    padding: 16px 14px 12px; border-bottom: 1px solid rgba(255,255,255,.06);
+    padding: 20px 18px 14px; border-bottom: 1px solid rgba(255,255,255,.06);
   }
   .phone-kicker {
-    font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 700;
-    letter-spacing: .2em; color: var(--pink); margin-bottom: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: .2em; color: var(--pink); margin-bottom: 5px;
   }
   .phone-title {
-    font-size: 22px; font-weight: 900; letter-spacing: -.03em; line-height: .95;
+    font-size: 28px; font-weight: 900; letter-spacing: -.03em; line-height: .95;
     text-transform: uppercase;
   }
   .phone-title .g {
     background: linear-gradient(180deg, #6FFFB2, #2ecc71);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .phone-badges { display: flex; gap: 5px; margin-top: 8px; }
+  .phone-badges { display: flex; gap: 6px; margin-top: 10px; }
   .phone-badge {
-    padding: 2px 7px; border-radius: 10px; font-size: 7px; font-weight: 700;
+    padding: 3px 10px; border-radius: 12px; font-size: 9px; font-weight: 700;
     font-family: 'JetBrains Mono', monospace; letter-spacing: .08em;
   }
   .pb-green { background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.3); color: var(--accent); }
   .pb-pink  { background: rgba(255,61,127,.12); border: 1px solid rgba(255,61,127,.3); color: var(--pink); }
-  .phone-section { padding: 10px 14px 6px; }
+  .phone-section { padding: 12px 18px 8px; }
   .phone-slabel {
-    font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 700;
-    letter-spacing: .18em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: .18em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;
   }
   .phone-sig {
     background: linear-gradient(135deg, #0d1810, #0a0c0a); border: 1px solid rgba(46,204,113,.2);
-    border-radius: 10px; padding: 8px 10px; margin-bottom: 5px; border-left: 2px solid var(--accent);
+    border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; border-left: 2px solid var(--accent);
   }
-  .phone-sig-top { display: flex; justify-content: space-between; margin-bottom: 3px; }
-  .phone-sig-tag { font-family: 'JetBrains Mono', monospace; font-size: 7px; font-weight: 700; color: var(--accent); }
-  .phone-sig-time { font-family: 'JetBrains Mono', monospace; font-size: 7px; color: var(--muted); }
-  .phone-sig-pair { font-size: 13px; font-weight: 800; }
+  .phone-sig-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .phone-sig-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700; color: var(--accent); }
+  .phone-sig-time { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--muted); }
+  .phone-sig-pair { font-size: 16px; font-weight: 800; }
   .phone-sig-action {
-    display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 7px; font-weight: 700;
+    display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 9px; font-weight: 700;
     background: rgba(46,204,113,.15); border: 1px solid rgba(46,204,113,.3); color: var(--accent);
-    margin-left: 5px; vertical-align: middle;
+    margin-left: 6px; vertical-align: middle;
   }
   .phone-nav {
-    display: flex; border-top: 1px solid rgba(255,255,255,.06); padding: 8px 0 4px;
+    display: flex; border-top: 1px solid rgba(255,255,255,.06); padding: 10px 0 6px;
   }
   .phone-nav-item {
-    flex: 1; text-align: center; font-size: 14px;
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    flex: 1; text-align: center; font-size: 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
   }
-  .phone-nav-label { font-size: 6px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+  .phone-nav-label { font-size: 8px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
   .phone-nav-item.active .phone-nav-label { color: var(--accent); }
 
   /* App features list */
