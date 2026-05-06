@@ -7,7 +7,7 @@ const express = require('express')
 const path    = require('path')
 const { Pool } = require('pg')
 const app = express()
-app.use(express.json())
+app.use(express.json({ limit: '10mb' }))
 app.use(express.static(path.join(__dirname, 'public')))
 
 // BOT_TOKEN       — токен сигнального бота (отправляет DM)

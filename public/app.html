@@ -623,58 +623,92 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
   <!-- Send tab -->
   <div class="atab-content" id="acontent-send">
-    <div style="padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1">
+    <div style="padding:16px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1">
 
-      <!-- Banner preview -->
+      <!-- Fields row -->
       <div class="ctrl">
-        <label>График (скрин с TradingView)</label>
-        <label class="upload-btn" for="bc-file" style="display:block;text-align:center;padding:10px;font-size:11px">📂 Загрузить график</label>
-        <input type="file" id="bc-file" accept="image/*" style="display:none" onchange="bcLoadChart(this)">
+        <label>Заголовок</label>
+        <input type="text" id="bc-title" placeholder="💎 SOL — обновление по рынку" oninput="bcUpdatePreview()">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="ctrl">
+          <label>Тег / монета</label>
+          <input type="text" id="bc-tag" value="АНАЛИТИКА" oninput="bcUpdatePreview()">
+        </div>
+        <div class="ctrl">
+          <label>Монеты (пилюля)</label>
+          <input type="text" id="bc-coins" value="BTC · ETH · SOL" oninput="bcUpdatePreview()">
+        </div>
       </div>
 
-      <div id="bc-banner-wrap" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0d0d0f;display:flex;align-items:center;justify-content:center;cursor:pointer" onclick="document.getElementById('bc-file').click()">
+      <!-- Upload button -->
+      <label class="upload-btn" for="bc-file" style="text-align:center;padding:12px">📂 Загрузить график с TradingView</label>
+      <input type="file" id="bc-file" accept="image/*" style="display:none" onchange="bcLoadChart(this)">
+
+      <!-- Banner preview -->
+      <div id="bc-banner-wrap" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0d0d0f;cursor:pointer" onclick="document.getElementById('bc-file').click()">
+        <!-- chart bg -->
         <div id="bc-chart-bg" style="position:absolute;inset:0;background-size:cover;background-position:center"></div>
+        <!-- overlays -->
         <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.75) 100%)"></div>
         <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(46,204,113,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(46,204,113,.04) 1px,transparent 1px);background-size:40px 40px"></div>
         <!-- corners -->
-        <div style="position:absolute;top:8px;left:8px;width:14px;height:14px;border-top:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
-        <div style="position:absolute;top:8px;right:8px;width:14px;height:14px;border-top:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
-        <div style="position:absolute;bottom:8px;left:8px;width:14px;height:14px;border-bottom:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
-        <div style="position:absolute;bottom:8px;right:8px;width:14px;height:14px;border-bottom:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
+        <div style="position:absolute;top:4px;left:4px;width:18px;height:18px;border-top:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
+        <div style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-top:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
+        <div style="position:absolute;bottom:4px;left:4px;width:18px;height:18px;border-bottom:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
+        <div style="position:absolute;bottom:4px;right:4px;width:18px;height:18px;border-bottom:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
         <!-- IT V3 badge -->
-        <div style="position:absolute;top:10px;right:28px;display:flex;align-items:center;gap:4px;background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);border-radius:20px;padding:3px 9px">
-          <div style="width:4px;height:4px;border-radius:50%;background:#2ecc71;box-shadow:0 0 5px #2ecc71"></div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:#2ecc71;letter-spacing:.15em">IT V3</span>
+        <div style="position:absolute;top:14px;right:20px;display:flex;align-items:center;gap:5px;background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);border-radius:20px;padding:4px 10px 4px 8px">
+          <div style="width:5px;height:5px;border-radius:50%;background:#2ecc71;box-shadow:0 0 6px #2ecc71"></div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:#2ecc71;letter-spacing:.2em">IT V3</span>
         </div>
         <!-- kicker -->
-        <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.25em;color:#ff3d7f;white-space:nowrap">— ИНДИКАТОР —</div>
-        <!-- bottom -->
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 12px 12px" id="bc-banner-bottom">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.15em;color:#2ecc71;margin-bottom:4px" id="bc-b-tag">• АНАЛИТИКА</div>
-          <div style="font-size:14px;font-weight:900;color:#fff;margin-bottom:3px" id="bc-b-title">Заголовок поста</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.55)" id="bc-b-sub"></div>
+        <div style="position:absolute;top:22px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.25em;color:#ff3d7f;white-space:nowrap;display:flex;align-items:center;gap:8px">
+          <span style="width:14px;height:1.5px;background:#ff3d7f;opacity:.7;display:block"></span>
+          ИНДИКАТОР
+          <span style="width:14px;height:1.5px;background:#ff3d7f;opacity:.7;display:block"></span>
         </div>
+        <!-- live dot + label -->
+        <div style="position:absolute;top:16px;left:16px;display:flex;align-items:center;gap:6px">
+          <div style="width:6px;height:6px;border-radius:50%;background:#2ecc71;box-shadow:0 0 7px #2ecc71"></div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.15em;color:rgba(255,255,255,.45)">LIVE · PRO SIGNALS</span>
+        </div>
+        <!-- bottom -->
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 14px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.18em;color:#2ecc71;display:flex;align-items:center;gap:5px;margin-bottom:5px">
+            <span style="width:4px;height:4px;border-radius:50%;background:#2ecc71;display:inline-block"></span>
+            <span id="bc-b-tag">АНАЛИТИКА</span>
+          </div>
+          <div style="font-size:15px;font-weight:900;color:#fff;margin-bottom:4px;text-shadow:0 2px 12px rgba(0,0,0,.8)" id="bc-b-title">Заголовок поста</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.55);text-shadow:0 1px 4px rgba(0,0,0,.9)" id="bc-b-sub"></div>
+        </div>
+        <!-- coin pill -->
+        <div id="bc-b-coins" style="position:absolute;bottom:14px;right:14px;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.5);font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.12em">BTC · ETH · SOL</div>
         <!-- upload hint -->
-        <div id="bc-upload-hint" style="position:relative;z-index:2;text-align:center;color:rgba(255,255,255,.25)">
-          <div style="font-size:28px;margin-bottom:6px">📈</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase">Нажми чтобы загрузить</div>
+        <div id="bc-upload-hint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;z-index:2">
+          <div style="font-size:32px;opacity:.3">📈</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.25)">Нажми чтобы загрузить скрин</div>
         </div>
       </div>
 
       <canvas id="bc-canvas" style="display:none"></canvas>
 
+      <!-- Post text -->
       <div class="ctrl">
-        <label>Заголовок</label>
-        <input type="text" id="bc-title" placeholder="💎 SOL — обновление по рынку" oninput="bcUpdatePreview()">
+        <label>📝 Текст поста</label>
+        <textarea id="bc-body" style="min-height:160px;background:#13131a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;line-height:1.7;outline:none;resize:vertical;font-family:'Inter',sans-serif;transition:border-color .2s" placeholder="Напиши аналитику сюда...
+
+Пример:
+💎 SOL — обновление по рынку
+
+📊 Структура ослабла. Приоритет за коррекцией.
+
+🔑 Ключевые уровни:
+• SELL 100% — 109.25
+• BUY 50% — 78.06" oninput="bcUpdatePreview()"></textarea>
       </div>
-      <div class="ctrl">
-        <label>Тег</label>
-        <input type="text" id="bc-tag" placeholder="SOL · 1D" value="АНАЛИТИКА" oninput="bcUpdatePreview()">
-      </div>
-      <div class="ctrl">
-        <label>Текст поста</label>
-        <textarea id="bc-body" style="min-height:140px;background:#13131a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;line-height:1.7;outline:none;resize:vertical;font-family:'Inter',sans-serif" placeholder="Напиши аналитику..." oninput="bcUpdatePreview()"></textarea>
-      </div>
+
+      <!-- Audience -->
       <div class="ctrl">
         <label>Аудитория</label>
         <div style="display:flex;gap:8px">
@@ -684,8 +718,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
         </div>
       </div>
 
-      <button id="bc-send-btn" style="background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif" onclick="bcSend()">📤 Отправить подписчикам</button>
-      <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);padding:8px"></div>
+      <!-- Send button -->
+      <button id="bc-send-btn" style="background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:-.01em" onclick="bcSend()">📤 Отправить подписчикам</button>
+      <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);padding:8px"></div>
     </div>
   </div>
 </div>
@@ -1190,10 +1225,12 @@ function bcLoadChart(input) {
 function bcUpdatePreview() {
   const title = document.getElementById('bc-title').value;
   const tag   = document.getElementById('bc-tag').value;
+  const coins = document.getElementById('bc-coins').value;
   const body  = document.getElementById('bc-body').value.split('\n')[0];
   document.getElementById('bc-b-title').textContent = title || 'Заголовок поста';
-  document.getElementById('bc-b-tag').textContent   = '• ' + (tag || 'АНАЛИТИКА');
+  document.getElementById('bc-b-tag').textContent   = tag || 'АНАЛИТИКА';
   document.getElementById('bc-b-sub').textContent   = body;
+  document.getElementById('bc-b-coins').textContent = coins || 'BTC · ETH · SOL';
 }
 
 function bcRoundRect(ctx, x, y, w, h, r) {
@@ -1310,6 +1347,19 @@ function bcRenderCanvas() {
       ctx.fillStyle = 'rgba(255,255,255,0.55)';
       ctx.fillText(sub.substring(0, 80), 30, H - 38);
 
+      // Coin pill (bottom right)
+      const coins = document.getElementById('bc-coins').value || 'BTC · ETH · SOL';
+      ctx.font = 'bold 13px JetBrains Mono, monospace';
+      const pillTW = ctx.measureText(coins).width;
+      const pillW = pillTW + 30, pillH = 28;
+      const pillX = W - pillW - 28, pillY = H - 54;
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      bcRoundRect(ctx, pillX, pillY, pillW, pillH, 14); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1;
+      bcRoundRect(ctx, pillX, pillY, pillW, pillH, 14); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.textAlign = 'left';
+      ctx.fillText(coins, pillX + 15, pillY + 18);
+
       resolve(canvas.toDataURL('image/png'));
     };
 
@@ -1358,9 +1408,11 @@ async function bcSend() {
     toast('✅ Пост с баннером отправлен!');
     document.getElementById('bc-title').value = '';
     document.getElementById('bc-body').value = '';
+    document.getElementById('bc-tag').value = 'АНАЛИТИКА';
+    document.getElementById('bc-coins').value = 'BTC · ETH · SOL';
     bcChartImg = null;
     document.getElementById('bc-chart-bg').style.backgroundImage = '';
-    document.getElementById('bc-upload-hint').style.display = '';
+    document.getElementById('bc-upload-hint').style.display = 'flex';
     bcUpdatePreview();
   } else {
     toast(r?.error || 'Ошибка отправки', true);
