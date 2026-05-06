@@ -305,6 +305,80 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   color:var(--muted);transition:all .15s}
 .aud-btn.active{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.4);color:var(--accent)}
 
+/* ── Send tab / Banner Maker ── */
+.bm-wrap{padding:16px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+.bm-ctrl{display:flex;flex-direction:column;gap:6px}
+.bm-ctrl label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.35)}
+.bm-ctrl input,.bm-ctrl textarea{background:#13131a;border:1px solid rgba(255,255,255,.1);color:#fff;
+  padding:9px 12px;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;
+  outline:none;transition:border-color .2s;width:100%}
+.bm-ctrl input:focus,.bm-ctrl textarea:focus{border-color:rgba(46,204,113,.4)}
+.bm-ctrl textarea{resize:vertical;min-height:120px;line-height:1.6}
+.bm-upload{display:block;text-align:center;padding:12px;background:#13131a;
+  border:1.5px dashed rgba(46,204,113,.4);color:#2ecc71;border-radius:10px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bm-upload:hover{background:rgba(46,204,113,.07);border-color:rgba(46,204,113,.7)}
+.bm-banner{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);background:#0d0d0f;cursor:pointer;
+  box-shadow:0 10px 40px rgba(0,0,0,.7)}
+.bm-grid{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(46,204,113,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(46,204,113,.04) 1px,transparent 1px);background-size:40px 40px}
+.bm-overlay{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.78) 100%)}
+.bm-corner{position:absolute;width:18px;height:18px;border-color:#ff3d7f;border-style:solid;opacity:.8}
+.bm-c-tl{top:4px;left:4px;border-width:2px 0 0 2px}
+.bm-c-tr{top:4px;right:4px;border-width:2px 2px 0 0}
+.bm-c-bl{bottom:4px;left:4px;border-width:0 0 2px 2px}
+.bm-c-br{bottom:4px;right:4px;border-width:0 2px 2px 0}
+.bm-badge{position:absolute;top:14px;right:16px;display:flex;align-items:center;gap:5px;
+  padding:4px 10px 4px 8px;border-radius:20px;
+  background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4)}
+.bm-badge-dot{width:5px;height:5px;border-radius:50%;background:#2ecc71;box-shadow:0 0 6px #2ecc71;animation:blink 2s infinite}
+.bm-badge-txt{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:#2ecc71;letter-spacing:.2em}
+.bm-kicker{position:absolute;top:22px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.25em;
+  color:#ff3d7f;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.bm-kicker-line{width:14px;height:1.5px;background:#ff3d7f;opacity:.7;display:block}
+.bm-live{position:absolute;top:16px;left:14px;display:flex;align-items:center;gap:6px}
+.bm-live-dot{width:6px;height:6px;border-radius:50%;background:#2ecc71;box-shadow:0 0 7px #2ecc71;animation:blink 2s infinite}
+.bm-live-txt{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.45)}
+.bm-bottom{position:absolute;bottom:0;left:0;right:0;padding:12px 14px 14px}
+.bm-b-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.18em;
+  color:#2ecc71;display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.bm-b-tag-dot{width:4px;height:4px;border-radius:50%;background:#2ecc71;flex-shrink:0}
+.bm-b-title{font-size:16px;font-weight:900;color:#fff;margin-bottom:4px;
+  text-shadow:0 2px 12px rgba(0,0,0,.8);letter-spacing:-.01em}
+.bm-b-sub{font-size:10px;color:rgba(255,255,255,.55);text-shadow:0 1px 4px rgba(0,0,0,.9);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bm-pill{position:absolute;bottom:14px;right:14px;display:flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.55);font-family:'JetBrains Mono',monospace;
+  font-size:8px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.12em}
+.bm-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:10px;z-index:2}
+.bm-hint-ico{font-size:32px;opacity:.3}
+.bm-hint-txt{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+.bm-composer-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.bm-actions{display:flex;gap:8px;flex-wrap:wrap}
+.bm-act-btn{flex:1;min-width:100px;padding:12px 10px;border:none;border-radius:10px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s}
+.bm-act-btn:active{opacity:.7}
+.bm-dl-btn{background:#1a1a24;color:#fff;border:1px solid rgba(255,255,255,.12)}
+.bm-copy-btn{background:#1a1a24;color:#4dc9f0;border:1px solid rgba(77,201,240,.2)}
+.bm-both-btn{background:#2ecc71;color:#000}
+.bm-send-btn{background:#ff3d7f;color:#fff;width:100%;padding:14px;border:none;
+  border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;
+  font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .15s}
+.bm-send-btn:active{opacity:.8}
+.bm-copy-toast{display:none;text-align:center;font-family:'JetBrains Mono',monospace;
+  font-size:12px;color:#2ecc71;letter-spacing:.08em;padding:6px}
+
 .act-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:600;
   display:none;align-items:flex-end;justify-content:center}
 .act-modal.open{display:flex}
@@ -623,80 +697,73 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
   <!-- Send tab -->
   <div class="atab-content" id="acontent-send">
-    <div style="padding:16px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1">
+    <div class="bm-wrap">
 
-      <!-- Fields row -->
-      <div class="ctrl">
+      <!-- Controls: title, tag, sub, coins -->
+      <div class="bm-ctrl">
         <label>Заголовок</label>
-        <input type="text" id="bc-title" placeholder="💎 SOL — обновление по рынку" oninput="bcUpdatePreview()">
+        <input type="text" id="bc-title" placeholder="💎 SOL — обновление по рынку" oninput="bcUpdate()">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="ctrl">
-          <label>Тег / монета</label>
-          <input type="text" id="bc-tag" value="АНАЛИТИКА" oninput="bcUpdatePreview()">
+        <div class="bm-ctrl">
+          <label>Тег</label>
+          <input type="text" id="bc-tag" value="SOL · 1D" oninput="bcUpdate()">
         </div>
-        <div class="ctrl">
-          <label>Монеты (пилюля)</label>
-          <input type="text" id="bc-coins" value="BTC · ETH · SOL" oninput="bcUpdatePreview()">
+        <div class="bm-ctrl">
+          <label>Монеты</label>
+          <input type="text" id="bc-coins" value="BTC · ETH · SOL" oninput="bcUpdate()">
         </div>
       </div>
+      <div class="bm-ctrl">
+        <label>Подзаголовок</label>
+        <input type="text" id="bc-sub" placeholder="Структура ослабла. Приоритет за коррекцией." oninput="bcUpdate()">
+      </div>
 
-      <!-- Upload button -->
-      <label class="upload-btn" for="bc-file" style="text-align:center;padding:12px">📂 Загрузить график с TradingView</label>
+      <!-- Upload + Download row -->
+      <div style="display:flex;gap:10px">
+        <label class="bm-upload" for="bc-file" style="flex:1">📂 Загрузить график</label>
+        <button class="bm-upload" style="flex:1;border:1.5px dashed rgba(255,61,127,.4);color:#ff3d7f;background:#13131a" onclick="bcExport()">💾 Скачать баннер</button>
+      </div>
       <input type="file" id="bc-file" accept="image/*" style="display:none" onchange="bcLoadChart(this)">
 
-      <!-- Banner preview -->
-      <div id="bc-banner-wrap" style="position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#0d0d0f;cursor:pointer" onclick="document.getElementById('bc-file').click()">
-        <!-- chart bg -->
-        <div id="bc-chart-bg" style="position:absolute;inset:0;background-size:cover;background-position:center"></div>
-        <!-- overlays -->
-        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.75) 100%)"></div>
-        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(46,204,113,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(46,204,113,.04) 1px,transparent 1px);background-size:40px 40px"></div>
-        <!-- corners -->
-        <div style="position:absolute;top:4px;left:4px;width:18px;height:18px;border-top:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
-        <div style="position:absolute;top:4px;right:4px;width:18px;height:18px;border-top:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
-        <div style="position:absolute;bottom:4px;left:4px;width:18px;height:18px;border-bottom:2px solid #ff3d7f;border-left:2px solid #ff3d7f;opacity:.8"></div>
-        <div style="position:absolute;bottom:4px;right:4px;width:18px;height:18px;border-bottom:2px solid #ff3d7f;border-right:2px solid #ff3d7f;opacity:.8"></div>
-        <!-- IT V3 badge -->
-        <div style="position:absolute;top:14px;right:20px;display:flex;align-items:center;gap:5px;background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);border-radius:20px;padding:4px 10px 4px 8px">
-          <div style="width:5px;height:5px;border-radius:50%;background:#2ecc71;box-shadow:0 0 6px #2ecc71"></div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;color:#2ecc71;letter-spacing:.2em">IT V3</span>
+      <!-- Banner preview — identical to banner_maker.html -->
+      <div class="bm-banner" id="bc-banner" onclick="document.getElementById('bc-file').click()">
+        <div id="bc-chart-bg" style="position:absolute;inset:0;background-size:cover;background-position:center;background-color:#0d0d0f"></div>
+        <div class="bm-grid"></div>
+        <div class="bm-overlay"></div>
+        <div class="bm-corner bm-c-tl"></div>
+        <div class="bm-corner bm-c-tr"></div>
+        <div class="bm-corner bm-c-bl"></div>
+        <div class="bm-corner bm-c-br"></div>
+        <div class="bm-badge">
+          <div class="bm-badge-dot"></div>
+          <span class="bm-badge-txt">IT V3</span>
         </div>
-        <!-- kicker -->
-        <div style="position:absolute;top:22px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.25em;color:#ff3d7f;white-space:nowrap;display:flex;align-items:center;gap:8px">
-          <span style="width:14px;height:1.5px;background:#ff3d7f;opacity:.7;display:block"></span>
-          ИНДИКАТОР
-          <span style="width:14px;height:1.5px;background:#ff3d7f;opacity:.7;display:block"></span>
+        <div class="bm-kicker">
+          <span class="bm-kicker-line"></span>ИНДИКАТОР<span class="bm-kicker-line"></span>
         </div>
-        <!-- live dot + label -->
-        <div style="position:absolute;top:16px;left:16px;display:flex;align-items:center;gap:6px">
-          <div style="width:6px;height:6px;border-radius:50%;background:#2ecc71;box-shadow:0 0 7px #2ecc71"></div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.15em;color:rgba(255,255,255,.45)">LIVE · PRO SIGNALS</span>
+        <div class="bm-live">
+          <div class="bm-live-dot"></div>
+          <span class="bm-live-txt">LIVE · PRO SIGNALS</span>
         </div>
-        <!-- bottom -->
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:12px 14px 14px">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.18em;color:#2ecc71;display:flex;align-items:center;gap:5px;margin-bottom:5px">
-            <span style="width:4px;height:4px;border-radius:50%;background:#2ecc71;display:inline-block"></span>
-            <span id="bc-b-tag">АНАЛИТИКА</span>
-          </div>
-          <div style="font-size:15px;font-weight:900;color:#fff;margin-bottom:4px;text-shadow:0 2px 12px rgba(0,0,0,.8)" id="bc-b-title">Заголовок поста</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.55);text-shadow:0 1px 4px rgba(0,0,0,.9)" id="bc-b-sub"></div>
+        <div class="bm-bottom">
+          <div class="bm-b-tag"><div class="bm-b-tag-dot"></div><span id="bc-b-tag">SOL · 1D</span></div>
+          <div class="bm-b-title" id="bc-b-title">💎 SOL — обновление по рынку</div>
+          <div class="bm-b-sub" id="bc-b-sub">Структура ослабла. Приоритет за коррекцией.</div>
         </div>
-        <!-- coin pill -->
-        <div id="bc-b-coins" style="position:absolute;bottom:14px;right:14px;display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.5);font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.12em">BTC · ETH · SOL</div>
-        <!-- upload hint -->
-        <div id="bc-upload-hint" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;z-index:2">
-          <div style="font-size:32px;opacity:.3">📈</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.25)">Нажми чтобы загрузить скрин</div>
+        <div class="bm-pill" id="bc-b-coins">BTC · ETH · SOL</div>
+        <div class="bm-hint" id="bc-upload-hint">
+          <div class="bm-hint-ico">📈</div>
+          <div class="bm-hint-txt">Нажми чтобы загрузить скрин графика</div>
         </div>
       </div>
 
       <canvas id="bc-canvas" style="display:none"></canvas>
 
       <!-- Post text -->
-      <div class="ctrl">
+      <div class="bm-ctrl">
         <label>📝 Текст поста</label>
-        <textarea id="bc-body" style="min-height:160px;background:#13131a;border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;padding:12px;font-size:14px;line-height:1.7;outline:none;resize:vertical;font-family:'Inter',sans-serif;transition:border-color .2s" placeholder="Напиши аналитику сюда...
+        <textarea id="bc-body" oninput="this.dataset.edited='1'" placeholder="Напиши аналитику сюда...
 
 Пример:
 💎 SOL — обновление по рынку
@@ -705,12 +772,25 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
 🔑 Ключевые уровни:
 • SELL 100% — 109.25
-• BUY 50% — 78.06" oninput="bcUpdatePreview()"></textarea>
+• BUY 50% — 78.06
+• BUY 100% — 69.55
+
+📌 Индикатор IT v3 | @твой_канал"></textarea>
       </div>
 
+      <!-- Action buttons: download / copy / both -->
+      <div class="bm-actions">
+        <button class="bm-act-btn bm-dl-btn" onclick="bcExport()"><span>⬇</span> Скачать</button>
+        <button class="bm-act-btn bm-copy-btn" onclick="bcCopyText()"><span>📋</span> Копировать</button>
+        <button class="bm-act-btn bm-both-btn" onclick="bcSaveAll()"><span>🚀</span> Скачать + Копировать</button>
+      </div>
+
+      <!-- Separator -->
+      <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:4px"></div>
+
       <!-- Audience -->
-      <div class="ctrl">
-        <label>Аудитория</label>
+      <div class="bm-ctrl">
+        <label>Аудитория рассылки</label>
         <div style="display:flex;gap:8px">
           <button class="aud-btn active" id="aud-all" onclick="setAudience('all',this)">👥 Все</button>
           <button class="aud-btn" id="aud-std" onclick="setAudience('STANDARD',this)">📊 Standard</button>
@@ -718,9 +798,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
         </div>
       </div>
 
-      <!-- Send button -->
-      <button id="bc-send-btn" style="background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:-.01em" onclick="bcSend()">📤 Отправить подписчикам</button>
-      <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);padding:8px"></div>
+      <!-- Send -->
+      <button class="bm-send-btn" id="bc-send-btn" onclick="bcSend()">📤 Отправить подписчикам</button>
+      <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px"></div>
+      <div class="bm-copy-toast" id="bc-copy-toast"></div>
+
     </div>
   </div>
 </div>
@@ -1049,16 +1131,19 @@ function adminTap() {
 let adminData = { stats: null, users: [], payments: [] };
 let activateTarget = null;
 
+const ADMIN_ID_FALLBACK = '562914492';
 async function adminApi(path, method = 'GET', body = null) {
+  const aid = userId || ADMIN_ID_FALLBACK;
   const opts = { method, headers: { 'Content-Type': 'application/json' } };
-  if (body) opts.body = JSON.stringify({ ...body, tg_id: userId });
+  if (body) opts.body = JSON.stringify({ ...body, tg_id: aid });
   const sep = path.includes('?') ? '&' : '?';
-  const url = BASE + path + sep + 'tg_id=' + userId;
+  const url = BASE + path + sep + 'tg_id=' + aid;
   try {
     const r = await fetch(url, opts);
     if (r.ok) return r.json();
+    console.error('adminApi error', r.status, path);
     return null;
-  } catch(_) { return null; }
+  } catch(e) { console.error('adminApi fetch fail', e.message); return null; }
 }
 
 async function loadAdminStats() {
@@ -1207,7 +1292,7 @@ function setAudience(val, el) {
   el.classList.add('active');
 }
 
-// ── Banner maker (Send tab) ──────────────────────────────────────
+// ── Banner maker (Send tab) — mirrors banner_maker.html logic ────
 let bcChartImg = null;
 
 function bcLoadChart(input) {
@@ -1217,34 +1302,43 @@ function bcLoadChart(input) {
   reader.onload = e => {
     bcChartImg = e.target.result;
     document.getElementById('bc-chart-bg').style.backgroundImage = `url(${bcChartImg})`;
+    document.getElementById('bc-chart-bg').style.backgroundSize = 'cover';
+    document.getElementById('bc-chart-bg').style.backgroundPosition = 'center';
     document.getElementById('bc-upload-hint').style.display = 'none';
+    document.getElementById('bc-banner').style.cursor = 'default';
   };
   reader.readAsDataURL(file);
 }
 
-function bcUpdatePreview() {
+function bcUpdate() {
   const title = document.getElementById('bc-title').value;
   const tag   = document.getElementById('bc-tag').value;
+  const sub   = document.getElementById('bc-sub').value;
   const coins = document.getElementById('bc-coins').value;
-  const body  = document.getElementById('bc-body').value.split('\n')[0];
-  document.getElementById('bc-b-title').textContent = title || 'Заголовок поста';
-  document.getElementById('bc-b-tag').textContent   = tag || 'АНАЛИТИКА';
-  document.getElementById('bc-b-sub').textContent   = body;
+  document.getElementById('bc-b-title').textContent = title || '💎 SOL — обновление по рынку';
+  document.getElementById('bc-b-tag').textContent   = tag   || 'SOL · 1D';
+  document.getElementById('bc-b-sub').textContent   = sub   || '';
   document.getElementById('bc-b-coins').textContent = coins || 'BTC · ETH · SOL';
+  bcSyncBody();
+}
+
+function bcSyncBody() {
+  const title = document.getElementById('bc-title').value;
+  const tag   = document.getElementById('bc-tag').value;
+  const sub   = document.getElementById('bc-sub').value;
+  const coins = document.getElementById('bc-coins').value;
+  const ta    = document.getElementById('bc-body');
+  if (!ta.dataset.edited) {
+    ta.value = `${title}\n\n📊 ${sub}\n\n🏷 ${tag}  |  ${coins}\n\n📌 Индикатор IT v3`;
+  }
 }
 
 function bcRoundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.arcTo(x + w, y, x + w, y + r, r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-  ctx.lineTo(x + r, y + h);
-  ctx.arcTo(x, y + h, x, y + h - r, r);
-  ctx.lineTo(x, y + r);
-  ctx.arcTo(x, y, x + r, y, r);
-  ctx.closePath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
 }
 
 function bcRenderCanvas() {
@@ -1252,125 +1346,120 @@ function bcRenderCanvas() {
   const canvas = document.getElementById('bc-canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
-
-  // Background
-  ctx.fillStyle = '#0d0d0f';
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#0d0d0f'; ctx.fillRect(0,0,W,H);
 
   return new Promise(resolve => {
     const finish = () => {
       // Grid
-      ctx.strokeStyle = 'rgba(46,204,113,0.04)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-      for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-
-      // Gradient overlay
-      const grad = ctx.createLinearGradient(0, 0, 0, H);
-      grad.addColorStop(0, 'rgba(0,0,0,0.5)');
-      grad.addColorStop(0.4, 'rgba(0,0,0,0.1)');
-      grad.addColorStop(0.6, 'rgba(0,0,0,0.15)');
-      grad.addColorStop(1, 'rgba(0,0,0,0.8)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-
-      // Corner brackets
-      ctx.strokeStyle = '#ff3d7f';
-      ctx.lineWidth = 5;
-      ctx.globalAlpha = 0.85;
-      const bs = 30, bp = 8;
-      ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(W-bp-bs,bp); ctx.lineTo(W-bp,bp); ctx.lineTo(W-bp,bp+bs); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(bp+bs,H-bp); ctx.lineTo(bp,H-bp); ctx.lineTo(bp,H-bp-bs); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(W-bp-bs,H-bp); ctx.lineTo(W-bp,H-bp); ctx.lineTo(W-bp,H-bp-bs); ctx.stroke();
-      ctx.globalAlpha = 1;
-
+      ctx.strokeStyle = 'rgba(46,204,113,0.04)'; ctx.lineWidth = 1;
+      for (let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for (let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+      // Gradient
+      const grad = ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0,'rgba(0,0,0,0.5)'); grad.addColorStop(0.4,'rgba(0,0,0,0.1)');
+      grad.addColorStop(0.6,'rgba(0,0,0,0.15)'); grad.addColorStop(1,'rgba(0,0,0,0.8)');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+      // Corners
+      ctx.strokeStyle='#ff3d7f'; ctx.lineWidth=5; ctx.globalAlpha=0.85;
+      const bs=30,bp=8;
+      ctx.beginPath();ctx.moveTo(bp+bs,bp);ctx.lineTo(bp,bp);ctx.lineTo(bp,bp+bs);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(W-bp-bs,bp);ctx.lineTo(W-bp,bp);ctx.lineTo(W-bp,bp+bs);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(bp+bs,H-bp);ctx.lineTo(bp,H-bp);ctx.lineTo(bp,H-bp-bs);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(W-bp-bs,H-bp);ctx.lineTo(W-bp,H-bp);ctx.lineTo(W-bp,H-bp-bs);ctx.stroke();
+      ctx.globalAlpha=1;
       // Kicker
-      ctx.font = 'bold 16px JetBrains Mono, monospace';
-      ctx.fillStyle = '#ff3d7f';
-      ctx.textAlign = 'center';
-      ctx.globalAlpha = 0.9;
-      ctx.fillText('— ИНДИКАТОР —', W/2, 42);
-      ctx.globalAlpha = 1;
-
+      ctx.font='bold 16px JetBrains Mono,monospace'; ctx.fillStyle='#ff3d7f';
+      ctx.textAlign='center'; ctx.globalAlpha=0.9;
+      ctx.fillText('— ИНДИКАТОР —',W/2,42); ctx.globalAlpha=1;
       // Live dot
-      ctx.beginPath();
-      ctx.arc(60, 38, 5, 0, Math.PI*2);
-      ctx.fillStyle = '#2ecc71';
-      ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 10;
-      ctx.fill(); ctx.shadowBlur = 0;
-
-      // LIVE label
-      ctx.font = 'bold 11px JetBrains Mono, monospace';
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.textAlign = 'left';
-      ctx.fillText('LIVE · PRO SIGNALS', 74, 42);
-
+      ctx.beginPath(); ctx.arc(60,38,5,0,Math.PI*2);
+      ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=10;
+      ctx.fill(); ctx.shadowBlur=0;
+      ctx.font='bold 11px JetBrains Mono,monospace';
+      ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.textAlign='left';
+      ctx.fillText('LIVE · PRO SIGNALS',74,42);
       // IT V3 badge
-      const badgeText = 'IT V3';
-      ctx.font = 'bold 12px JetBrains Mono, monospace';
-      const badgeTW = ctx.measureText(badgeText).width;
-      const badgeW = badgeTW + 30, badgeH = 26;
-      const badgeX = W - badgeW - 28, badgeY = 22;
-      ctx.fillStyle = 'rgba(46,204,113,0.15)';
-      bcRoundRect(ctx, badgeX, badgeY, badgeW, badgeH, 13); ctx.fill();
-      ctx.strokeStyle = 'rgba(46,204,113,0.5)'; ctx.lineWidth = 1;
-      bcRoundRect(ctx, badgeX, badgeY, badgeW, badgeH, 13); ctx.stroke();
-      ctx.beginPath(); ctx.arc(badgeX+13, badgeY+badgeH/2, 3.5, 0, Math.PI*2);
-      ctx.fillStyle = '#2ecc71'; ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 8;
-      ctx.fill(); ctx.shadowBlur = 0;
-      ctx.fillStyle = '#2ecc71'; ctx.textAlign = 'left';
-      ctx.fillText(badgeText, badgeX+22, badgeY+17);
-
-      // Bottom extra gradient
-      const botGrad = ctx.createLinearGradient(0, H*0.55, 0, H);
-      botGrad.addColorStop(0, 'rgba(0,0,0,0)');
-      botGrad.addColorStop(1, 'rgba(0,0,0,0.7)');
-      ctx.fillStyle = botGrad;
-      ctx.fillRect(0, H*0.55, W, H*0.45);
-
+      const bt='IT V3'; ctx.font='bold 12px JetBrains Mono,monospace';
+      const btw=ctx.measureText(bt).width, bw=btw+30, bh=26;
+      const bx=W-bw-28, by=22;
+      ctx.fillStyle='rgba(46,204,113,0.15)'; bcRoundRect(ctx,bx,by,bw,bh,13); ctx.fill();
+      ctx.strokeStyle='rgba(46,204,113,0.5)'; ctx.lineWidth=1; bcRoundRect(ctx,bx,by,bw,bh,13); ctx.stroke();
+      ctx.beginPath(); ctx.arc(bx+13,by+bh/2,3.5,0,Math.PI*2);
+      ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+      ctx.fillStyle='#2ecc71'; ctx.textAlign='left'; ctx.fillText(bt,bx+22,by+17);
+      // Extra bottom gradient
+      const bg=ctx.createLinearGradient(0,H*0.55,0,H);
+      bg.addColorStop(0,'rgba(0,0,0,0)'); bg.addColorStop(1,'rgba(0,0,0,0.7)');
+      ctx.fillStyle=bg; ctx.fillRect(0,H*0.55,W,H*0.45);
       // Tag
-      const tag = document.getElementById('bc-tag').value || 'АНАЛИТИКА';
-      ctx.font = 'bold 14px JetBrains Mono, monospace';
-      ctx.fillStyle = '#2ecc71'; ctx.textAlign = 'left';
-      ctx.fillText('• ' + tag, 32, H - 110);
-
+      const tag=document.getElementById('bc-tag').value||'SOL · 1D';
+      ctx.font='bold 14px JetBrains Mono,monospace'; ctx.fillStyle='#2ecc71'; ctx.textAlign='left';
+      ctx.fillText('• '+tag,32,H-110);
       // Title
-      const title = document.getElementById('bc-title').value || '';
-      ctx.font = '900 36px Inter, sans-serif';
-      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'left';
-      ctx.fillText(title, 30, H - 72);
-
-      // Sub (first line of body)
-      const sub = (document.getElementById('bc-body').value || '').split('\n')[0];
-      ctx.font = '400 18px Inter, sans-serif';
-      ctx.fillStyle = 'rgba(255,255,255,0.55)';
-      ctx.fillText(sub.substring(0, 80), 30, H - 38);
-
-      // Coin pill (bottom right)
-      const coins = document.getElementById('bc-coins').value || 'BTC · ETH · SOL';
-      ctx.font = 'bold 13px JetBrains Mono, monospace';
-      const pillTW = ctx.measureText(coins).width;
-      const pillW = pillTW + 30, pillH = 28;
-      const pillX = W - pillW - 28, pillY = H - 54;
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      bcRoundRect(ctx, pillX, pillY, pillW, pillH, 14); ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1;
-      bcRoundRect(ctx, pillX, pillY, pillW, pillH, 14); ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.textAlign = 'left';
-      ctx.fillText(coins, pillX + 15, pillY + 18);
+      const title=document.getElementById('bc-title').value||'';
+      ctx.font='900 36px Inter,sans-serif'; ctx.fillStyle='#ffffff'; ctx.textAlign='left';
+      ctx.fillText(title,30,H-72);
+      // Sub
+      const sub=document.getElementById('bc-sub').value||'';
+      ctx.font='400 18px Inter,sans-serif'; ctx.fillStyle='rgba(255,255,255,0.55)';
+      ctx.fillText(sub.substring(0,80),30,H-38);
+      // Coin pill
+      const coins=document.getElementById('bc-coins').value||'BTC · ETH · SOL';
+      ctx.font='bold 13px JetBrains Mono,monospace';
+      const pw=ctx.measureText(coins).width+30, ph=30;
+      const px=W-pw-28, py=H-54;
+      ctx.fillStyle='rgba(0,0,0,0.55)'; bcRoundRect(ctx,px,py,pw,ph,15); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1; bcRoundRect(ctx,px,py,pw,ph,15); ctx.stroke();
+      ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.textAlign='center';
+      ctx.fillText(coins,px+pw/2,py+20);
 
       resolve(canvas.toDataURL('image/png'));
     };
-
     if (bcChartImg) {
-      const img = new Image();
-      img.onload = () => { ctx.drawImage(img, 0, 0, W, H); finish(); };
-      img.src = bcChartImg;
-    } else {
-      finish();
-    }
+      const img=new Image();
+      img.onload=()=>{ctx.drawImage(img,0,0,W,H);finish();};
+      img.onerror=()=>finish();
+      img.src=bcChartImg;
+    } else { finish(); }
   });
+}
+
+function bcExport() {
+  const tag = document.getElementById('bc-tag').value || 'banner';
+  const btn = event?.currentTarget;
+  if (btn) { btn.textContent='⏳ Генерирую...'; btn.disabled=true; }
+  bcRenderCanvas().then(dataUrl => {
+    if (btn) { btn.textContent='💾 Скачать баннер'; btn.disabled=false; }
+    const canvas = document.getElementById('bc-canvas');
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url; a.download=`IT_v3_${tag.replace(/[^a-zа-я0-9]/gi,'_')}_banner.png`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    },'image/png');
+  });
+}
+
+function bcCopyText() {
+  const text = document.getElementById('bc-body').value.trim();
+  if (!text) { bcShowToast('⚠️ Текст пустой'); return; }
+  navigator.clipboard.writeText(text)
+    .then(()=>bcShowToast('✅ Текст скопирован!'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');
+      ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta); bcShowToast('✅ Текст скопирован!');
+    });
+}
+
+function bcSaveAll() { bcExport(); setTimeout(bcCopyText,400); }
+
+function bcShowToast(msg) {
+  const t=document.getElementById('bc-copy-toast');
+  t.textContent=msg; t.style.display='block';
+  setTimeout(()=>{ t.style.display='none'; },2500);
 }
 
 async function bcSend() {
@@ -1379,43 +1468,45 @@ async function bcSend() {
   const tag   = document.getElementById('bc-tag').value.trim();
 
   if (!body && !title) { toast('Напиши текст поста', true); return; }
-  if (!bcChartImg) { toast('Загрузи график!', true); return; }
 
   const btn = document.getElementById('bc-send-btn');
-  btn.disabled = true; btn.textContent = '⏳ Рендерю баннер...';
+  btn.disabled = true; btn.innerHTML = '⏳ Рендерю баннер...';
 
   let image_b64;
   try {
     const dataUrl = await bcRenderCanvas();
-    image_b64 = dataUrl.replace(/^data:image\/png;base64,/, '');
+    image_b64 = dataUrl.replace(/^data:image\/png;base64,/,'');
   } catch(e) {
-    btn.disabled = false; btn.textContent = '📤 Отправить подписчикам';
-    toast('Ошибка рендера', true); return;
+    btn.disabled=false; btn.innerHTML='📤 Отправить подписчикам';
+    toast('Ошибка рендера',true); return;
   }
 
-  btn.textContent = '⏳ Отправляю...';
+  btn.innerHTML='⏳ Отправляю...';
+  const res = document.getElementById('bc-result');
+  res.style.display='block'; res.style.color='rgba(255,255,255,.4)'; res.textContent='⏳ Отправка...';
 
-  const r = await adminApi('/api/admin/broadcast-photo', 'POST', {
-    title, body, tag, image_b64, audience: bcAudience
-  });
+  const r = await adminApi('/api/admin/broadcast-photo','POST',{title,body,tag,image_b64,audience:bcAudience});
 
-  btn.disabled = false; btn.textContent = '📤 Отправить подписчикам';
+  btn.disabled=false; btn.innerHTML='📤 Отправить подписчикам';
 
   if (r?.ok) {
-    const res = document.getElementById('bc-result');
-    res.textContent = `✅ Отправлено: ${r.sent} · Ошибок: ${r.failed} · Всего: ${r.total}`;
-    res.style.display = 'block';
+    res.textContent=`✅ Отправлено: ${r.sent} · Ошибок: ${r.failed} · Всего: ${r.total}`;
+    res.style.color='#2ecc71';
     toast('✅ Пост с баннером отправлен!');
-    document.getElementById('bc-title').value = '';
-    document.getElementById('bc-body').value = '';
-    document.getElementById('bc-tag').value = 'АНАЛИТИКА';
-    document.getElementById('bc-coins').value = 'BTC · ETH · SOL';
-    bcChartImg = null;
-    document.getElementById('bc-chart-bg').style.backgroundImage = '';
-    document.getElementById('bc-upload-hint').style.display = 'flex';
-    bcUpdatePreview();
+    document.getElementById('bc-title').value='';
+    document.getElementById('bc-sub').value='';
+    document.getElementById('bc-body').value='';
+    document.getElementById('bc-body').dataset.edited='';
+    document.getElementById('bc-tag').value='SOL · 1D';
+    document.getElementById('bc-coins').value='BTC · ETH · SOL';
+    bcChartImg=null;
+    document.getElementById('bc-chart-bg').style.backgroundImage='';
+    document.getElementById('bc-upload-hint').style.display='flex';
+    document.getElementById('bc-banner').style.cursor='pointer';
+    bcUpdate();
   } else {
-    toast(r?.error || 'Ошибка отправки', true);
+    res.textContent=`❌ ${r?.error||'adminApi вернул null — проверь консоль'}`;
+    res.style.color='#ff3d7f';
   }
 }
 
@@ -1426,7 +1517,7 @@ function adminTab(tab) {
   document.getElementById('acontent-' + tab).classList.add('active');
   if (tab === 'users' && !adminData.users.length) loadAdminUsers();
   if (tab === 'payments' && !adminData.payments.length) loadAdminPayments();
-  if (tab === 'send') { /* ready */ }
+  if (tab === 'send') { bcUpdate(); }
 }
 
 // close modal on backdrop click
