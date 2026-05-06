@@ -544,6 +544,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div class="menu-row-text">Руководство</div>
       <span class="menu-row-r">›</span>
     </div>
+    <div class="menu-row" onclick="toast('ID: ' + (userId||'null') + ' | admin: ' + isAdmin)">
+      <span class="menu-row-icon">🔑</span>
+      <div class="menu-row-text">Мой Telegram ID</div>
+      <span class="menu-row-r">›</span>
+    </div>
     <div class="menu-row" onclick="openSupport()">
       <span class="menu-row-icon">💬</span>
       <div class="menu-row-text">Поддержка</div>
@@ -678,6 +683,8 @@ const ADMIN_IDS = ['562914492'];
 const tgUser = tg?.initDataUnsafe?.user || {};
 const userId = tgUser.id || null;
 const isAdmin = ADMIN_IDS.includes(String(userId));
+// DEBUG — убрать после проверки
+console.log('TG userId:', userId, 'isAdmin:', isAdmin, 'initData:', tg?.initData?.substring(0,50));
 const userName = tgUser.first_name || 'Пользователь';
 const userUsername = tgUser.username ? '@' + tgUser.username : '';
 const userInitial = (userName[0] || 'U').toUpperCase();
