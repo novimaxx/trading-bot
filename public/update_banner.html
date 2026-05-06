@@ -84,7 +84,16 @@ body { background:#060608; color:#fff; font-family:'Inter',sans-serif; }
   animation: blink 1.8s ease-in-out infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
-.v3-tag { color: rgba(255,255,255,.4); }
+.pro-badge {
+  background: rgba(255,204,0,.1); border: 1px solid rgba(255,204,0,.32);
+  padding: 5px 16px; border-radius: 100px;
+  color: #ffcc00; font-size: 11px; letter-spacing: .18em;
+  display: flex; align-items: center; gap: 7px;
+}
+.pro-badge::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:#ffcc00; box-shadow:0 0 6px #ffcc00;
+}
 
 /* Main content */
 .hero-body {
@@ -280,7 +289,7 @@ canvas#export  { display:none; }
   <!-- Top bar -->
   <div class="hero-topbar">
     <div class="live"><div class="live-dot"></div>LIVE</div>
-    <div class="v3-tag">V 3</div>
+    <div class="pro-badge">PRO FIRST</div>
   </div>
 
   <!-- Main content -->
@@ -292,9 +301,7 @@ canvas#export  { display:none; }
     </h1>
     <p class="hero-sub">Глобальное обновление. Новый индикатор, автосигналы 24/7 и мини-апп в Telegram.</p>
     <div class="hero-pills">
-      <div class="hp hp-pink">⏰ 07 МАЯ — ЗАПУСК</div>
-      <div class="hp hp-cyan">BTC · ETH · SOL</div>
-      <div class="hp hp-green">● PRO FIRST</div>
+      <div class="hp hp-pink" style="padding-left:32px;padding-right:32px;letter-spacing:.18em;">⏰ &nbsp;07 МАЯ — ГЛОБАЛЬНЫЙ ЗАПУСК</div>
     </div>
     <div class="hero-chips">
       <div class="chip">📊 Новый индикатор</div>
@@ -306,7 +313,10 @@ canvas#export  { display:none; }
   <!-- Bottom bar -->
   <div class="hero-bottombar">
     <div>IT V3</div>
-    <div class="hero-bottombar-r">TRADINGVIEW</div>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <span style="color:rgba(255,255,255,.45);letter-spacing:.2em;">BTC · ETH · SOL</span>
+      <div class="hero-bottombar-r">TRADINGVIEW</div>
+    </div>
   </div>
 </section>
 
