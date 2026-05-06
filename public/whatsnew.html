@@ -362,34 +362,6 @@
   }
   .cta-pro-note strong { color: var(--yellow); }
 
-  /* ─── BANNER DOWNLOAD ─── */
-  .banner-dl {
-    margin-bottom: 48px;
-    display: flex; flex-direction: column; align-items: center; gap: 14px;
-  }
-  .banner-dl-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
-    letter-spacing: .3em; color: var(--muted); text-transform: uppercase;
-  }
-  .banner-btn-row { display: flex; gap: 12px; }
-  .banner-dl-btn {
-    background: var(--accent); color: #000; border: none;
-    padding: 13px 34px; border-radius: 10px;
-    font-size: 14px; font-weight: 800; cursor: pointer;
-    font-family: 'Inter', sans-serif; transition: opacity .15s;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .banner-dl-btn:hover { opacity: .85; }
-  .banner-dl-btn:disabled { opacity: .5; cursor: wait; }
-  .banner-copy-btn {
-    background: var(--card2); color: var(--cyan);
-    border: 1px solid rgba(77,201,240,.25);
-    padding: 13px 26px; border-radius: 10px;
-    font-size: 14px; font-weight: 700; cursor: pointer;
-    font-family: 'JetBrains Mono', monospace; transition: opacity .15s;
-  }
-  .banner-copy-btn:hover { opacity: .85; }
-
   /* ─── FOOTER ─── */
   .footer {
     text-align: center; padding: 32px 0 0;
@@ -444,15 +416,6 @@
     <div class="hero-footer">
       <div>IT V3</div>
       <div class="hero-footer-r">TRADINGVIEW</div>
-    </div>
-  </div>
-
-  <!-- BANNER DOWNLOAD -->
-  <div class="banner-dl">
-    <div class="banner-dl-label">— Скачать баннер для поста —</div>
-    <div class="banner-btn-row">
-      <button class="banner-dl-btn" id="wn-dl-btn" onclick="wnDownload()">⬇ Скачать PNG</button>
-      <button class="banner-copy-btn" onclick="wnCopyText()">📋 Копировать текст поста</button>
     </div>
   </div>
 
@@ -694,69 +657,5 @@
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-const WN_POST = `🚀 IT v3 — глобальное обновление. Завтра.
-
-Мы переписали всё с нуля. Вот что вас ждёт:
-
-📊 Улучшенный индикатор
-Больше данных, точнее сигналы. Новые слои аналитики прямо на графике.
-
-⚡️ Автоматические сигналы 24/7
-Индикатор сам отслеживает рынок и присылает сигнал в момент входа.
-
-📱 Мини-апп в Telegram
-Все сигналы, аналитика и обновления прямо в мессенджере.
-
-——————————————
-⏰ 07 мая 2026 — запуск.
-Подписчики PRO получают доступ первыми.
-
-📌 Индикатор IT v3`;
-
-async function wnDownload() {
-  const btn = document.getElementById('wn-dl-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Генерирую...';
-
-  try {
-    const hero = document.querySelector('.hero');
-    const canvas = await html2canvas(hero, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#0a0a0c',
-      logging: false,
-      width: hero.offsetWidth,
-      height: hero.offsetHeight
-    });
-
-    canvas.toBlob(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'IT_v3_update_banner.png';
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }, 'image/png');
-  } catch(e) {
-    alert('Ошибка: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '⬇ Скачать PNG';
-  }
-}
-
-function wnCopyText() {
-  navigator.clipboard.writeText(WN_POST)
-    .then(() => alert('✅ Текст поста скопирован!'))
-    .catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = WN_POST; ta.style.cssText = 'position:fixed;opacity:0';
-      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
-      document.body.removeChild(ta); alert('✅ Текст поста скопирован!');
-    });
-}
-</script>
 </body>
 </html>
