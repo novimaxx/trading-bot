@@ -3,45 +3,326 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IT v3 — Update Banner</title>
+<title>IT v3 — Глобальный Апдейт</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#060608; color:#fff; font-family:'Inter',sans-serif; min-height:100vh;
-  display:flex; flex-direction:column; align-items:center; padding:40px 20px; gap:28px; }
+body { background:#060608; color:#fff; font-family:'Inter',sans-serif; }
 
-h1 { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
-  letter-spacing:.3em; color:rgba(255,255,255,.25); text-transform:uppercase; }
+/* ── HERO ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+  background: #070b09;
+}
 
-.preview-wrap { position:relative; width:700px; height:394px; border-radius:16px;
-  overflow:hidden; border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 60px rgba(0,0,0,.9); }
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(46,204,113,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,204,113,.045) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none; z-index: 0;
+}
 
+.hero-glow {
+  position: absolute; bottom: -120px; left: -80px;
+  width: 650px; height: 650px;
+  background: radial-gradient(circle, rgba(46,204,113,.22) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+.hero-glow-tr {
+  position: absolute; top: -80px; right: -60px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(255,61,127,.1) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+
+/* Corner brackets */
+.bk { position: absolute; width: 26px; height: 26px; z-index: 10; }
+.bk::before, .bk::after { content:''; position:absolute; background:#2ecc71; }
+.bk.tl { top:26px; left:26px; }
+.bk.tl::before { top:0;left:0;width:100%;height:2px; }
+.bk.tl::after  { top:0;left:0;width:2px;height:100%; }
+.bk.tr { top:26px; right:26px; }
+.bk.tr::before { top:0;right:0;width:100%;height:2px; }
+.bk.tr::after  { top:0;right:0;width:2px;height:100%; }
+.bk.bl { bottom:26px; left:26px; }
+.bk.bl::before { bottom:0;left:0;width:100%;height:2px; }
+.bk.bl::after  { bottom:0;left:0;width:2px;height:100%; }
+.bk.br { bottom:26px; right:26px; }
+.bk.br::before { bottom:0;right:0;width:100%;height:2px; }
+.bk.br::after  { bottom:0;right:0;width:2px;height:100%; }
+
+/* SVG Chart */
+.hero-chart {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 62%; height: 100%;
+  pointer-events: none; z-index: 1;
+}
+
+/* Top bar */
+.hero-topbar {
+  position: absolute; top: 34px; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 62px; z-index: 10;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: .25em;
+}
+.live {
+  display: flex; align-items: center; gap: 9px; color: #fff;
+}
+.live-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #ff3d7f;
+  box-shadow: 0 0 0 3px rgba(255,61,127,.2), 0 0 10px rgba(255,61,127,.5);
+  animation: blink 1.8s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.v3-tag { color: rgba(255,255,255,.4); }
+
+/* Main content */
+.hero-body {
+  position: relative; z-index: 5;
+  padding: 0 62px;
+  width: 100%; max-width: 1200px;
+}
+
+.kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 700; letter-spacing: .32em;
+  color: #ff3d7f; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 14px;
+  margin-bottom: 20px;
+}
+.kicker::before, .kicker::after { content:''; width:22px; height:2px; background:#ff3d7f; }
+
+.hero-title {
+  font-size: clamp(72px, 12vw, 148px);
+  font-weight: 900;
+  line-height: .88;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+.hero-title .t1 { display:block; color:#ffffff; }
+.hero-title .t2 {
+  display: block;
+  background: linear-gradient(180deg, #7fffb8 0%, #2ecc71 45%, #0e7035 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.hero-sub {
+  font-size: 16px; color: rgba(255,255,255,.45);
+  max-width: 400px; margin-bottom: 36px; line-height: 1.65;
+}
+
+.hero-pills { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 44px; }
+.hp {
+  padding: 10px 24px; border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700; letter-spacing: .12em;
+}
+.hp-pink  { background: rgba(255,61,127,.12);  border:1px solid rgba(255,61,127,.4);  color:#ff3d7f; }
+.hp-cyan  { background: rgba(77,201,240,.07);  border:1px solid rgba(77,201,240,.3);  color:rgba(255,255,255,.75); }
+.hp-green { background: rgba(46,204,113,.08);  border:1px solid rgba(46,204,113,.3);  color:#2ecc71; }
+
+.hero-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip {
+  background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+  border-radius: 10px; padding: 9px 18px;
+  font-size: 13px; color: rgba(255,255,255,.65);
+  font-family: 'JetBrains Mono', monospace; letter-spacing: .05em;
+}
+
+/* Bottom bar */
+.hero-bottombar {
+  position: absolute; bottom: 32px; left: 0; right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 62px; z-index: 10;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: .28em;
+  text-transform: uppercase; color: rgba(255,255,255,.28);
+}
+.hero-bottombar-r { display:flex; align-items:center; gap:8px; }
+.hero-bottombar-r::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:#2ecc71; box-shadow:0 0 6px #2ecc71;
+}
+
+/* ── BANNER GENERATOR ── */
+.gen-wrap {
+  background: #060608;
+  border-top: 1px solid rgba(255,255,255,.06);
+  padding: 60px 20px 72px;
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+}
+.gen-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: .32em;
+  color: rgba(255,255,255,.2); text-transform: uppercase;
+}
+.preview-wrap {
+  position: relative; width: 700px; height: 394px;
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: 0 24px 70px rgba(0,0,0,.85);
+}
 canvas#preview { width:700px; height:394px; display:block; }
 canvas#export  { display:none; }
-
 .btn-row { display:flex; gap:12px; }
-.dl-btn { background:#2ecc71; color:#000; border:none; padding:13px 36px;
-  border-radius:10px; font-size:14px; font-weight:800; cursor:pointer;
-  font-family:'Inter',sans-serif; transition:opacity .15s; }
+.dl-btn {
+  background:#2ecc71; color:#000; border:none;
+  padding:13px 36px; border-radius:10px;
+  font-size:14px; font-weight:800; cursor:pointer;
+  font-family:'Inter',sans-serif; transition:opacity .15s;
+}
 .dl-btn:hover { opacity:.85; }
-.copy-btn { background:#1a1a24; color:#4dc9f0; border:1px solid rgba(77,201,240,.25);
-  padding:13px 28px; border-radius:10px; font-size:14px; font-weight:700;
-  cursor:pointer; font-family:'JetBrains Mono',monospace; transition:opacity .15s; }
+.copy-btn {
+  background:#1a1a24; color:#4dc9f0;
+  border:1px solid rgba(77,201,240,.25);
+  padding:13px 28px; border-radius:10px;
+  font-size:14px; font-weight:700; cursor:pointer;
+  font-family:'JetBrains Mono',monospace; transition:opacity .15s;
+}
 .copy-btn:hover { opacity:.85; }
+
+@media(max-width:760px){
+  .hero-body { padding:0 28px; }
+  .hero-topbar,.hero-bottombar { padding:0 28px; }
+  .hero-title { font-size:68px; }
+  .hero-chart { width:100%; opacity:.18; }
+  .preview-wrap { width:100%; height:auto; aspect-ratio:16/9; }
+  canvas#preview { width:100%; height:auto; }
+}
 </style>
 </head>
 <body>
 
-<h1>— IT v3 · Update Banner Generator —</h1>
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow-tr"></div>
 
-<div class="preview-wrap">
-  <canvas id="preview"></canvas>
-</div>
-<canvas id="export"></canvas>
+  <!-- Candlestick chart SVG -->
+  <svg class="hero-chart" viewBox="0 0 620 560" preserveAspectRatio="xMaxYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="fadeL" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"  stop-color="#070b09" stop-opacity="1"/>
+        <stop offset="28%" stop-color="#070b09" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="fadeB" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="70%" stop-color="#070b09" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#070b09" stop-opacity="1"/>
+      </linearGradient>
+    </defs>
 
-<div class="btn-row">
-  <button class="dl-btn" onclick="downloadBanner()">⬇ Скачать PNG (1280×720)</button>
-  <button class="copy-btn" onclick="copyPostText()">📋 Копировать текст поста</button>
+    <!-- ── Candles ── -->
+    <!-- c1 small green -->
+    <line x1="75"  y1="435" x2="75"  y2="375" stroke="#2ecc71" stroke-width="1.5" opacity=".6"/>
+    <rect x="66"  y="390"  width="18" height="35" fill="#2ecc71" opacity=".75" rx="2"/>
+    <!-- c2 green up -->
+    <line x1="120" y1="415" x2="120" y2="335" stroke="#2ecc71" stroke-width="1.5" opacity=".65"/>
+    <rect x="111" y="345"  width="18" height="60" fill="#2ecc71" opacity=".82" rx="2"/>
+    <!-- c3 red small -->
+    <line x1="165" y1="320" x2="165" y2="275" stroke="#ff3d7f" stroke-width="1.5" opacity=".6"/>
+    <rect x="156" y="283"  width="18" height="28" fill="#ff3d7f" opacity=".72" rx="2"/>
+    <!-- c4 big green -->
+    <line x1="210" y1="375" x2="210" y2="215" stroke="#2ecc71" stroke-width="1.5" opacity=".7"/>
+    <rect x="201" y="228"  width="18" height="110" fill="#2ecc71" opacity=".88" rx="2"/>
+    <!-- c5 green -->
+    <line x1="255" y1="260" x2="255" y2="168" stroke="#2ecc71" stroke-width="1.5" opacity=".7"/>
+    <rect x="246" y="180"  width="18" height="66" fill="#2ecc71" opacity=".84" rx="2"/>
+    <!-- c6 peak green -->
+    <line x1="300" y1="220" x2="300" y2="88"  stroke="#2ecc71" stroke-width="1.5" opacity=".72"/>
+    <rect x="291" y="104"  width="18" height="100" fill="#2ecc71" opacity=".9" rx="2"/>
+    <!-- c7 red drop -->
+    <line x1="345" y1="145" x2="345" y2="215" stroke="#ff3d7f" stroke-width="1.5" opacity=".65"/>
+    <rect x="336" y="153"  width="18" height="48" fill="#ff3d7f" opacity=".8" rx="2"/>
+    <!-- c8 red bigger -->
+    <line x1="390" y1="185" x2="390" y2="285" stroke="#ff3d7f" stroke-width="1.5" opacity=".68"/>
+    <rect x="381" y="195"  width="18" height="78" fill="#ff3d7f" opacity=".82" rx="2"/>
+    <!-- c9 red -->
+    <line x1="435" y1="258" x2="435" y2="338" stroke="#ff3d7f" stroke-width="1.5" opacity=".62"/>
+    <rect x="426" y="268"  width="18" height="58" fill="#ff3d7f" opacity=".75" rx="2"/>
+    <!-- c10 small red -->
+    <line x1="480" y1="318" x2="480" y2="372" stroke="#ff3d7f" stroke-width="1.5" opacity=".55"/>
+    <rect x="471" y="326"  width="18" height="38" fill="#ff3d7f" opacity=".65" rx="2"/>
+
+    <!-- Trend line (pink) -->
+    <polyline
+      points="75,408 120,370 165,300 210,280 255,210 300,150 345,178 390,234 435,295 480,345"
+      stroke="#ff3d7f" stroke-width="2.8" fill="none"
+      stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>
+
+    <!-- SM level line (faint green) -->
+    <line x1="60" y1="200" x2="510" y2="200" stroke="#2ecc71" stroke-width="1" stroke-dasharray="6 5" opacity=".18"/>
+    <line x1="60" y1="320" x2="510" y2="320" stroke="#2ecc71" stroke-width="1" stroke-dasharray="6 5" opacity=".12"/>
+
+    <!-- Fade from left -->
+    <rect x="0" y="0" width="620" height="560" fill="url(#fadeL)"/>
+    <!-- Fade bottom -->
+    <rect x="0" y="0" width="620" height="560" fill="url(#fadeB)"/>
+  </svg>
+
+  <!-- Corner brackets -->
+  <div class="bk tl"></div>
+  <div class="bk tr"></div>
+  <div class="bk bl"></div>
+  <div class="bk br"></div>
+
+  <!-- Top bar -->
+  <div class="hero-topbar">
+    <div class="live"><div class="live-dot"></div>LIVE</div>
+    <div class="v3-tag">V 3</div>
+  </div>
+
+  <!-- Main content -->
+  <div class="hero-body">
+    <div class="kicker">Индикатор</div>
+    <h1 class="hero-title">
+      <span class="t1">IT v3</span>
+      <span class="t2">Апдейт</span>
+    </h1>
+    <p class="hero-sub">Глобальное обновление. Новый индикатор, автосигналы 24/7 и мини-апп в Telegram.</p>
+    <div class="hero-pills">
+      <div class="hp hp-pink">⏰ 07 МАЯ — ЗАПУСК</div>
+      <div class="hp hp-cyan">BTC · ETH · SOL</div>
+      <div class="hp hp-green">● PRO FIRST</div>
+    </div>
+    <div class="hero-chips">
+      <div class="chip">📊 Новый индикатор</div>
+      <div class="chip">⚡ Сигналы 24/7</div>
+      <div class="chip">📱 Мини-апп</div>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="hero-bottombar">
+    <div>IT V3</div>
+    <div class="hero-bottombar-r">TRADINGVIEW</div>
+  </div>
+</section>
+
+<!-- ═══════════ BANNER GENERATOR ═══════════ -->
+<div class="gen-wrap">
+  <div class="gen-label">— Banner Generator · 1280 × 720 —</div>
+
+  <div class="preview-wrap">
+    <canvas id="preview"></canvas>
+  </div>
+  <canvas id="export"></canvas>
+
+  <div class="btn-row">
+    <button class="dl-btn" onclick="downloadBanner()">⬇ Скачать PNG (1280×720)</button>
+    <button class="copy-btn" onclick="copyPostText()">📋 Копировать текст поста</button>
+  </div>
 </div>
 
 <script>
@@ -73,176 +354,200 @@ function roundRect(ctx, x, y, w, h, r) {
 }
 
 function drawBanner(ctx, W, H) {
-  // ── Background ──────────────────────────────────────────────
+  // Background
   ctx.fillStyle = '#08080c';
   ctx.fillRect(0, 0, W, H);
 
-  // Radial glow — green bottom-left
+  // Green glow bottom-left
   const g1 = ctx.createRadialGradient(W*0.18, H*0.85, 0, W*0.18, H*0.85, W*0.55);
-  g1.addColorStop(0, 'rgba(46,204,113,0.18)');
+  g1.addColorStop(0, 'rgba(46,204,113,0.22)');
   g1.addColorStop(1, 'rgba(46,204,113,0)');
   ctx.fillStyle = g1; ctx.fillRect(0,0,W,H);
 
-  // Radial glow — pink top-right
-  const g2 = ctx.createRadialGradient(W*0.88, H*0.12, 0, W*0.88, H*0.12, W*0.45);
+  // Pink glow top-right
+  const g2 = ctx.createRadialGradient(W*0.88, H*0.12, 0, W*0.88, H*0.12, W*0.4);
   g2.addColorStop(0, 'rgba(255,61,127,0.14)');
   g2.addColorStop(1, 'rgba(255,61,127,0)');
   ctx.fillStyle = g2; ctx.fillRect(0,0,W,H);
 
   // Grid
-  ctx.strokeStyle = 'rgba(46,204,113,0.035)'; ctx.lineWidth = 1;
-  for (let x=0; x<W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let y=0; y<H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(46,204,113,0.04)'; ctx.lineWidth = 1;
+  for (let x=0; x<W; x+=50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y=0; y<H; y+=50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
 
-  // Subtle horizontal scan line
-  const scan = ctx.createLinearGradient(0, H*0.42, 0, H*0.58);
-  scan.addColorStop(0, 'rgba(46,204,113,0)');
-  scan.addColorStop(0.5, 'rgba(46,204,113,0.04)');
-  scan.addColorStop(1, 'rgba(46,204,113,0)');
-  ctx.fillStyle = scan; ctx.fillRect(0, H*0.42, W, H*0.16);
+  // Candlestick chart (right side)
+  const cx = W * 0.42; // chart start x
+  const cy = H * 0.1;
+  const cw = W * 0.52;
+  const ch = H * 0.82;
 
-  // ── Corner brackets ─────────────────────────────────────────
-  ctx.strokeStyle = '#ff3d7f'; ctx.lineWidth = 5; ctx.globalAlpha = 0.85;
-  const bs=30, bp=8;
+  const candles = [
+    { x:0.06, lo:0.76, hi:0.55, oc:[0.70,0.62], bull:true  },
+    { x:0.17, lo:0.72, hi:0.48, oc:[0.65,0.52], bull:true  },
+    { x:0.27, lo:0.50, hi:0.42, oc:[0.48,0.45], bull:false },
+    { x:0.37, lo:0.65, hi:0.28, oc:[0.60,0.32], bull:true  },
+    { x:0.47, lo:0.42, hi:0.20, oc:[0.38,0.23], bull:true  },
+    { x:0.57, lo:0.35, hi:0.08, oc:[0.30,0.11], bull:true  },
+    { x:0.67, lo:0.18, hi:0.28, oc:[0.20,0.25], bull:false },
+    { x:0.77, lo:0.28, hi:0.44, oc:[0.30,0.42], bull:false },
+    { x:0.87, lo:0.42, hi:0.56, oc:[0.44,0.53], bull:false },
+  ];
+
+  candles.forEach(c => {
+    const bx = cx + c.x * cw;
+    const bw = cw * 0.06;
+    const color = c.bull ? '#2ecc71' : '#ff3d7f';
+    ctx.globalAlpha = 0.82;
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(bx, cy + c.lo * ch);
+    ctx.lineTo(bx, cy + c.hi * ch);
+    ctx.stroke();
+    const ot = Math.min(c.oc[0], c.oc[1]);
+    const oh = Math.abs(c.oc[0] - c.oc[1]);
+    ctx.fillStyle = color;
+    ctx.fillRect(bx - bw/2, cy + ot * ch, bw, oh * ch || 4);
+    ctx.globalAlpha = 1;
+  });
+
+  // Trend line
+  const trendPts = [
+    [0.06,0.66],[0.17,0.58],[0.27,0.47],[0.37,0.46],
+    [0.47,0.30],[0.57,0.20],[0.67,0.22],[0.77,0.36],[0.87,0.48]
+  ];
+  ctx.beginPath();
+  ctx.strokeStyle = '#ff3d7f'; ctx.lineWidth = 3;
+  ctx.globalAlpha = 0.92; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  trendPts.forEach(([tx,ty], i) => {
+    const px = cx + tx*cw, py = cy + ty*ch;
+    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+  });
+  ctx.stroke(); ctx.globalAlpha = 1;
+
+  // Fade left over chart
+  const fadeL = ctx.createLinearGradient(cx-10,0,cx+cw*0.3,0);
+  fadeL.addColorStop(0,'rgba(8,8,12,1)');
+  fadeL.addColorStop(1,'rgba(8,8,12,0)');
+  ctx.fillStyle = fadeL; ctx.fillRect(cx-10,0,cw*0.35,H);
+
+  // Corner brackets
+  ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 5; ctx.globalAlpha = 0.85;
+  const bs=32, bp=10;
   ctx.beginPath(); ctx.moveTo(bp+bs,bp); ctx.lineTo(bp,bp); ctx.lineTo(bp,bp+bs); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(W-bp-bs,bp); ctx.lineTo(W-bp,bp); ctx.lineTo(W-bp,bp+bs); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(bp+bs,H-bp); ctx.lineTo(bp,H-bp); ctx.lineTo(bp,H-bp-bs); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(W-bp-bs,H-bp); ctx.lineTo(W-bp,H-bp); ctx.lineTo(W-bp,H-bp-bs); ctx.stroke();
   ctx.globalAlpha = 1;
 
-  // ── IT V3 badge (top-right) ──────────────────────────────────
-  const bt = 'IT V3'; ctx.font = 'bold 12px JetBrains Mono, monospace';
-  const bw = ctx.measureText(bt).width + 30, bh = 26;
-  const bx = W - bw - 28, by = 22;
-  ctx.fillStyle = 'rgba(46,204,113,0.15)'; roundRect(ctx,bx,by,bw,bh,13); ctx.fill();
-  ctx.strokeStyle = 'rgba(46,204,113,0.5)'; ctx.lineWidth=1; roundRect(ctx,bx,by,bw,bh,13); ctx.stroke();
-  ctx.beginPath(); ctx.arc(bx+13, by+bh/2, 3.5, 0, Math.PI*2);
+  // IT V3 badge (top-right)
+  const bt='IT V3'; ctx.font='bold 13px JetBrains Mono,monospace';
+  const bw2=ctx.measureText(bt).width+32, bh2=28;
+  const bx2=W-bw2-28, by2=24;
+  ctx.fillStyle='rgba(46,204,113,0.12)'; roundRect(ctx,bx2,by2,bw2,bh2,14); ctx.fill();
+  ctx.strokeStyle='rgba(46,204,113,0.45)'; ctx.lineWidth=1; roundRect(ctx,bx2,by2,bw2,bh2,14); ctx.stroke();
+  ctx.beginPath(); ctx.arc(bx2+14,by2+bh2/2,3.5,0,Math.PI*2);
   ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
-  ctx.fillStyle='#2ecc71'; ctx.textAlign='left'; ctx.fillText(bt, bx+22, by+17);
+  ctx.fillStyle='#2ecc71'; ctx.textAlign='left'; ctx.fillText(bt,bx2+24,by2+19);
 
-  // ── Kicker top-center ────────────────────────────────────────
-  ctx.font = 'bold 13px JetBrains Mono, monospace';
-  ctx.fillStyle = '#ff3d7f'; ctx.textAlign = 'center'; ctx.globalAlpha = 0.9;
-  ctx.fillText('— ГЛОБАЛЬНЫЙ АПДЕЙТ —', W/2, 42); ctx.globalAlpha = 1;
+  // LIVE dot + label (top-left)
+  ctx.beginPath(); ctx.arc(54,38,5,0,Math.PI*2);
+  ctx.fillStyle='#ff3d7f'; ctx.shadowColor='#ff3d7f'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
+  ctx.font='bold 11px JetBrains Mono,monospace';
+  ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.textAlign='left';
+  ctx.fillText('LIVE',70,42);
 
-  // Live dot + label (top-left)
-  ctx.beginPath(); ctx.arc(52, 38, 5, 0, Math.PI*2);
-  ctx.fillStyle='#2ecc71'; ctx.shadowColor='#2ecc71'; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
-  ctx.font='bold 10px JetBrains Mono, monospace';
-  ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.textAlign='left';
-  ctx.fillText('LIVE · PRO SIGNALS', 66, 42);
+  // Kicker
+  ctx.font='bold 14px JetBrains Mono,monospace';
+  ctx.fillStyle='#ff3d7f'; ctx.textAlign='left'; ctx.globalAlpha=0.92;
+  ctx.fillText('— ИНДИКАТОР —',54,90); ctx.globalAlpha=1;
 
-  // ── Main headline ────────────────────────────────────────────
-  // "IT v3" — giant
-  ctx.font = '900 110px Inter, sans-serif';
-  ctx.textAlign = 'left';
-  // Gradient text
-  const tg = ctx.createLinearGradient(60, H*0.25, 60, H*0.55);
-  tg.addColorStop(0, '#ffffff');
-  tg.addColorStop(0.6, 'rgba(255,255,255,0.85)');
-  tg.addColorStop(1, 'rgba(255,255,255,0.5)');
-  ctx.fillStyle = tg;
-  ctx.fillText('IT v3', 52, H*0.52);
+  // Main headline "IT v3"
+  ctx.font='900 130px Inter,sans-serif';
+  ctx.textAlign='left';
+  const tg=ctx.createLinearGradient(54,H*0.2,54,H*0.55);
+  tg.addColorStop(0,'#ffffff');
+  tg.addColorStop(0.6,'rgba(255,255,255,0.88)');
+  tg.addColorStop(1,'rgba(255,255,255,0.55)');
+  ctx.fillStyle=tg;
+  ctx.fillText('IT v3',54,H*0.52);
 
-  // Glow behind text
-  ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 40;
-  ctx.fillStyle = 'rgba(46,204,113,0.08)';
-  ctx.fillText('IT v3', 52, H*0.52);
-  ctx.shadowBlur = 0;
+  // "ОТ ТОВАРИЩА" sub-headline
+  ctx.font='900 52px Inter,sans-serif';
+  const tg2=ctx.createLinearGradient(54,H*0.56,54,H*0.68);
+  tg2.addColorStop(0,'#7fffb8');
+  tg2.addColorStop(1,'#2ecc71');
+  ctx.fillStyle=tg2;
+  ctx.fillText('ГЛОБАЛЬНЫЙ АПДЕЙТ',54,H*0.64);
 
-  // "ЗАПУСК" accent word (right side, vertical-ish)
-  ctx.save();
-  ctx.translate(W - 68, H*0.22);
-  ctx.rotate(Math.PI / 2);
-  ctx.font = 'bold 11px JetBrains Mono, monospace';
-  ctx.fillStyle = 'rgba(255,61,127,0.6)';
-  ctx.textAlign = 'center'; ctx.letterSpacing = '0.3em';
-  ctx.fillText('07 МАЯ · ЗАВТРА', 0, 0);
-  ctx.restore();
+  // Date pill
+  const dateText='⏰  07 МАЯ — ЗАПУСК';
+  ctx.font='bold 13px JetBrains Mono,monospace';
+  const dpw=ctx.measureText(dateText).width+38, dph=36;
+  const dpx=54, dpy=H*0.7;
+  ctx.fillStyle='rgba(255,61,127,0.12)'; roundRect(ctx,dpx,dpy,dpw,dph,18); ctx.fill();
+  ctx.strokeStyle='rgba(255,61,127,0.4)'; ctx.lineWidth=1; roundRect(ctx,dpx,dpy,dpw,dph,18); ctx.stroke();
+  ctx.fillStyle='#ff3d7f'; ctx.textAlign='left';
+  ctx.fillText(dateText,dpx+19,dpy+24);
 
-  // ── Date pill ────────────────────────────────────────────────
-  const dateText = '⏰  07 МАЯ — ЗАПУСК';
-  ctx.font = 'bold 13px JetBrains Mono, monospace';
-  const dpw = ctx.measureText(dateText).width + 36, dph = 34;
-  const dpx = 52, dpy = H*0.56;
-  ctx.fillStyle = 'rgba(255,61,127,0.12)';
-  roundRect(ctx, dpx, dpy, dpw, dph, 17); ctx.fill();
-  ctx.strokeStyle = 'rgba(255,61,127,0.4)'; ctx.lineWidth = 1;
-  roundRect(ctx, dpx, dpy, dpw, dph, 17); ctx.stroke();
-  ctx.fillStyle = '#ff3d7f'; ctx.textAlign = 'left';
-  ctx.fillText(dateText, dpx + 18, dpy + 22);
-
-  // ── Three feature pills ──────────────────────────────────────
-  const features = [
-    { icon: '📊', label: 'Новый индикатор' },
-    { icon: '⚡️', label: 'Сигналы 24/7' },
-    { icon: '📱', label: 'Мини-апп' },
-  ];
-  ctx.font = 'bold 12px JetBrains Mono, monospace';
-  let fx = 52;
-  const fy = H*0.73, fh = 32;
-  features.forEach(f => {
-    const label = f.icon + '  ' + f.label;
-    const fw = ctx.measureText(label).width + 28;
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
-    roundRect(ctx, fx, fy, fw, fh, 16); ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
-    roundRect(ctx, fx, fy, fw, fh, 16); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.textAlign = 'left';
-    ctx.fillText(label, fx + 14, fy + 21);
-    fx += fw + 12;
+  // Feature chips
+  const feats=[{i:'📊',l:'Новый индикатор'},{i:'⚡',l:'Сигналы 24/7'},{i:'📱',l:'Мини-апп'}];
+  ctx.font='bold 12px JetBrains Mono,monospace';
+  let fx=54; const fy=H*0.82, fh=32;
+  feats.forEach(f=>{
+    const label=f.i+'  '+f.l;
+    const fw=ctx.measureText(label).width+28;
+    ctx.fillStyle='rgba(255,255,255,0.06)'; roundRect(ctx,fx,fy,fw,fh,16); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.12)'; ctx.lineWidth=1; roundRect(ctx,fx,fy,fw,fh,16); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.72)'; ctx.textAlign='left';
+    ctx.fillText(label,fx+14,fy+21);
+    fx+=fw+12;
   });
 
-  // ── Bottom tagline ───────────────────────────────────────────
-  ctx.font = '400 15px Inter, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.textAlign = 'left';
-  ctx.fillText('Подписчики PRO получают доступ первыми  💎', 52, H - 28);
+  // Bottom bar
+  ctx.font='400 14px Inter,sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.28)'; ctx.textAlign='left';
+  ctx.fillText('Подписчики PRO получают доступ первыми  💎',54,H-28);
 
-  // Bottom-right: PRO pill
-  const proText = 'PRO FIRST';
-  ctx.font = 'bold 11px JetBrains Mono, monospace';
-  const ppw = ctx.measureText(proText).width + 24, pph = 26;
-  const ppx = W - ppw - 28, ppy = H - 48;
-  ctx.fillStyle = 'rgba(255,204,0,0.12)';
-  roundRect(ctx, ppx, ppy, ppw, pph, 13); ctx.fill();
-  ctx.strokeStyle = 'rgba(255,204,0,0.35)'; ctx.lineWidth = 1;
-  roundRect(ctx, ppx, ppy, ppw, pph, 13); ctx.stroke();
-  ctx.fillStyle = '#ffcc00'; ctx.textAlign = 'left';
-  ctx.fillText(proText, ppx + 12, ppy + 17);
+  // PRO pill
+  const proText='PRO FIRST';
+  ctx.font='bold 11px JetBrains Mono,monospace';
+  const ppw=ctx.measureText(proText).width+26, pph=26;
+  const ppx=W-ppw-28, ppy=H-48;
+  ctx.fillStyle='rgba(255,204,0,0.1)'; roundRect(ctx,ppx,ppy,ppw,pph,13); ctx.fill();
+  ctx.strokeStyle='rgba(255,204,0,0.35)'; ctx.lineWidth=1; roundRect(ctx,ppx,ppy,ppw,pph,13); ctx.stroke();
+  ctx.fillStyle='#ffcc00'; ctx.textAlign='left';
+  ctx.fillText(proText,ppx+13,ppy+17);
 }
 
-// ── Draw live preview ────────────────────────────────────────────
-function renderPreview() {
-  const c = document.getElementById('preview');
-  c.width = 700; c.height = 394;
-  const ctx = c.getContext('2d');
-  ctx.scale(700/1280, 394/720);
-  drawBanner(ctx, 1280, 720);
+function renderPreview(){
+  const c=document.getElementById('preview');
+  c.width=700; c.height=394;
+  const ctx=c.getContext('2d');
+  ctx.scale(700/1280,394/720);
+  drawBanner(ctx,1280,720);
 }
 
-// ── Download full-res ────────────────────────────────────────────
-function downloadBanner() {
-  const c = document.getElementById('export');
-  c.width = 1280; c.height = 720;
-  const ctx = c.getContext('2d');
-  drawBanner(ctx, 1280, 720);
-  c.toBlob(blob => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'IT_v3_global_update_banner.png';
+function downloadBanner(){
+  const c=document.getElementById('export');
+  c.width=1280; c.height=720;
+  const ctx=c.getContext('2d');
+  drawBanner(ctx,1280,720);
+  c.toBlob(blob=>{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download='IT_v3_global_update_banner.png';
     document.body.appendChild(a); a.click();
     document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }, 'image/png');
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  },'image/png');
 }
 
-function copyPostText() {
+function copyPostText(){
   navigator.clipboard.writeText(POST_TEXT)
-    .then(() => alert('✅ Текст поста скопирован!'))
-    .catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = POST_TEXT; ta.style.position='fixed'; ta.style.opacity='0';
+    .then(()=>alert('✅ Текст поста скопирован!'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');
+      ta.value=POST_TEXT; ta.style.position='fixed'; ta.style.opacity='0';
       document.body.appendChild(ta); ta.select(); document.execCommand('copy');
       document.body.removeChild(ta); alert('✅ Текст поста скопирован!');
     });
