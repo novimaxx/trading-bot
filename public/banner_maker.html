@@ -350,11 +350,16 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
       <button class="bm-aud" id="bm-aud-pro" onclick="bmSetAud('PRO',this)">💎 PRO</button>
     </div>
 
-    <button class="action-btn both-btn" id="bm-send-btn" onclick="bmSend()" style="background:#ff3d7f;color:#fff">
-      <span>📤</span> Отправить с баннером
-    </button>
+    <div style="display:flex;gap:10px">
+      <button class="action-btn both-btn" id="bm-send-btn" onclick="bmSend()" style="background:#ff3d7f;color:#fff;flex:2">
+        <span>📤</span> Отправить с баннером
+      </button>
+      <button class="action-btn" id="bm-test-btn" onclick="bmTestSend()" style="flex:1;background:#1a1a24;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12)">
+        🧪 Тест → мне
+      </button>
+    </div>
 
-    <div id="bm-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#2ecc71;padding:6px;letter-spacing:.05em"></div>
+    <div id="bm-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px;letter-spacing:.05em"></div>
   </div>
 </div>
 
@@ -644,6 +649,45 @@ async function bmRenderBase64() {
       finish();
     }
   });
+}
+
+async function bmTestSend() {
+  const title = document.getElementById('inp-title').value.trim();
+  const tag   = document.getElementById('inp-tag').value.trim();
+  const body  = document.getElementById('post-text').value.trim();
+
+  const btn = document.getElementById('bm-test-btn');
+  btn.disabled = true; btn.innerHTML = '⏳ Тест...';
+
+  const res = document.getElementById('bm-result');
+  res.style.display = 'block'; res.style.color = 'rgba(255,255,255,.4)';
+  res.textContent = '⏳ Рендерю и отправляю тебе...';
+
+  let image_b64;
+  try { image_b64 = await bmRenderBase64(); }
+  catch(e) {
+    btn.disabled = false; btn.innerHTML = '🧪 Тест → мне';
+    res.textContent = '❌ Ошибка рендера'; res.style.color = '#ff3d7f'; return;
+  }
+
+  try {
+    const r = await fetch('/api/admin/test-send?tg_id=562914492', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, tag, body, image_b64 })
+    });
+    const j = await r.json();
+    if (j.ok) {
+      res.textContent = '✅ Тест отправлен тебе в Telegram!';
+      res.style.color = '#2ecc71';
+    } else {
+      res.textContent = `❌ ${j.error || 'ошибка'}`;
+      res.style.color = '#ff3d7f';
+    }
+  } catch(e) {
+    res.textContent = '❌ ' + e.message; res.style.color = '#ff3d7f';
+  }
+  btn.disabled = false; btn.innerHTML = '🧪 Тест → мне';
 }
 
 async function bmSend() {

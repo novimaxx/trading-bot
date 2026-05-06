@@ -799,7 +799,10 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       </div>
 
       <!-- Send -->
-      <button class="bm-send-btn" id="bc-send-btn" onclick="bcSend()">📤 Отправить подписчикам</button>
+      <div style="display:flex;gap:8px">
+        <button class="bm-send-btn" id="bc-send-btn" onclick="bcSend()" style="flex:2">📤 Отправить подписчикам</button>
+        <button class="bm-send-btn" id="bc-test-btn" onclick="bcTestSend()" style="flex:1;background:#1a1a24;border:1px solid rgba(255,255,255,.15);font-size:13px">🧪 Тест → мне</button>
+      </div>
       <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px"></div>
       <div class="bm-copy-toast" id="bc-copy-toast"></div>
 
@@ -1506,6 +1509,38 @@ async function bcSend() {
     bcUpdate();
   } else {
     res.textContent=`❌ ${r?.error||'adminApi вернул null — проверь консоль'}`;
+    res.style.color='#ff3d7f';
+  }
+}
+
+async function bcTestSend() {
+  const title = document.getElementById('bc-title').value.trim();
+  const body  = document.getElementById('bc-body').value.trim();
+  const tag   = document.getElementById('bc-tag').value.trim();
+
+  const btn = document.getElementById('bc-test-btn');
+  btn.disabled = true; btn.innerHTML = '⏳';
+
+  const res = document.getElementById('bc-result');
+  res.style.display='block'; res.style.color='rgba(255,255,255,.4)'; res.textContent='⏳ Рендерю...';
+
+  let image_b64;
+  try {
+    const dataUrl = await bcRenderCanvas();
+    image_b64 = dataUrl.replace(/^data:image\/png;base64,/,'');
+  } catch(e) {
+    btn.disabled=false; btn.innerHTML='🧪 Тест → мне';
+    res.textContent='❌ Ошибка рендера'; res.style.color='#ff3d7f'; return;
+  }
+
+  const r = await adminApi('/api/admin/test-send','POST',{title,body,tag,image_b64});
+  btn.disabled=false; btn.innerHTML='🧪 Тест → мне';
+
+  if (r?.ok) {
+    res.textContent=`✅ Тест отправлен тебе в Telegram! (chat_id: ${r.chat_id})`;
+    res.style.color='#2ecc71';
+  } else {
+    res.textContent=`❌ ${r?.error||'adminApi null — смотри консоль'}`;
     res.style.color='#ff3d7f';
   }
 }

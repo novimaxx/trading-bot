@@ -879,6 +879,45 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
 })
 
+// ─── API: Admin test-send (to admin only) ─────────────────
+app.post('/api/admin/test-send', adminOnly, async (req, res) => {
+  const { title, body, tag, image_b64 } = req.body
+  if (!image_b64) return res.sendStatus(400)
+
+  const adminChatId = String(req.query.tg_id || req.body?.tg_id || '562914492')
+
+  const caption = [
+    title ? `*${title}*` : null,
+    body || null,
+    tag ? `\n🏷 ${tag}` : null,
+    '\n📱 _IT v3 · тест_'
+  ].filter(Boolean).join('\n\n')
+
+  const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
+  const imgBuf = Buffer.from(base64, 'base64')
+
+  try {
+    const fd = new FormData()
+    fd.append('chat_id', adminChatId)
+    fd.append('caption', caption)
+    fd.append('parse_mode', 'Markdown')
+    fd.append('photo', new Blob([imgBuf], { type: 'image/png' }), 'banner.png')
+
+    const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+      method: 'POST', body: fd
+    })
+    const j = await r.json()
+    if (j.ok) {
+      res.json({ ok: true, chat_id: adminChatId })
+    } else {
+      console.error('test-send error:', j)
+      res.json({ ok: false, error: j.description })
+    }
+  } catch (e) {
+    res.json({ ok: false, error: e.message })
+  }
+})
+
 // ─── API: Approve payment request ────────────────────────
 app.post('/api/admin/payments/:id/approve', adminOnly, async (req, res) => {
   if (!pool) return res.sendStatus(503)
