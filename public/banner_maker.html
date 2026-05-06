@@ -235,6 +235,14 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
   animation:fadeIn .2s ease;
 }
 @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+
+.bm-aud {
+  flex:1; padding:9px 8px; border-radius:10px; border:1px solid rgba(255,255,255,.12);
+  background:#13131a; color:rgba(255,255,255,.5); font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700; cursor:pointer; letter-spacing:.05em; transition:all .15s;
+}
+.bm-aud.active { background:rgba(255,61,127,.12); border-color:rgba(255,61,127,.4); color:#ff3d7f; }
+.bm-aud:hover:not(.active) { border-color:rgba(255,255,255,.25); color:rgba(255,255,255,.8); }
 </style>
 </head>
 <body>
@@ -331,6 +339,23 @@ h1 { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; le
     </button>
   </div>
   <div class="copy-toast" id="copy-toast">✅ Текст скопирован!</div>
+
+  <!-- Broadcast section -->
+  <div style="border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;flex-direction:column;gap:12px">
+    <div class="composer-label">📤 ОТПРАВИТЬ ПОДПИСЧИКАМ</div>
+
+    <div style="display:flex;gap:8px">
+      <button class="bm-aud active" id="bm-aud-all" onclick="bmSetAud('all',this)">👥 Все</button>
+      <button class="bm-aud" id="bm-aud-std" onclick="bmSetAud('STANDARD',this)">📊 Standard</button>
+      <button class="bm-aud" id="bm-aud-pro" onclick="bmSetAud('PRO',this)">💎 PRO</button>
+    </div>
+
+    <button class="action-btn both-btn" id="bm-send-btn" onclick="bmSend()" style="background:#ff3d7f;color:#fff">
+      <span>📤</span> Отправить с баннером
+    </button>
+
+    <div id="bm-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#2ecc71;padding:6px;letter-spacing:.05em"></div>
+  </div>
 </div>
 
 <script>
@@ -588,6 +613,83 @@ document.getElementById('post-text').addEventListener('input', function() {
 // Init
 update();
 syncPostText();
+
+// ── Broadcast ──────────────────────────────────────────────────
+let bmAudience = 'all';
+
+function bmSetAud(val, el) {
+  bmAudience = val;
+  document.querySelectorAll('.bm-aud').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function bmRenderBase64() {
+  const W = 1280, H = 720;
+  const canvas = document.getElementById('export-canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0d0d0f';
+  ctx.fillRect(0, 0, W, H);
+
+  return new Promise(resolve => {
+    const finish = () => {
+      drawOverlay(ctx, W, H);
+      resolve(canvas.toDataURL('image/png').replace(/^data:image\/png;base64,/, ''));
+    };
+    if (chartImg) {
+      const img = new Image();
+      img.onload = () => { ctx.drawImage(img, 0, 0, W, H); finish(); };
+      img.src = chartImg;
+    } else {
+      finish();
+    }
+  });
+}
+
+async function bmSend() {
+  const title = document.getElementById('inp-title').value.trim();
+  const tag   = document.getElementById('inp-tag').value.trim();
+  const body  = document.getElementById('post-text').value.trim();
+
+  if (!body && !title) { showToast('⚠️ Напиши текст поста'); return; }
+
+  const btn = document.getElementById('bm-send-btn');
+  btn.disabled = true; btn.innerHTML = '<span>⏳</span> Рендерю баннер...';
+
+  let image_b64;
+  try {
+    image_b64 = await bmRenderBase64();
+  } catch(e) {
+    btn.disabled = false; btn.innerHTML = '<span>📤</span> Отправить с баннером';
+    showToast('⚠️ Ошибка рендера'); return;
+  }
+
+  btn.innerHTML = '<span>⏳</span> Отправляю...';
+
+  try {
+    const r = await fetch('/api/admin/broadcast-photo?tg_id=562914492', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, tag, body, image_b64, audience: bmAudience })
+    });
+    const j = await r.json();
+
+    const res = document.getElementById('bm-result');
+    if (j.ok) {
+      res.textContent = `✅ Отправлено: ${j.sent} · Ошибок: ${j.failed} · Всего: ${j.total}`;
+      res.style.color = '#2ecc71';
+      showToast('✅ Пост с баннером отправлен!');
+    } else {
+      res.textContent = '❌ Ошибка: ' + (j.error || r.status);
+      res.style.color = '#ff3d7f';
+    }
+    res.style.display = 'block';
+  } catch(e) {
+    showToast('⚠️ Ошибка соединения');
+  }
+
+  btn.disabled = false; btn.innerHTML = '<span>📤</span> Отправить с баннером';
+}
 </script>
 </body>
 </html>
