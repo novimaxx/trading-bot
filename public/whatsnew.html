@@ -117,17 +117,6 @@
     letter-spacing: .1em;
   }
 
-  .hero-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    padding: 16px 40px; border-radius: 14px; border: none;
-    background: var(--accent); color: #000; font-size: 17px; font-weight: 800;
-    cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none;
-    position: relative; z-index: 5; margin-bottom: 24px;
-    transition: opacity .15s, transform .1s;
-    box-shadow: 0 0 32px rgba(46,204,113,.35);
-  }
-  .hero-btn:hover { opacity: .88; transform: translateY(-2px); }
-
   .hero-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; position: relative; z-index: 5; }
   .hero-pill {
     display: inline-flex; align-items: center; gap: 7px;
@@ -481,8 +470,6 @@
 
     <div class="hero-date">⏰ &nbsp;08 МАЯ 2026 — ГЛОБАЛЬНЫЙ ЗАПУСК</div>
 
-    <a href="https://t.me/Ind_icator_Bot" class="hero-btn" target="_blank">🚀 Открыть бота</a>
-
     <div class="hero-pills">
       <div class="hero-pill">📊 Новый индикатор</div>
       <div class="hero-pill">⚡️ Сигналы 24/7</div>
@@ -494,6 +481,30 @@
       <div class="hero-footer-r">TRADINGVIEW</div>
     </div>
   </div>
+
+  <!-- СКАЧАТЬ БАННЕР -->
+  <div style="text-align:center; margin: -24px 0 32px;">
+    <button onclick="downloadHero()" style="
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 24px; border-radius:10px; border:1px solid var(--line2);
+      background:var(--card2); color:var(--lg); font-size:13px; font-weight:600;
+      cursor:pointer; font-family:'Inter',sans-serif;
+      transition:opacity .15s;
+    ">📥 Скачать баннер</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    function downloadHero() {
+      var hero = document.querySelector('.hero');
+      html2canvas(hero, { scale: 2, useCORS: true, backgroundColor: '#0a0a0c' }).then(function(canvas) {
+        var link = document.createElement('a');
+        link.download = 'it-v3-banner.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+  </script>
 
   <!-- ЧТО НОВОГО -->
   <div class="section">
