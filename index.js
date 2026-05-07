@@ -553,7 +553,7 @@ app.get('/api/posts', async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT id, title, body, image_data, tag, sent_at FROM app_posts ORDER BY sent_at DESC LIMIT 20`
+      `SELECT id, title, body, file_id, image_data, tag, sent_at FROM app_posts ORDER BY sent_at DESC LIMIT 20`
     )
     res.json(rows.length ? rows : getDemoPosts())
   } catch (err) {
