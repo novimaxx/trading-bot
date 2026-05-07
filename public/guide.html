@@ -444,9 +444,10 @@
 
     /* Таблица — горизонтальный скролл */
     .sig-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch;
-      border-radius: 10px; border: 1px solid var(--line2); }
-    .sig-table { font-size: 11px; min-width: 480px; border-radius: 0; }
-    .sig-table th, .sig-table td { padding: 9px 10px; }
+      border-radius: 10px; border: 1px solid var(--line2);
+      margin: 0 -16px; border-radius: 0; border-left: none; border-right: none; }
+    .sig-table { font-size: 11px; min-width: 500px; border-radius: 0; width: 100%; }
+    .sig-table th, .sig-table td { padding: 9px 10px; white-space: nowrap; }
 
     /* Quote */
     .quote { font-size: 14px; padding: 16px 18px; margin: 20px 0; }
@@ -959,9 +960,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    IT v3 Trading Signal System<br>
-    TradingView · Railway · Telegram Bot API<br>
-    Bitcoin · Ethereum · Solana · 1D · 4H · 1H
+    IT v3 Trading Signal System
   </div>
 
 </div>
