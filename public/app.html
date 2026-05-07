@@ -457,9 +457,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     </div>
 
     <div class="tile tile-gold" onclick="navigate('posts')">
-      <span class="tile-icon">📊</span>
-      <div class="tile-label">Аналитика</div>
-      <div class="tile-desc">Обзоры и посты<br><span class="tc">от команды</span></div>
+      <span class="tile-icon">📰</span>
+      <div class="tile-label">Лента</div>
+      <div class="tile-desc">Анонсы, обзоры,<br><span class="tc">аналитика</span></div>
     </div>
 
     <div class="tile tile-pink" onclick="navigate('buy')">
@@ -495,8 +495,8 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 <!-- ════════════ POSTS ════════════ -->
 <div class="screen" id="screen-posts">
   <div class="screen-header">
-    <div class="kicker">Аналитика</div>
-    <div class="screen-h1">Обзоры и посты</div>
+    <div class="kicker">Лента</div>
+    <div class="screen-h1">Анонсы и обзоры</div>
   </div>
   <div class="slabel">ОТ КОМАНДЫ · ОБНОВЛЯЕТСЯ</div>
   <div class="posts" id="posts-list"></div>
@@ -854,7 +854,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 <div id="post-overlay">
   <div class="po-header">
     <div class="po-back" onclick="closePost()">‹</div>
-    <div class="po-header-title" id="po-header-title">Аналитика</div>
+    <div class="po-header-title" id="po-header-title">Пост</div>
   </div>
   <img id="po-img" class="po-img" style="display:none" src="" alt="">
   <div class="po-tag-bar">
@@ -875,7 +875,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="nav-notif" id="nav-notif-signals"></div>
   </div>
   <div class="nav-item" id="nav-posts" onclick="navigate('posts')">
-    <span class="nav-icon">📊</span><span class="nav-label">Аналитика</span>
+    <span class="nav-icon">📰</span><span class="nav-label">Лента</span>
     <div class="nav-notif" id="nav-notif-posts"></div>
   </div>
   <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
@@ -1000,7 +1000,7 @@ function postCard(p, featured) {
   return `<div class="post-card ${featured?'featured':''}" onclick="openPostDetail(${p.id})">
     ${imgUrl ? `<div class="post-img-wrap"><img class="post-img" src="${imgUrl}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
     <div class="post-tag-bar">
-      <div class="post-tag">${p.tag || 'АНАЛИТИКА'}</div>
+      <div class="post-tag">${p.tag || 'ПОСТ'}</div>
       <div class="post-date">${dateStr}</div>
     </div>
     <div class="post-body">
@@ -1022,8 +1022,8 @@ function openPostDetail(id) {
   const d = new Date(p.sent_at);
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
 
-  document.getElementById('po-header-title').textContent = p.title || 'Аналитика';
-  document.getElementById('po-tag').textContent = p.tag || 'АНАЛИТИКА';
+  document.getElementById('po-header-title').textContent = p.title || 'Пост';
+  document.getElementById('po-tag').textContent = p.tag || 'ПОСТ';
   document.getElementById('po-date').textContent = dateStr;
   document.getElementById('po-title').textContent = p.title || '';
 
@@ -1164,7 +1164,7 @@ async function boot() {
     postsList.innerHTML = allPosts.map((p, i) => postCard(p, i === 0)).join('');
     document.getElementById('nav-notif-posts').classList.add('show');
   } else {
-    postsList.innerHTML = `<div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Постов пока нет</div><div class="empty-sub">Аналитика появится здесь</div></div>`;
+    postsList.innerHTML = `<div class="empty"><div class="empty-icon">📰</div><div class="empty-text">В ленте пока пусто</div><div class="empty-sub">Посты появятся здесь</div></div>`;
   }
 
   // ── admin check ──
