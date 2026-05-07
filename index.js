@@ -1016,6 +1016,17 @@ app.get('/', (req, res) => {
   })
 })
 
+// ─── Whoami ───────────────────────────────────────────────
+app.get('/api/whoami', async (req, res) => {
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getMe`)
+    const j = await r.json()
+    res.json({ ok: j.ok, bot: j.result || j.description, db: !!pool })
+  } catch (e) {
+    res.json({ ok: false, error: e.message })
+  }
+})
+
 // ─── Test ─────────────────────────────────────────────────
 app.get('/test/:signal?', async (req, res) => {
   const signal = req.params.signal || 'buy100'

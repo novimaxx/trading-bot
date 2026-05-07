@@ -1425,13 +1425,11 @@ function bcUpdate() {
 }
 
 function bcSyncBody() {
-  const title = document.getElementById('bc-title').value;
-  const tag   = document.getElementById('bc-tag').value;
-  const sub   = document.getElementById('bc-sub').value;
-  const coins = document.getElementById('bc-coins').value;
-  const ta    = document.getElementById('bc-body');
-  if (!ta.dataset.edited) {
-    ta.value = `${title}\n\n📊 ${sub}\n\n🏷 ${tag}  |  ${coins}\n\n📌 Индикатор IT v3`;
+  const sub = document.getElementById('bc-sub').value;
+  const ta  = document.getElementById('bc-body');
+  // Только подзаголовок как стартер — заголовок и тег уже идут в caption сервера
+  if (!ta.dataset.edited && sub) {
+    ta.value = sub;
   }
 }
 
@@ -1606,6 +1604,7 @@ async function bcSend() {
     document.getElementById('bc-upload-hint').style.display='flex';
     document.getElementById('bc-banner').style.cursor='pointer';
     bcUpdate();
+    await refreshFeed();
   } else {
     res.textContent=`❌ ${r?.error||'adminApi вернул null — проверь консоль'}`;
     res.style.color='#ff3d7f';
@@ -1636,11 +1635,23 @@ async function bcTestSend() {
   btn.disabled=false; btn.innerHTML='🧪 Тест → мне';
 
   if (r?.ok) {
-    res.textContent=`✅ Тест отправлен тебе в Telegram! (chat_id: ${r.chat_id})`;
+    res.textContent=`✅ Тест отправлен в Telegram + сохранён в ленту`;
     res.style.color='#2ecc71';
+    await refreshFeed();
   } else {
     res.textContent=`❌ ${r?.error||'adminApi null — смотри консоль'}`;
     res.style.color='#ff3d7f';
+  }
+}
+
+// Refresh posts feed
+async function refreshFeed() {
+  const posts = await api('/api/posts');
+  if (!posts) return;
+  allPosts = posts;
+  const postsList = document.getElementById('posts-list');
+  if (allPosts.length) {
+    postsList.innerHTML = allPosts.map((p, i) => postCard(p, i === 0)).join('');
   }
 }
 
