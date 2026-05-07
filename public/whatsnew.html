@@ -497,7 +497,24 @@
   <script>
     function downloadHero() {
       var hero = document.querySelector('.hero');
+      // Fix: html2canvas не рендерит background-clip:text — временно меняем стиль
+      var accents = hero.querySelectorAll('.accent');
+      accents.forEach(function(el) {
+        el.style.webkitBackgroundClip = 'unset';
+        el.style.backgroundClip = 'unset';
+        el.style.webkitTextFillColor = '#2ecc71';
+        el.style.color = '#2ecc71';
+        el.style.background = 'none';
+      });
       html2canvas(hero, { scale: 2, useCORS: true, backgroundColor: '#0a0a0c' }).then(function(canvas) {
+        // Восстанавливаем стили
+        accents.forEach(function(el) {
+          el.style.webkitBackgroundClip = '';
+          el.style.backgroundClip = '';
+          el.style.webkitTextFillColor = '';
+          el.style.color = '';
+          el.style.background = '';
+        });
         var link = document.createElement('a');
         link.download = 'it-v3-banner.png';
         link.href = canvas.toDataURL('image/png');
