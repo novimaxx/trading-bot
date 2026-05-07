@@ -845,10 +845,9 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   if (!image_b64) return res.sendStatus(400)
 
   const caption = [
-    title ? `*${title}*` : null,
     body || null,
-    tag ? `\n🏷 ${tag}` : null,
-    '\n📱 _IT v3_'
+    tag ? `🏷 ${tag}` : null,
+    '📱 _IT v3_'
   ].filter(Boolean).join('\n\n')
 
   // Сохранить пост в БД
@@ -910,10 +909,9 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   const adminChatId = String(req.query.tg_id || req.body?.tg_id || '562914492')
 
   const caption = [
-    title ? `*${title}*` : null,
     body || null,
-    tag ? `\n🏷 ${tag}` : null,
-    '\n📱 _IT v3 · тест_'
+    tag ? `🏷 ${tag}` : null,
+    '📱 _IT v3 · тест_'
   ].filter(Boolean).join('\n\n')
 
   const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
