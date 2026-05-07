@@ -203,13 +203,17 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 #lightbox{position:fixed;inset:0;background:#000;z-index:999;display:none;flex-direction:column}
 #lightbox.open{display:flex}
 #lb-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;
-  display:flex;align-items:center;justify-content:center}
-#lb-img{max-width:100%;height:auto;display:block;
-  touch-action:pan-x pan-y pinch-zoom;cursor:zoom-in;border-radius:4px}
+  display:flex;align-items:flex-start;justify-content:flex-start;cursor:grab}
+#lb-scroll:active{cursor:grabbing}
+#lb-img{display:block;height:auto;border-radius:4px;
+  width:100%;max-width:none;transition:none;user-select:none;-webkit-user-select:none}
 #lb-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
   background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
   color:#fff;font-size:18px;cursor:pointer;z-index:1001;
   display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+#lb-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  font-size:11px;color:rgba(255,255,255,.4);pointer-events:none;white-space:nowrap;
+  transition:opacity .5s;letter-spacing:.04em}
 .po-tag-bar{padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between}
 .po-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
   letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
@@ -1738,29 +1742,99 @@ boot();
 <div id="lightbox">
   <button id="lb-close" onclick="closeLightbox()">✕</button>
   <div id="lb-scroll">
-    <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+    <img id="lb-img" src="" alt="">
   </div>
+  <div id="lb-hint">двойной тап — zoom · сведи пальцы — масштаб</div>
 </div>
 <script>
-function openLightbox(src) {
-  const lb = document.getElementById('lightbox');
-  const img = document.getElementById('lb-img');
-  img.src = src;
-  lb.classList.add('open');
-  document.getElementById('lb-scroll').scrollTop = 0;
-  document.getElementById('lb-scroll').scrollLeft = 0;
-  // Escape на десктопе
-  document.addEventListener('keydown', lbKeyClose);
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.getElementById('lb-img').src = '';
-  document.removeEventListener('keydown', lbKeyClose);
-}
-function lbKeyClose(e) { if (e.key === 'Escape') closeLightbox(); }
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this || e.target === document.getElementById('lb-scroll')) closeLightbox();
-});
+(function(){
+  const lb    = document.getElementById('lightbox');
+  const scrl  = document.getElementById('lb-scroll');
+  const img   = document.getElementById('lb-img');
+  const hint  = document.getElementById('lb-hint');
+
+  let curScale = 1, baseScale = 1;
+  let initDist = 0;
+  let lastTap  = 0;
+  let hintTimer = null;
+
+  /* ─── helpers ─── */
+  function pinchDist(e){
+    return Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+  function applyScale(s){
+    curScale = Math.min(5, Math.max(1, s));
+    // меняем ширину картинки — контейнер с overflow:auto даёт нативный pan
+    img.style.width = (curScale * 100) + 'vw';
+    // центрируем если меньше экрана (scale=1)
+    scrl.style.justifyContent = curScale <= 1 ? 'center' : 'flex-start';
+    scrl.style.alignItems     = curScale <= 1 ? 'center' : 'flex-start';
+  }
+  function resetScale(){
+    applyScale(1); baseScale = 1;
+    scrl.scrollTop  = 0;
+    scrl.scrollLeft = 0;
+  }
+  function showHint(){
+    hint.style.opacity = '1';
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(()=>{ hint.style.opacity='0'; }, 2500);
+  }
+
+  /* ─── touch events ─── */
+  img.addEventListener('touchstart', e=>{
+    if(e.touches.length === 2){
+      e.preventDefault();
+      initDist = pinchDist(e);
+    } else if(e.touches.length === 1){
+      const now = Date.now();
+      if(now - lastTap < 280){
+        e.preventDefault();
+        curScale > 1.2 ? resetScale() : applyScale(2.5);
+      }
+      lastTap = now;
+    }
+  },{passive:false});
+
+  img.addEventListener('touchmove', e=>{
+    if(e.touches.length === 2){
+      e.preventDefault();
+      const d = pinchDist(e);
+      applyScale(baseScale * d / initDist);
+    }
+  },{passive:false});
+
+  img.addEventListener('touchend', e=>{
+    if(e.touches.length < 2){
+      baseScale = curScale;
+      if(curScale < 1.05) resetScale();
+    }
+  });
+
+  /* ─── close on backdrop click ─── */
+  scrl.addEventListener('click', e=>{
+    if(e.target === scrl) window.closeLightbox();
+  });
+
+  /* ─── public API ─── */
+  window.openLightbox = function(src){
+    resetScale();
+    img.src = src;
+    lb.classList.add('open');
+    document.addEventListener('keydown', lbKeyClose);
+    showHint();
+  };
+  window.closeLightbox = function(){
+    lb.classList.remove('open');
+    img.src = '';
+    document.removeEventListener('keydown', lbKeyClose);
+    resetScale();
+  };
+  function lbKeyClose(e){ if(e.key==='Escape') window.closeLightbox(); }
+})();
 </script>
 </body>
 </html>
