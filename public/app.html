@@ -448,7 +448,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div class="tile-wide-inner">
         <span class="tile-icon">📡</span>
         <div class="tile-wide-text">
-          <div class="tile-label">Мои сигналы</div>
+          <div class="tile-label">Мои сигналы <span id="sig-pro-lock" style="display:none;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--accent2);background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.3);padding:2px 6px;border-radius:5px;letter-spacing:.1em;margin-left:6px;vertical-align:middle">🔒 PRO</span></div>
           <div class="tile-desc"><span class="tc">BTC · ETH · SOL</span> · 1D / 4H / 1H</div>
         </div>
         <div class="tile-arrow">›</div>
@@ -597,8 +597,8 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
   <div class="stats-row">
     <div class="stat"><div class="stat-val sv-g" id="st-sigs">—</div><div class="stat-key">Сигналов</div></div>
-    <div class="stat"><div class="stat-val" id="st-wr">—</div><div class="stat-key">Win Rate</div></div>
     <div class="stat"><div class="stat-val sv-p" id="st-refs">0</div><div class="stat-key">Рефералов</div></div>
+    <div class="stat"><div class="stat-val" id="st-days">—</div><div class="stat-key">Дней с нами</div></div>
   </div>
 
   <div class="slabel">УПРАВЛЕНИЕ</div>
@@ -928,7 +928,7 @@ function copyText(id) {
   else { const t=document.createElement('textarea');t.value=val;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('📋 Скопировано!'); }
 }
 function copyRefLink() {
-  const link = `https://t.me/NoviYTBot?start=ref_${userId||'user'}`;
+  const link = `https://t.me/Ind_icator_Bot?start=ref_${userId||'user'}`;
   if (navigator.clipboard) navigator.clipboard.writeText(link).then(() => toast('🔗 Ссылка скопирована!'));
   else toast('🔗 Скопировано!');
 }
@@ -1047,7 +1047,7 @@ async function boot() {
     userId ? api(`/api/user/${userId}`) : null,
     api('/api/signals'),
     api('/api/posts'),
-    new Promise(r => setTimeout(r, 700)),
+    new Promise(r => setTimeout(r, 300)),
   ]);
 
   if (user) userData = { ...userData, ...user };
@@ -1077,21 +1077,56 @@ async function boot() {
     document.getElementById('st-refs').textContent = userData.refs;
     document.getElementById('ref-badge').textContent = userData.refs + ' друзей';
   }
+  // Days with us (from created_at)
+  if (userData.created_at) {
+    const days = Math.floor((Date.now() - new Date(userData.created_at).getTime()) / 86400000);
+    document.getElementById('st-days').textContent = days >= 0 ? days : 0;
+  } else {
+    document.getElementById('st-days').textContent = '0';
+  }
 
   // ── signals UI ──
   const sigList = document.getElementById('signals-list');
   const lastWrap = document.getElementById('last-signal-wrap');
-  if (allSignals.length) {
+  const isPro = userData.plan === 'PRO';
+  const isStandard = userData.plan === 'STANDARD';
+
+  // Show PRO lock badge on tile if user is not PRO
+  if (!isPro) {
+    document.getElementById('sig-pro-lock').style.display = 'inline-block';
+  }
+
+  if (isPro && allSignals.length) {
     lastWrap.innerHTML = '<div style="padding:0 16px 0">' + sigCard(allSignals[0]) + '</div>';
     sigList.innerHTML = allSignals.map(s => sigCard(s)).join('');
-    if (allSignals.length > 0) {
-      document.getElementById('sig-count-badge').style.display = 'flex';
-      document.getElementById('sig-count-badge').textContent = allSignals.length;
-      document.getElementById('nav-notif-signals').classList.add('show');
-    }
+    document.getElementById('sig-count-badge').style.display = 'flex';
+    document.getElementById('sig-count-badge').textContent = allSignals.length;
+    document.getElementById('nav-notif-signals').classList.add('show');
+  } else if (isPro) {
+    // PRO user, no signals yet
+    const emptyHtml = `<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">Пока нет сигналов</div><div class="empty-sub">Появятся при движении рынка</div></div>`;
+    lastWrap.innerHTML = emptyHtml;
+    sigList.innerHTML = emptyHtml;
+  } else if (isStandard) {
+    // STANDARD — show upgrade CTA
+    const upgradeHtml = `<div class="empty">
+      <div class="empty-icon">🔒</div>
+      <div class="empty-text">Сигналы доступны только в PRO</div>
+      <div class="empty-sub" style="margin-bottom:14px">Обнови подписку — получай BUY/SELL по BTC · ETH · SOL</div>
+      <button onclick="navigate('buy')" style="background:var(--accent);color:#000;border:none;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">💎 Апгрейд до PRO</button>
+    </div>`;
+    lastWrap.innerHTML = upgradeHtml;
+    sigList.innerHTML = upgradeHtml;
   } else {
-    lastWrap.innerHTML = `<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">Нет активных сигналов</div><div class="empty-sub">Появятся здесь при подписке PRO</div></div>`;
-    sigList.innerHTML = lastWrap.innerHTML;
+    // No subscription
+    const noSubHtml = `<div class="empty">
+      <div class="empty-icon">📡</div>
+      <div class="empty-text">Сигналы — это PRO-фича</div>
+      <div class="empty-sub" style="margin-bottom:14px">BUY/SELL по BTC · ETH · SOL · 1D/4H/1H</div>
+      <button onclick="navigate('buy')" style="background:var(--accent);color:#000;border:none;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">💎 Купить PRO</button>
+    </div>`;
+    lastWrap.innerHTML = noSubHtml;
+    sigList.innerHTML = noSubHtml;
   }
 
   // ── posts UI ──
@@ -1167,8 +1202,8 @@ async function loadAdminStats() {
 }
 
 async function loadAdminUsers(search = '') {
-  const sep = search ? `&search=${encodeURIComponent(search)}` : '';
-  const users = await adminApi(`/api/admin/users?${sep}`);
+  const q = search ? `search=${encodeURIComponent(search)}` : '';
+  const users = await adminApi(`/api/admin/users${q ? '?' + q : ''}`);
   if (!users) return;
   adminData.users = users;
   renderUsers(users);
