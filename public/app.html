@@ -196,9 +196,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   color:var(--accent);font-weight:700;letter-spacing:.05em}
 
 /* ── post detail overlay ── */
-#post-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;
+#post-overlay, #support-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;
   display:none;flex-direction:column;overflow-y:auto}
-#post-overlay.open{display:flex}
+#post-overlay.open, #support-overlay.open{display:flex}
 .po-header{position:sticky;top:0;background:rgba(10,10,12,.97);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line);padding:14px 16px;
   display:flex;align-items:center;gap:12px;z-index:10;flex-shrink:0}
@@ -676,6 +676,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       Заявки <span id="pay-count-badge" style="display:none;background:var(--accent2);color:#fff;font-size:8px;padding:1px 5px;border-radius:8px;margin-left:4px">0</span>
     </div>
     <div class="atab" id="atab-send" onclick="adminTab('send')">📤 Пост</div>
+    <div class="atab" id="atab-support" onclick="adminTab('support')">
+      💬 <span id="support-badge" style="display:none;background:var(--accent2);color:#fff;font-size:8px;padding:1px 5px;border-radius:8px;margin-left:2px">0</span>
+    </div>
   </div>
 
   <!-- Stats tab -->
@@ -834,6 +837,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
     </div>
   </div>
+
+  <!-- Support tab -->
+  <div class="atab-content" id="acontent-support">
+    <div id="support-list" style="padding:8px 0"></div>
+  </div>
 </div>
 
 <!-- TradingView username modal -->
@@ -870,6 +878,32 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     </div>
     <button class="act-do" onclick="doActivate()">✅ Активировать</button>
     <button class="act-cancel" onclick="closeActModal()">Отмена</button>
+  </div>
+</div>
+
+<!-- ════════════ SUPPORT OVERLAY ════════════ -->
+<div id="support-overlay">
+  <div class="po-header">
+    <div class="po-back" onclick="closeSupport()">‹</div>
+    <div class="po-header-title">💬 Поддержка</div>
+  </div>
+  <div style="padding:20px 16px;display:flex;flex-direction:column;gap:16px;flex:1">
+    <div style="font-size:14px;color:rgba(255,255,255,.6);line-height:1.6">
+      Опиши свой вопрос или проблему — ответим в течение нескольких часов.
+    </div>
+    <textarea id="support-msg" placeholder="Напиши свой вопрос..."
+      style="background:var(--card);border:1px solid var(--line2);border-radius:12px;
+             padding:14px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;
+             resize:none;min-height:140px;outline:none;line-height:1.6;width:100%"></textarea>
+    <div id="support-result" style="display:none;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);
+         border-radius:10px;padding:12px 16px;font-size:13px;color:var(--accent)">
+      ✅ Сообщение отправлено! Ответим в Telegram.
+    </div>
+    <button id="support-send-btn" onclick="sendSupport()"
+      style="background:var(--accent);color:#000;border:none;border-radius:12px;
+             padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">
+      Отправить
+    </button>
   </div>
 </div>
 
@@ -950,7 +984,44 @@ function openExt(type) {
   if (tg && map[type]) tg.openLink(map[type]);
   else if (map[type]) window.open(map[type], '_blank');
 }
-function openSupport() { if (tg) tg.openTelegramLink('https://t.me/indicatortovaricha'); }
+function openSupport() {
+  document.getElementById('support-overlay').classList.add('open');
+  document.getElementById('support-msg').value = '';
+  document.getElementById('support-result').style.display = 'none';
+  document.getElementById('support-send-btn').disabled = false;
+  document.getElementById('support-send-btn').textContent = 'Отправить';
+  if (tg?.BackButton) { tg.BackButton.show(); tg.BackButton.onClick(closeSupport); }
+}
+function closeSupport() {
+  document.getElementById('support-overlay').classList.remove('open');
+  if (tg?.BackButton) { tg.BackButton.hide(); tg.BackButton.offClick(closeSupport); }
+}
+async function sendSupport() {
+  const msg = document.getElementById('support-msg').value.trim();
+  if (!msg) return;
+  const btn = document.getElementById('support-send-btn');
+  btn.disabled = true;
+  btn.textContent = 'Отправляю...';
+  try {
+    const r = await fetch(`${BASE}/api/support`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, username: tgUser.username, first_name: tgUser.first_name, message: msg })
+    });
+    if (r.ok) {
+      document.getElementById('support-result').style.display = 'block';
+      document.getElementById('support-msg').value = '';
+      btn.textContent = '✓ Отправлено';
+      setTimeout(closeSupport, 1800);
+    } else {
+      btn.disabled = false; btn.textContent = 'Отправить';
+      toast('Ошибка отправки', true);
+    }
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Отправить';
+    toast('Ошибка сети', true);
+  }
+}
 
 // ── toast ──
 function toast(msg, err) {
@@ -1722,6 +1793,63 @@ function adminTab(tab) {
   if (tab === 'users' && !adminData.users.length) loadAdminUsers();
   if (tab === 'payments' && !adminData.payments.length) loadAdminPayments();
   if (tab === 'send') { bcUpdate(); }
+  if (tab === 'support') loadSupport();
+}
+
+async function loadSupport() {
+  const aid = userId || ADMIN_ID_FALLBACK;
+  const data = await adminApi(`/api/admin/support?tg_id=${aid}`);
+  if (!data) return;
+  const list = document.getElementById('support-list');
+  const open = data.filter(m => m.status === 'open');
+  const badge = document.getElementById('support-badge');
+  if (open.length) { badge.style.display = 'inline'; badge.textContent = open.length; }
+  else { badge.style.display = 'none'; }
+  if (!data.length) {
+    list.innerHTML = '<div style="padding:20px 16px;color:var(--muted);font-size:13px;text-align:center">Обращений пока нет</div>';
+    return;
+  }
+  list.innerHTML = data.map(m => {
+    const d = new Date(m.created_at).toLocaleString('ru-RU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    const name = m.first_name ? `${m.first_name}${m.username ? ' @'+m.username : ''}` : `ID ${m.user_id}`;
+    const isOpen = m.status === 'open';
+    return `<div style="border-bottom:1px solid var(--line);padding:14px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:700">${escHtml(name)}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="font-size:10px;color:var(--muted)">${d}</div>
+          <div style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;
+            background:${isOpen ? 'rgba(255,61,127,.15)' : 'rgba(46,204,113,.1)'};
+            color:${isOpen ? 'var(--accent2)' : 'var(--accent)'}">
+            ${isOpen ? 'ОТКРЫТО' : 'ОТВЕЧЕНО'}
+          </div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:rgba(255,255,255,.75);margin-bottom:${isOpen ? 10 : 4}px;line-height:1.5">${escHtml(m.message)}</div>
+      ${m.reply ? `<div style="font-size:12px;color:var(--accent);background:rgba(46,204,113,.06);border-radius:8px;padding:8px 12px;margin-top:6px">📬 ${escHtml(m.reply)}</div>` : ''}
+      ${isOpen ? `
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="reply-${m.id}" placeholder="Написать ответ..."
+            style="flex:1;background:var(--card2);border:1px solid var(--line2);border-radius:8px;
+                   padding:9px 12px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none">
+          <button onclick="sendReply(${m.id},${m.user_id})"
+            style="background:var(--accent);color:#000;border:none;border-radius:8px;
+                   padding:9px 16px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap">
+            Ответить
+          </button>
+        </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function sendReply(id, replyUserId) {
+  const inp = document.getElementById(`reply-${id}`);
+  const reply = inp?.value?.trim();
+  if (!reply) return;
+  const aid = userId || ADMIN_ID_FALLBACK;
+  const r = await adminApi(`/api/admin/support/${id}/reply?tg_id=${aid}`, 'POST', { reply });
+  if (r?.ok) { toast('✅ Ответ отправлен'); loadSupport(); }
+  else toast('Ошибка', true);
 }
 
 // close modal on backdrop click

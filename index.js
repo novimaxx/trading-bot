@@ -83,6 +83,18 @@ async function runMigrations() {
         status      TEXT DEFAULT 'pending',
         created_at  TIMESTAMP NOT NULL DEFAULT NOW()
       );
+
+      CREATE TABLE IF NOT EXISTS support_messages (
+        id         SERIAL PRIMARY KEY,
+        user_id    BIGINT NOT NULL,
+        username   TEXT,
+        first_name TEXT,
+        message    TEXT NOT NULL,
+        reply      TEXT,
+        status     TEXT DEFAULT 'open',
+        created_at TIMESTAMP DEFAULT NOW(),
+        replied_at TIMESTAMP
+      );
     `)
     console.log('✅ Миграции выполнены')
   } catch (err) {
@@ -354,6 +366,21 @@ async function sendSignal(text) {
     // Fallback — отправить в CHAT_ID (канал или один пользователь)
     await sendTgTo(CHAT_ID, text)
   }
+}
+
+// ─── Send to Admin ────────────────────────────────────────
+async function sendToAdmin(text) {
+  const chatId = process.env.CHAT_ID
+  if (!chatId) return
+  await bot_sendMessage(chatId, text)
+}
+
+async function bot_sendMessage(chatId, text) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+  }).catch(e => console.error('sendToAdmin error:', e.message))
 }
 
 // ─── Webhook ──────────────────────────────────────────────
@@ -1047,6 +1074,67 @@ app.post('/api/admin/payments/:id/approve', adminOnly, async (req, res) => {
   } catch (err) {
     console.error('Approve payment error:', err.message)
     res.sendStatus(500)
+  }
+})
+
+// ─── API: Support messages ────────────────────────────────
+// POST /api/support — пользователь отправляет сообщение
+app.post('/api/support', async (req, res) => {
+  const { user_id, username, first_name, message } = req.body
+  if (!user_id || !message?.trim()) return res.status(400).json({ error: 'bad request' })
+  try {
+    if (pool) {
+      await pool.query(
+        `INSERT INTO support_messages (user_id, username, first_name, message) VALUES ($1,$2,$3,$4)`,
+        [user_id, username || null, first_name || null, message.trim()]
+      )
+    }
+    // Уведомление админу в Telegram
+    const name = first_name ? `${first_name}${username ? ' @' + username : ''}` : `ID ${user_id}`
+    const adminText = `💬 *Новое обращение*\n\nОт: ${name}\nID: \`${user_id}\`\n\n${message.trim()}`
+    await sendToAdmin(adminText)
+    res.json({ ok: true })
+  } catch (e) {
+    console.error('support error:', e.message)
+    res.status(500).json({ error: 'server error' })
+  }
+})
+
+// GET /api/admin/support — список обращений (только для админа)
+app.get('/api/admin/support', async (req, res) => {
+  const tgId = String(req.query.tg_id || '')
+  if (!ADMIN_IDS.includes(tgId)) return res.status(403).json({ error: 'forbidden' })
+  try {
+    if (!pool) return res.json([])
+    const { rows } = await pool.query(
+      `SELECT * FROM support_messages ORDER BY created_at DESC LIMIT 50`
+    )
+    res.json(rows)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+// POST /api/admin/support/:id/reply — ответ на обращение
+app.post('/api/admin/support/:id/reply', async (req, res) => {
+  const tgId = String(req.query.tg_id || '')
+  if (!ADMIN_IDS.includes(tgId)) return res.status(403).json({ error: 'forbidden' })
+  const { reply } = req.body
+  if (!reply?.trim()) return res.status(400).json({ error: 'empty reply' })
+  try {
+    if (!pool) return res.status(500).json({ error: 'no db' })
+    const { rows } = await pool.query(
+      `UPDATE support_messages SET reply=$1, status='replied', replied_at=NOW() WHERE id=$2 RETURNING *`,
+      [reply.trim(), req.params.id]
+    )
+    if (!rows[0]) return res.status(404).json({ error: 'not found' })
+    const msg = rows[0]
+    // Отправить ответ пользователю через бота
+    const text = `📬 *Ответ от поддержки:*\n\n${reply.trim()}`
+    await bot_sendMessage(msg.user_id, text)
+    res.json({ ok: true })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
   }
 })
 
