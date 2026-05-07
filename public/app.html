@@ -198,7 +198,16 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 .po-back{font-size:22px;color:var(--accent2);cursor:pointer;line-height:1;padding:2px 4px}
 .po-header-title{font-size:14px;font-weight:800;flex:1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.po-img{width:100%;max-height:280px;object-fit:cover;display:block}
+.po-img{width:100%;max-height:280px;object-fit:cover;display:block;cursor:zoom-in}
+/* ── lightbox ── */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;display:none;
+  align-items:center;justify-content:center;padding:12px}
+#lightbox.open{display:flex}
+#lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;
+  touch-action:pinch-zoom}
+#lb-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.12);border:none;color:#fff;font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:1000}
 .po-tag-bar{padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between}
 .po-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
   letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
@@ -856,7 +865,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="po-back" onclick="closePost()">‹</div>
     <div class="po-header-title" id="po-header-title">Пост</div>
   </div>
-  <img id="po-img" class="po-img" style="display:none" src="" alt="">
+  <img id="po-img" class="po-img" style="display:none" src="" alt="" onclick="openLightbox(this.src)">
   <div class="po-tag-bar">
     <div class="po-tag" id="po-tag">АНАЛИТИКА</div>
     <div class="po-date" id="po-date"></div>
@@ -1732,6 +1741,23 @@ async function saveTvUsername() {
 }
 
 boot();
+</script>
+
+<!-- Лайтбокс для картинок -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lb-close" onclick="closeLightbox()">✕</button>
+  <img id="lb-img" src="" alt="">
+</div>
+<script>
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lb-img').src = src;
+  lb.classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lb-img').src = '';
+}
 </script>
 </body>
 </html>
