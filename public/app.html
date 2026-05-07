@@ -202,11 +202,12 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 /* ── lightbox ── */
 #lightbox{position:fixed;inset:0;background:#000;z-index:999;display:none;flex-direction:column}
 #lightbox.open{display:flex}
-#lb-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;
-  display:flex;align-items:flex-start;justify-content:flex-start;cursor:grab}
-#lb-scroll:active{cursor:grabbing}
-#lb-img{display:block;height:auto;border-radius:4px;
-  width:100%;max-width:none;transition:none;user-select:none;-webkit-user-select:none}
+#lb-scroll{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;
+  display:flex;align-items:center;justify-content:center}
+#lb-img{display:block;width:auto;height:auto;
+  max-width:100%;max-height:100%;
+  object-fit:contain;border-radius:4px;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #lb-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
   background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
   color:#fff;font-size:18px;cursor:pointer;z-index:1001;
@@ -1767,14 +1768,27 @@ boot();
   }
   function applyScale(s){
     curScale = Math.min(5, Math.max(1, s));
-    // меняем ширину картинки — контейнер с overflow:auto даёт нативный pan
-    img.style.width = (curScale * 100) + 'vw';
-    // центрируем если меньше экрана (scale=1)
-    scrl.style.justifyContent = curScale <= 1 ? 'center' : 'flex-start';
-    scrl.style.alignItems     = curScale <= 1 ? 'center' : 'flex-start';
+    if(curScale <= 1.02){
+      resetScale(); return;
+    }
+    // При zoom > 1: растягиваем картинку, убираем max-ограничения
+    // overflow:auto контейнера даёт нативный pan
+    img.style.width    = (curScale * 100) + 'vw';
+    img.style.maxWidth = 'none';
+    img.style.maxHeight= 'none';
+    img.style.height   = 'auto';
+    scrl.style.alignItems     = 'flex-start';
+    scrl.style.justifyContent = 'flex-start';
   }
   function resetScale(){
-    applyScale(1); baseScale = 1;
+    curScale = 1; baseScale = 1;
+    // Сбрасываем все инлайн-стили — работают правила CSS (max-width:100%, max-height:100%)
+    img.style.width    = '';
+    img.style.maxWidth = '';
+    img.style.maxHeight= '';
+    img.style.height   = '';
+    scrl.style.alignItems     = 'center';
+    scrl.style.justifyContent = 'center';
     scrl.scrollTop  = 0;
     scrl.scrollLeft = 0;
   }
