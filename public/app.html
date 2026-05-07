@@ -333,9 +333,12 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 .pr-link{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);
   word-break:break-all;margin-bottom:8px;line-height:1.4}
 .pr-note{font-size:12px;color:var(--muted);margin-bottom:10px}
-.pr-approve{width:100%;background:var(--accent);color:#000;border:none;border-radius:9px;
-  padding:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s}
+.pr-approve{background:var(--accent);color:#000;border:none;border-radius:9px;
+  padding:10px 14px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s}
 .pr-approve:active{opacity:.8}
+.pr-reject{background:rgba(255,61,127,.12);color:var(--accent2);border:1px solid rgba(255,61,127,.3);border-radius:9px;
+  padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;white-space:nowrap}
+.pr-reject:active{opacity:.8}
 
 .aud-btn{flex:1;padding:9px 6px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;
   font-family:'JetBrains Mono',monospace;border:1px solid var(--line);background:var(--card);
@@ -1582,21 +1585,37 @@ function renderPayments(payments) {
       ${p.tx_link ? `<div class="pr-link">🔗 ${/^https?:\/\//.test(p.tx_link) ? `<a href="${escHtml(p.tx_link)}" target="_blank" style="color:var(--cyan);word-break:break-all">${escHtml(p.tx_link)}</a>` : `<span style="font-family:monospace;font-size:12px;word-break:break-all">${escHtml(p.tx_link)}</span>`}</div>` : ''}
       ${p.tv_username ? `<div class="pr-note">TradingView: <b>${escHtml(p.tv_username)}</b></div>` : ''}
       ${p.note ? `<div class="pr-note">${escHtml(p.note)}</div>` : ''}
-      <button class="pr-approve" onclick="approvePayment(${p.id}, '${escHtml(p.plan || 'PRO')}', this)">✅ Одобрить и активировать</button>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="pr-approve" style="flex:1" onclick="approvePayment(${p.id}, '${escHtml(p.plan || 'PRO')}', this)">✅ Одобрить</button>
+        <button class="pr-reject" onclick="rejectPayment(${p.id}, this)">✕ Отклонить</button>
+      </div>
     </div>`;
   }).join('');
 }
 
 async function approvePayment(id, plan, btn) {
-  btn.disabled = true; btn.textContent = '⏳ Активирую...';
+  btn.disabled = true; btn.textContent = '⏳...';
   const r = await adminApi(`/api/admin/payments/${id}/approve`, 'POST', { days: 30 });
   if (r?.ok) {
-    btn.closest('.pay-req').style.opacity = '0.4';
-    btn.textContent = '✅ Активировано!';
+    btn.closest('.pay-req').remove();
     toast('✅ Подписка активирована!');
     loadAdminStats();
+    if (!document.querySelectorAll('.pay-req').length) loadAdminPayments();
   } else {
-    btn.disabled = false; btn.textContent = '✅ Одобрить и активировать';
+    btn.disabled = false; btn.textContent = '✅ Одобрить';
+    toast('Ошибка', true);
+  }
+}
+
+async function rejectPayment(id, btn) {
+  btn.disabled = true; btn.textContent = '⏳...';
+  const r = await adminApi(`/api/admin/payments/${id}/reject`, 'POST');
+  if (r?.ok) {
+    btn.closest('.pay-req').remove();
+    toast('Заявка отклонена');
+    if (!document.querySelectorAll('.pay-req').length) loadAdminPayments();
+  } else {
+    btn.disabled = false; btn.textContent = '✕ Отклонить';
     toast('Ошибка', true);
   }
 }

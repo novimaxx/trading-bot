@@ -1094,6 +1094,34 @@ app.post('/api/admin/payments/:id/approve', adminOnly, async (req, res) => {
   }
 })
 
+// POST /api/admin/payments/:id/reject
+app.post('/api/admin/payments/:id/reject', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  const reqId = parseInt(req.params.id)
+  try {
+    const { rows } = await pool.query(`SELECT * FROM payment_requests WHERE id = $1`, [reqId])
+    if (!rows.length) return res.sendStatus(404)
+    const pr = rows[0]
+    await pool.query(`UPDATE payment_requests SET status = 'rejected' WHERE id = $1`, [reqId])
+    // Уведомить пользователя
+    if (BOT_TOKEN) {
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: pr.user_id,
+          text: `❌ Заявка на активацию отклонена.\n\nВозможные причины: транзакция не найдена, неверный хеш или сумма не совпадает.\n\nЕсли уверен что всё верно — напиши в поддержку.`,
+          parse_mode: 'Markdown'
+        })
+      }).catch(() => {})
+    }
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Reject payment error:', err.message)
+    res.sendStatus(500)
+  }
+})
+
 // ─── API: Support messages ────────────────────────────────
 // POST /api/support — пользователь отправляет сообщение
 app.post('/api/support', async (req, res) => {
