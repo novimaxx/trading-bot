@@ -43,8 +43,10 @@ async function runMigrations() {
         tag        TEXT,
         timeframe  TEXT,
         price      TEXT,
+        comment    TEXT,
         sent_at    TIMESTAMP NOT NULL DEFAULT NOW()
       );
+      ALTER TABLE app_signals ADD COLUMN IF NOT EXISTS comment TEXT;
 
       CREATE TABLE IF NOT EXISTS app_posts (
         id         SERIAL PRIMARY KEY,
@@ -387,18 +389,45 @@ app.post('/webhook', async (req, res) => {
 
     // Сохранить сигнал в БД для мини-апп
     if (pool) {
-      const isBuy  = signal.includes('buy')
-      const isSell = signal.includes('sell')
+      const isBuy    = signal.includes('buy')
+      const isSell   = signal.includes('sell')
       const isStrong = signal.startsWith('strong_')
+      const isTrend  = signal.includes('trend')
+      const isHold   = signal.includes('holding')
+      const isStruct = signal.includes('structure')
+      const isLiq    = signal.startsWith('liq_')
       const actionLabel = isStrong
         ? (isBuy ? 'STRONG BUY' : 'STRONG SELL')
         : (isBuy ? 'BUY' : isSell ? 'SELL' : meta.title)
       const sym = (data.ticker || '').toUpperCase().replace('USDT','').replace('USD','')
       const pair = sym ? `${sym}/USDT` : data.ticker
 
+      // Строим comment — дополнительный контекст для апп
+      const commentParts = []
+      if (data.rsi)   commentParts.push(`RSI: ${data.rsi}${data.rsi_status ? ' · ' + data.rsi_status : ''}`)
+      if (data.vol)   commentParts.push(`Объём: ${data.vol}`)
+      if (data.trend) commentParts.push(`Тренд: ${data.trend}`)
+      if (isStrong)   commentParts.push('⚡️ Все три фильтра совпали — сильный сигнал')
+      if (isTrend)    commentParts.push(signal === 'trend_up'
+        ? '📊 Цена закрылась выше SMA50 → бычий тренд'
+        : '📊 Цена закрылась ниже SMA50 → медвежий тренд')
+      if (isHold)     commentParts.push(`🔒 Уровень удерживается уже ${data.bars || '5'} баров`)
+      if (isStruct)   commentParts.push(signal === 'structure_lh'
+        ? '📉 LH после HH — бычья структура сломана'
+        : '📈 HL после LL — медвежья структура сломана')
+      if (isLiq) {
+        const isBreach  = signal.includes('breach')
+        const isBuyside = signal.includes('buy')
+        commentParts.push(isBreach
+          ? (isBuyside ? '🎯 Стопы выбиты — возможный разворот вниз' : '🎯 Стопы выбиты — возможный разворот вверх')
+          : (isBuyside ? '💡 Скопление покупок выше этой зоны'        : '💡 Скопление продаж ниже этой зоны'))
+      }
+      if (data.sm_level) commentParts.push(`📍 Уровень: ${fmtPrice(data.sm_level)}`)
+      const comment = commentParts.join('\n') || null
+
       pool.query(
-        `INSERT INTO app_signals (pair, action, tag, timeframe, price) VALUES ($1,$2,$3,$4,$5)`,
-        [pair, actionLabel, actionLabel, normalize(data.interval || ''), fmtPrice(data.price)]
+        `INSERT INTO app_signals (pair, action, tag, timeframe, price, comment) VALUES ($1,$2,$3,$4,$5,$6)`,
+        [pair, actionLabel, actionLabel, normalize(data.interval || ''), fmtPrice(data.price), comment]
       ).catch(e => console.error('Signal save error:', e.message))
     }
 
@@ -513,7 +542,7 @@ app.get('/api/signals', async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT pair, action, tag, timeframe, price, sent_at FROM app_signals ORDER BY sent_at DESC LIMIT 30`
+      `SELECT pair, action, tag, timeframe, price, comment, sent_at FROM app_signals ORDER BY sent_at DESC LIMIT 30`
     )
     res.json(rows.length ? rows.map(formatSignalRow) : getDemoSignals())
   } catch (err) {
@@ -529,6 +558,9 @@ function formatSignalRow(r) {
     : diffH < 24 ? Math.round(diffH) + ' ч'
     : Math.round(diffH / 24) + ' дн'
   const action = (r.action || '').toUpperCase()
+  const d = new Date(r.sent_at)
+  const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })
+    + ', ' + d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' })
   return {
     pair: r.pair || 'BTC/USDT',
     action: action.includes('BUY') ? 'BUY' : 'SELL',
@@ -536,6 +568,8 @@ function formatSignalRow(r) {
     tf: r.timeframe || '1H',
     time,
     price: r.price || '—',
+    comment: r.comment || null,
+    date: dateStr,
   }
 }
 

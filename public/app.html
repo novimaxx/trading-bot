@@ -51,6 +51,12 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   text-transform:uppercase;color:var(--muted);padding:18px 20px 8px;position:relative;z-index:1}
 
 /* ── signal card ── */
+.sig-card{cursor:pointer;transition:background .15s}
+.sig-card:active{background:rgba(255,255,255,.04)}
+.sc-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sc-detail.open{display:block}
+.sc-detail-row{font-size:12px;color:rgba(255,255,255,.65);line-height:1.7;white-space:pre-line;font-family:'Inter',sans-serif}
+.sc-detail-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:6px;letter-spacing:.04em}
 .sig-card{margin:0 16px 8px;background:linear-gradient(135deg,#0d1810 0%,#0a0c0a 100%);
   border:1px solid rgba(46,204,113,.2);border-radius:14px;padding:13px 15px;position:relative;overflow:hidden;z-index:1}
 .sig-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--accent);border-radius:3px 0 0 3px}
@@ -988,16 +994,24 @@ function paidConfirm() {
 }
 
 // ── render signal card ──
+let _sigIdx = 0;
 function sigCard(s) {
   const isBuy = s.action === 'BUY' || (s.tag||'').includes('BUY');
   const tagClass = isBuy ? '' : 'sell';
   const dotClass = isBuy ? '' : 'sell';
   const btnClass = isBuy ? 'sc-buy' : 'sc-sell-btn';
   const cardClass = isBuy ? '' : 'sell-card';
-  return `<div class="sig-card ${cardClass}">
+  const idx = _sigIdx++;
+  const detailHtml = (s.comment || s.date) ? `
+    <div class="sc-detail" id="sc-det-${idx}">
+      ${s.comment ? `<div class="sc-detail-row">${escHtml(s.comment)}</div>` : ''}
+      ${s.date ? `<div class="sc-detail-date">🕐 ${s.date}</div>` : ''}
+    </div>` : '';
+  const hasDetail = !!(s.comment || s.date);
+  return `<div class="sig-card ${cardClass}" ${hasDetail ? `onclick="toggleSigDetail('sc-det-${idx}',this)"` : ''}>
     <div class="sc-top">
       <div class="sc-tag ${tagClass}"><span class="sc-dot ${dotClass}"></span>${s.tag || s.action}</div>
-      <div class="sc-time">${s.tf} · ${s.time}</div>
+      <div class="sc-time">${s.tf} · ${s.time}${hasDetail ? ' <span style="color:var(--muted2);font-size:9px">▾</span>' : ''}</div>
     </div>
     <div class="sc-body">
       <div class="sc-pair">${s.pair}</div>
@@ -1005,7 +1019,15 @@ function sigCard(s) {
       <div class="sc-tf">${s.tf}</div>
       <div class="sc-price">${s.price !== '—' ? '$'+s.price : '—'}</div>
     </div>
+    ${detailHtml}
   </div>`;
+}
+function toggleSigDetail(id, card) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const open = el.classList.toggle('open');
+  const arrow = card.querySelector('.sc-time span');
+  if (arrow) arrow.textContent = open ? ' ▴' : ' ▾';
 }
 
 // ── render post card ──
@@ -1181,7 +1203,9 @@ async function boot() {
   }
 
   if (isPro && allSignals.length) {
+    _sigIdx = 0;
     lastWrap.innerHTML = '<div style="padding:0 16px 0">' + sigCard(allSignals[0]) + '</div>';
+    _sigIdx = 0;
     sigList.innerHTML = allSignals.map(s => sigCard(s)).join('');
     document.getElementById('sig-count-badge').style.display = 'flex';
     document.getElementById('sig-count-badge').textContent = allSignals.length;
