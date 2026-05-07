@@ -389,6 +389,72 @@
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .page { padding: 24px; }
   }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 640px) {
+    .page { padding: 20px 16px 60px; }
+
+    /* Hero */
+    .hero { padding: 48px 18px 40px; border-radius: 18px; margin-bottom: 28px; }
+    .hero h1 { font-size: 48px; }
+    .hero-tagline { font-size: 13px; }
+    .hero-sub { font-size: 11px; }
+    .hero-topbar { font-size: 9px; letter-spacing: 1.5px; gap: 6px; }
+    .hero-coins { gap: 8px; flex-wrap: wrap; }
+    .hero-tfs { gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .hero-footer { left: 18px; right: 18px; font-size: 9px; }
+    .bk { width: 12px; height: 12px; }
+    .bk.tl { top: 10px; left: 10px; }
+    .bk.tr { top: 10px; right: 10px; }
+    .bk.bl { bottom: 10px; left: 10px; }
+    .bk.br { bottom: 10px; right: 10px; }
+
+    /* Sections */
+    .section { margin-bottom: 36px; }
+    .sec-title { font-size: 22px; }
+    .sec-desc { font-size: 13px; }
+
+    /* Все гриды → 1 колонка */
+    .grid2, .grid3, .for-grid, .struct-grid, .liq-grid, .tg-grid { grid-template-columns: 1fr; }
+
+    /* Arch → вертикально */
+    .arch { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 20px 16px; }
+    .arch-arr { transform: rotate(90deg); font-size: 18px; }
+    .arch-step { padding: 0; }
+
+    /* Levels */
+    .lv { flex-wrap: wrap; gap: 6px 10px; padding: 12px 14px; }
+    .lv-desc { width: 100%; min-width: 0; font-size: 12px;
+      padding-top: 6px; border-top: 1px solid rgba(255,255,255,.05); }
+
+    /* Strong / bot */
+    .strong-block { padding: 18px 16px; }
+    .bot-block { padding: 20px 16px; }
+    .strong-title { font-size: 17px; }
+    .filters-row { gap: 8px; }
+    .filter-pill { font-size: 12px; padding: 7px 14px; }
+
+    /* Feature cards */
+    .fcard { padding: 18px 16px 14px; }
+    .fcard-icon { font-size: 24px; }
+    .fcard-title { font-size: 15px; }
+
+    /* Структура */
+    .struct-tag { font-size: 17px; }
+
+    /* Таблица — горизонтальный скролл */
+    .sig-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch;
+      border-radius: 10px; border: 1px solid var(--line2); }
+    .sig-table { font-size: 11px; min-width: 480px; border-radius: 0; }
+    .sig-table th, .sig-table td { padding: 9px 10px; }
+
+    /* Quote */
+    .quote { font-size: 14px; padding: 16px 18px; margin: 20px 0; }
+
+    /* Steps */
+    .step-title { font-size: 14px; }
+    .step-desc { font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -853,7 +919,7 @@
   <div class="section">
     <div class="sec-label">Справочник</div>
     <div class="sec-title">Все сигналы системы</div>
-    <table class="sig-table">
+    <div class="sig-table-wrap"><table class="sig-table">
       <thead>
         <tr>
           <th>Сигнал</th>
@@ -882,7 +948,7 @@
         <tr style="background:rgba(111,255,178,.03)"><td><span class="dot" style="background:var(--green2)"></span><strong style="color:var(--green2)">Пивот HH + Фибо</strong></td><td><span class="mono" style="color:var(--green2)">HH</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--muted)">Новый максимум + уровни коррекции Фибо</td></tr>
         <tr style="background:rgba(249,64,64,.03)"><td><span class="dot" style="background:var(--red)"></span><strong style="color:var(--red)">Пивот LL + Фибо</strong></td><td><span class="mono" style="color:var(--red)">LL</span></td><td style="color:var(--lg)">1D</td><td style="color:var(--muted)">Новый минимум + уровни отскока Фибо</td></tr>
       </tbody>
-    </table>
+    </table></div>
   </div>
 
   <!-- ЦИТАТА -->

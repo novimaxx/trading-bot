@@ -221,6 +221,52 @@
     margin-bottom: 24px; opacity: .8;
   }
   .back-link:hover { opacity: 1; }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 640px) {
+    .page { padding: 20px 16px 60px; }
+
+    /* Hero */
+    .hero { padding: 48px 18px 40px; border-radius: 18px; margin-bottom: 28px; }
+    .hero h1 { font-size: 48px; }
+    .hero-sub { font-size: 13px; }
+    .hero-note { font-size: 12px; }
+    .hero-topbar { font-size: 9px; letter-spacing: 1.5px; }
+    .hero-footer { left: 18px; right: 18px; font-size: 9px; }
+    .bk { width: 12px; height: 12px; }
+    .bk.tl { top: 10px; left: 10px; }
+    .bk.tr { top: 10px; right: 10px; }
+    .bk.bl { bottom: 10px; left: 10px; }
+    .bk.br { bottom: 10px; right: 10px; }
+
+    /* Sections */
+    .sec-title { font-size: 22px; }
+    .sec-desc { font-size: 13px; }
+
+    /* Steps */
+    .step-title { font-size: 15px; }
+    .step-desc { font-size: 13px; }
+
+    /* Грид → 1 колонка */
+    .resp-grid2 { grid-template-columns: 1fr !important; }
+
+    /* code-block */
+    .code-block { font-size: 11px; word-break: break-all; }
+
+    /* Таблица-превью индикатора */
+    .tv-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Alert */
+    .alert { padding: 12px 14px; }
+    .alert-text { font-size: 13px; }
+
+    /* TG preview */
+    .tg-preview { max-width: 100%; }
+
+    /* FAQ */
+    .faq-q { font-size: 13px; }
+    .faq-a { font-size: 12px; }
+  }
 </style>
 </head>
 <body>
@@ -338,7 +384,7 @@
   <div class="sec-title">Тарифы</div>
   <div class="sec-desc">Выбери подходящий план — индикатор доступен в обоих.</div>
 
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:32px">
+  <div class="resp-grid2" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:32px">
 
     <div style="background:var(--card); border:1px solid var(--line2); border-radius:18px; padding:24px 22px">
       <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:12px">STANDARD</div>
@@ -384,7 +430,7 @@
 
   <div style="background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:24px; margin-bottom:20px">
     <div style="font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:2px; margin-bottom:16px">Что приходит автоматически</div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+    <div class="resp-grid2" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
       <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--green); margin-top:1px">🟢</span><span>BUY 50% / BUY 100% по уровням SM</span></div>
       <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="color:var(--red); margin-top:1px">🔴</span><span>SELL 50% / SELL 100% по уровням SM</span></div>
       <div style="display:flex; gap:8px; font-size:13px; align-items:flex-start"><span style="margin-top:1px">🔥</span><span>STRONG BUY / SELL — тройной фильтр</span></div>
