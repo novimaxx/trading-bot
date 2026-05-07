@@ -593,6 +593,14 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
         <div class="sub-days-lbl">дней осталось</div>
       </div>
     </div>
+
+    <div class="sub-card" id="tv-card" style="display:none;margin-top:10px;cursor:pointer" onclick="openTvModal()">
+      <div style="flex:1">
+        <div class="sub-label">📊 TRADINGVIEW</div>
+        <div class="sub-plan" id="tv-username-txt" style="font-size:15px;color:var(--cyan)">— не указан —</div>
+      </div>
+      <div style="color:var(--muted);font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:.08em" id="tv-action-hint">ДОБАВИТЬ</div>
+    </div>
   </div>
 
   <div class="stats-row">
@@ -621,11 +629,6 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="menu-row" onclick="openExt('guide')">
       <span class="menu-row-icon">📖</span>
       <div class="menu-row-text">Руководство</div>
-      <span class="menu-row-r">›</span>
-    </div>
-    <div class="menu-row" onclick="toast('ID: ' + (userId||'null') + ' | admin: ' + isAdmin)">
-      <span class="menu-row-icon">🔑</span>
-      <div class="menu-row-text">Мой Telegram ID</div>
       <span class="menu-row-r">›</span>
     </div>
     <div class="menu-row" onclick="openSupport()">
@@ -807,6 +810,22 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div class="bm-copy-toast" id="bc-copy-toast"></div>
 
     </div>
+  </div>
+</div>
+
+<!-- TradingView username modal -->
+<div class="act-modal" id="tv-modal">
+  <div class="act-sheet">
+    <div class="act-title">📊 TradingView Username</div>
+    <div class="act-sub">Укажи свой username с TradingView — нужен чтобы дать тебе доступ к индикатору</div>
+    <div class="bm-ctrl" style="margin-bottom:14px">
+      <input type="text" id="tv-input" placeholder="например: NoviCrypto" style="background:var(--card);border:1px solid var(--line);color:#fff;padding:11px 14px;border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;outline:none;width:100%">
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5">
+      💡 Найти username можно в TradingView → клик по аватару в правом верхнем углу
+    </div>
+    <button class="act-do" onclick="saveTvUsername()">✅ Сохранить</button>
+    <button class="act-cancel" onclick="closeTvModal()">Отмена</button>
   </div>
 </div>
 
@@ -1071,6 +1090,16 @@ async function boot() {
     document.getElementById('menu-sub-lbl').textContent = 'Продлить подписку';
     document.getElementById('hero-plan-badge').style.display = 'inline-flex';
     document.getElementById('hero-plan-badge').textContent = userData.plan;
+
+    // Show TV username card for subscribers
+    document.getElementById('tv-card').style.display = 'flex';
+    if (userData.tv_username) {
+      document.getElementById('tv-username-txt').textContent = '@' + userData.tv_username;
+      document.getElementById('tv-action-hint').textContent = 'ИЗМЕНИТЬ';
+    } else {
+      document.getElementById('tv-username-txt').innerHTML = '<span style="color:var(--accent2)">⚠ Не указан</span>';
+      document.getElementById('tv-action-hint').textContent = 'УКАЗАТЬ';
+    }
   }
   if (userData.signalsCount) document.getElementById('st-sigs').textContent = userData.signalsCount;
   if (userData.refs) {
@@ -1594,6 +1623,45 @@ function adminTab(tab) {
 document.getElementById('act-modal').addEventListener('click', function(e) {
   if (e.target === this) closeActModal();
 });
+document.getElementById('tv-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeTvModal();
+});
+
+// ── TradingView username ──
+function openTvModal() {
+  const cur = userData.tv_username || '';
+  document.getElementById('tv-input').value = cur;
+  document.getElementById('tv-modal').classList.add('open');
+  setTimeout(() => document.getElementById('tv-input').focus(), 100);
+}
+function closeTvModal() {
+  document.getElementById('tv-modal').classList.remove('open');
+}
+async function saveTvUsername() {
+  const val = document.getElementById('tv-input').value.trim().replace(/^@/, '');
+  if (!val) { toast('Введи username', true); return; }
+  if (!/^[a-zA-Z0-9_]{2,40}$/.test(val)) { toast('Только буквы, цифры, _', true); return; }
+  if (!userId) { toast('Ошибка: нет ID', true); return; }
+
+  try {
+    const r = await fetch(`${BASE}/api/user/${userId}/tv-username`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tv_username: val })
+    });
+    if (r.ok) {
+      userData.tv_username = val;
+      document.getElementById('tv-username-txt').textContent = '@' + val;
+      document.getElementById('tv-action-hint').textContent = 'ИЗМЕНИТЬ';
+      closeTvModal();
+      toast('✅ TradingView username сохранён');
+    } else {
+      toast('Ошибка сохранения', true);
+    }
+  } catch(e) {
+    toast('Ошибка сети', true);
+  }
+}
 
 boot();
 </script>

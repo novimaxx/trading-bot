@@ -428,7 +428,7 @@ app.get('/api/user/:id', async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT subscription_plan, subscription_until, referral_count FROM users WHERE id = $1`,
+      `SELECT subscription_plan, subscription_until, referral_count, tv_username, created_at FROM users WHERE id = $1`,
       [userId]
     )
 
@@ -450,10 +450,33 @@ app.get('/api/user/:id', async (req, res) => {
       daysLeft,
       refs: u.referral_count || 0,
       signalsCount,
+      tv_username: u.tv_username || null,
+      created_at: u.created_at || null,
     })
   } catch (err) {
     console.error('API /user error:', err.message)
     res.json({ plan: null })
+  }
+})
+
+// ─── API: сохранить TradingView username ──────────────────
+app.post('/api/user/:id/tv-username', async (req, res) => {
+  const userId = parseInt(req.params.id)
+  if (!userId || !pool) return res.sendStatus(400)
+
+  const tv = (req.body?.tv_username || '').trim().replace(/^@/, '')
+  if (!tv || !/^[a-zA-Z0-9_]{2,40}$/.test(tv)) {
+    return res.status(400).json({ error: 'invalid username' })
+  }
+
+  try {
+    // ensure column exists
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS tv_username TEXT`).catch(()=>{})
+    await pool.query(`UPDATE users SET tv_username = $1 WHERE id = $2`, [tv, userId])
+    res.json({ ok: true, tv_username: tv })
+  } catch (err) {
+    console.error('TV username save error:', err.message)
+    res.sendStatus(500)
   }
 })
 
