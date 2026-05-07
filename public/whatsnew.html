@@ -482,22 +482,10 @@
     </div>
   </div>
 
-  <!-- СКАЧАТЬ БАННЕР -->
-  <div style="text-align:center; margin: -24px 0 32px;">
-    <button onclick="downloadHero()" style="
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 24px; border-radius:10px; border:1px solid var(--line2);
-      background:var(--card2); color:var(--lg); font-size:13px; font-weight:600;
-      cursor:pointer; font-family:'Inter',sans-serif;
-      transition:opacity .15s;
-    ">📥 Скачать баннер</button>
-  </div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     function downloadHero() {
       var hero = document.querySelector('.hero');
-      // Fix: html2canvas не рендерит background-clip:text — временно меняем стиль
       var accents = hero.querySelectorAll('.accent');
       accents.forEach(function(el) {
         el.style.webkitBackgroundClip = 'unset';
@@ -506,8 +494,7 @@
         el.style.color = '#2ecc71';
         el.style.background = 'none';
       });
-      html2canvas(hero, { scale: 2, useCORS: true, backgroundColor: '#0a0a0c' }).then(function(canvas) {
-        // Восстанавливаем стили
+      html2canvas(hero, { scale: 2, useCORS: true, backgroundColor: null }).then(function(canvas) {
         accents.forEach(function(el) {
           el.style.webkitBackgroundClip = '';
           el.style.backgroundClip = '';
@@ -515,9 +502,28 @@
           el.style.color = '';
           el.style.background = '';
         });
+        // Скругляем углы
+        var radius = 56;
+        var rounded = document.createElement('canvas');
+        rounded.width = canvas.width;
+        rounded.height = canvas.height;
+        var ctx = rounded.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(radius, 0);
+        ctx.lineTo(canvas.width - radius, 0);
+        ctx.quadraticCurveTo(canvas.width, 0, canvas.width, radius);
+        ctx.lineTo(canvas.width, canvas.height - radius);
+        ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - radius, canvas.height);
+        ctx.lineTo(radius, canvas.height);
+        ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - radius);
+        ctx.lineTo(0, radius);
+        ctx.quadraticCurveTo(0, 0, radius, 0);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(canvas, 0, 0);
         var link = document.createElement('a');
         link.download = 'it-v3-banner.png';
-        link.href = canvas.toDataURL('image/png');
+        link.href = rounded.toDataURL('image/png');
         link.click();
       });
     }
