@@ -1028,7 +1028,7 @@ function postCard(p, featured) {
       </div>
     </div>
     <div class="post-body">
-      ${(p.title && !imgUrl) ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
+      ${p.title ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
       <div class="post-text">${escHtml(p.body || '')}</div>
       <div class="post-read-more">Читать полностью →</div>
     </div>
@@ -1088,13 +1088,10 @@ function openPostDetail(id) {
     const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     img.onclick = isTouch ? () => openLightbox(img.src) : null;
     img.style.cursor = isTouch ? 'zoom-in' : 'default';
-    // Заголовок уже в баннере — не дублируем
-    document.getElementById('po-title').style.display = 'none';
   } else {
     img.style.display = 'none';
     img.onclick = null;
     img.style.cursor = '';
-    document.getElementById('po-title').style.display = '';
   }
 
   const overlay = document.getElementById('post-overlay');
