@@ -468,7 +468,7 @@
     <div class="hero-tagline">Мы переписали всё с нуля. Встречайте.</div>
     <div class="hero-sub">Автосигналы 24/7 · Мини-апп в Telegram · Улучшенный индикатор</div>
 
-    <div class="hero-date">⏰ &nbsp;07 МАЯ 2026 — ГЛОБАЛЬНЫЙ ЗАПУСК</div>
+    <div class="hero-date">⏰ &nbsp;08 МАЯ 2026 — ГЛОБАЛЬНЫЙ ЗАПУСК</div>
 
     <div class="hero-pills">
       <div class="hero-pill">📊 Новый индикатор</div>
@@ -792,14 +792,49 @@
   <!-- CTA -->
   <div class="cta-block">
     <div class="cta-glow"></div>
-    <div class="cta-tag">07 МАЯ 2026 · ЗАПУСК</div>
+    <div class="cta-tag">08 МАЯ 2026 · ЗАПУСК</div>
     <div class="cta-title">Готов к <span class="g">новому уровню?</span></div>
     <div class="cta-sub">IT v3 работает пока ты спишь. Автосигналы, мини-апп, улучшенный индикатор — всё в одном.</div>
     <div class="cta-btns">
-      <a href="https://t.me/NoviYTBot" class="cta-btn-primary">📱 Открыть мини-апп</a>
+      <button id="launch-btn" class="cta-btn-primary" style="cursor:not-allowed;opacity:.45" disabled>
+        🔒 Открыть мини-апп · <span id="launch-countdown">--:--:--</span>
+      </button>
       <a href="guide.html" class="cta-btn-secondary">📖 Документация</a>
     </div>
-    <div class="cta-pro-note">💎 <strong>PRO-подписчики</strong> получают доступ первыми · 07 мая 2026</div>
+    <div class="cta-pro-note">💎 <strong>PRO-подписчики</strong> получают доступ первыми · 08 мая 2026 · 00:00</div>
+
+    <script>
+      (function() {
+        var launch = new Date('2026-05-08T00:00:00');
+        var btn = document.getElementById('launch-btn');
+        var countdown = document.getElementById('launch-countdown');
+
+        function tick() {
+          var now = new Date();
+          var diff = launch - now;
+
+          if (diff <= 0) {
+            btn.innerHTML = '📱 Открыть мини-апп';
+            btn.style.cursor = 'pointer';
+            btn.style.opacity = '1';
+            btn.disabled = false;
+            btn.onclick = function() { window.open('https://t.me/NoviYTBot', '_blank'); };
+            return;
+          }
+
+          var h = Math.floor(diff / 3600000);
+          var m = Math.floor((diff % 3600000) / 60000);
+          var s = Math.floor((diff % 60000) / 1000);
+          countdown.textContent =
+            String(h).padStart(2,'0') + ':' +
+            String(m).padStart(2,'0') + ':' +
+            String(s).padStart(2,'0');
+
+          setTimeout(tick, 1000);
+        }
+        tick();
+      })();
+    </script>
   </div>
 
   <div class="footer">
