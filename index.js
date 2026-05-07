@@ -553,7 +553,7 @@ app.get('/api/posts', async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT id, title, body, image_url, file_id, tag, sent_at FROM app_posts ORDER BY sent_at DESC LIMIT 20`
+      `SELECT id, title, body, image_data, tag, sent_at FROM app_posts ORDER BY sent_at DESC LIMIT 20`
     )
     res.json(rows.length ? rows : getDemoPosts())
   } catch (err) {
@@ -847,7 +847,6 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   const caption = [
     body || null,
     tag ? `🏷 ${tag}` : null,
-    '📱 _IT v3_'
   ].filter(Boolean).join('\n\n')
 
   // Сохранить пост в БД
@@ -855,8 +854,8 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   if (pool) {
     try {
       const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, tag) VALUES ($1,$2,$3) RETURNING id`,
-        [title||null, body||null, tag||'АНАЛИТИКА']
+        `INSERT INTO app_posts (title, body, tag, image_data) VALUES ($1,$2,$3,$4) RETURNING id`,
+        [title||null, body||null, tag||'АНАЛИТИКА', image_b64||null]
       )
       savedId = rows[0].id
     } catch (e) { console.error('Save post error:', e.message) }
@@ -911,7 +910,6 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   const caption = [
     body || null,
     tag ? `🏷 ${tag}` : null,
-    '📱 _IT v3 · тест_'
   ].filter(Boolean).join('\n\n')
 
   const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
@@ -922,8 +920,8 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   if (pool) {
     try {
       const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, tag) VALUES ($1,$2,$3) RETURNING id`,
-        [title||null, body||null, tag||'ТЕСТ']
+        `INSERT INTO app_posts (title, body, tag, image_data) VALUES ($1,$2,$3,$4) RETURNING id`,
+        [title||null, body||null, tag||'ТЕСТ', image_b64||null]
       )
       savedId = rows[0].id
     } catch (e) { console.error('Save test post error:', e.message) }

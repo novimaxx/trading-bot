@@ -996,7 +996,7 @@ function sigCard(s) {
 function postCard(p, featured) {
   const d = new Date(p.sent_at);
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
-  const imgUrl = p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null);
+  const imgUrl = p.image_data ? p.image_data : (p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null));
   const adminDel = isAdmin
     ? `<button onclick="event.stopPropagation();deletePost(${p.id})" style="background:rgba(255,61,127,.12);border:1px solid rgba(255,61,127,.3);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;cursor:pointer;letter-spacing:.08em">✕ УДАЛИТЬ</button>`
     : '';
@@ -1060,7 +1060,7 @@ function openPostDetail(id) {
   document.getElementById('po-body').textContent = p.body || '';
 
   const img = document.getElementById('po-img');
-  const imgSrc = p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null);
+  const imgSrc = p.image_data ? p.image_data : (p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null));
   if (imgSrc) {
     img.src = imgSrc;
     img.style.display = 'block';
