@@ -1207,7 +1207,7 @@ async function boot() {
   if (isPro && allSignals.length) {
     _sigIdx = 0;
     lastWrap.innerHTML = '<div style="padding:0 16px 0">' + sigCard(allSignals[0]) + '</div>';
-    _sigIdx = 0;
+    // НЕ сбрасываем _sigIdx — иначе дублируются id sc-det-N
     sigList.innerHTML = allSignals.map(s => sigCard(s)).join('');
     document.getElementById('sig-count-badge').style.display = 'flex';
     document.getElementById('sig-count-badge').textContent = allSignals.length;
