@@ -200,14 +200,16 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .po-img{width:100%;max-height:280px;object-fit:cover;display:block;cursor:zoom-in}
 /* ── lightbox ── */
-#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:999;display:none;
-  align-items:center;justify-content:center;padding:12px}
+#lightbox{position:fixed;inset:0;background:#000;z-index:999;display:none;flex-direction:column}
 #lightbox.open{display:flex}
-#lightbox img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;
-  touch-action:pinch-zoom}
-#lb-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;
-  background:rgba(255,255,255,.12);border:none;color:#fff;font-size:20px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;z-index:1000}
+#lb-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;
+  display:flex;align-items:center;justify-content:center}
+#lb-img{max-width:100%;height:auto;display:block;
+  touch-action:pan-x pan-y pinch-zoom;cursor:zoom-in;border-radius:4px}
+#lb-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-size:18px;cursor:pointer;z-index:1001;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .po-tag-bar{padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between}
 .po-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
   letter-spacing:.15em;text-transform:uppercase;color:var(--accent);
@@ -1539,20 +1541,9 @@ function bcRenderCanvas() {
   });
 }
 
-// Сжатая версия для отправки (JPEG 0.8, макс 900px) — легче для мобилки
+// Максимальное качество — просто берём оригинальный PNG с canvas
 async function bcRenderForSend() {
-  const dataUrl = await bcRenderCanvas();
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => {
-      const W2 = 1280, H2 = Math.round(1280 * img.height / img.width);
-      const c = document.createElement('canvas');
-      c.width = W2; c.height = H2;
-      c.getContext('2d').drawImage(img, 0, 0, W2, H2);
-      resolve(c.toDataURL('image/jpeg', 0.92));
-    };
-    img.src = dataUrl;
-  });
+  return bcRenderCanvas();
 }
 
 function bcExport() {
@@ -1744,20 +1735,32 @@ boot();
 </script>
 
 <!-- Лайтбокс для картинок -->
-<div id="lightbox" onclick="closeLightbox()">
+<div id="lightbox">
   <button id="lb-close" onclick="closeLightbox()">✕</button>
-  <img id="lb-img" src="" alt="">
+  <div id="lb-scroll">
+    <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+  </div>
 </div>
 <script>
 function openLightbox(src) {
   const lb = document.getElementById('lightbox');
-  document.getElementById('lb-img').src = src;
+  const img = document.getElementById('lb-img');
+  img.src = src;
   lb.classList.add('open');
+  document.getElementById('lb-scroll').scrollTop = 0;
+  document.getElementById('lb-scroll').scrollLeft = 0;
+  // Escape на десктопе
+  document.addEventListener('keydown', lbKeyClose);
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.getElementById('lb-img').src = '';
+  document.removeEventListener('keydown', lbKeyClose);
 }
+function lbKeyClose(e) { if (e.key === 'Escape') closeLightbox(); }
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this || e.target === document.getElementById('lb-scroll')) closeLightbox();
+});
 </script>
 </body>
 </html>
