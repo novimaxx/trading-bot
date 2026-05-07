@@ -681,10 +681,10 @@ app.get('/api/admin/users', adminOnly, async (req, res) => {
   const offset = parseInt(req.query.offset) || 0
   try {
     const query = search
-      ? `SELECT id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count
-         FROM users WHERE username ILIKE $1 OR first_name ILIKE $1 OR id::text = $2
+      ? `SELECT id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count, tv_username
+         FROM users WHERE username ILIKE $1 OR first_name ILIKE $1 OR id::text = $2 OR tv_username ILIKE $1
          ORDER BY subscription_until DESC NULLS LAST, id DESC LIMIT $3 OFFSET $4`
-      : `SELECT id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count
+      : `SELECT id, username, first_name, subscribed, subscription_until, subscription_plan, referral_count, tv_username
          FROM users ORDER BY subscription_until DESC NULLS LAST, id DESC LIMIT $1 OFFSET $2`
     const params = search ? [`%${search}%`, search, limit, offset] : [limit, offset]
     const { rows } = await pool.query(query, params)

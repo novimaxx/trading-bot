@@ -1252,11 +1252,17 @@ function renderUsers(users) {
       ? `✅ ${u.subscription_plan} · ${u.daysLeft} дн`
       : '— нет подписки';
     const subCls = u.active ? 'active' : '';
+    const tvBlock = u.active
+      ? (u.tv_username
+          ? `<div class="ur-sub" style="color:var(--cyan);margin-top:2px">📊 @${escHtml(u.tv_username)}</div>`
+          : `<div class="ur-sub" style="color:var(--accent2);margin-top:2px">📊 ⚠ TV username не указан</div>`)
+      : '';
     return `<div class="user-row">
       <div class="ur-ava">${letter}</div>
       <div class="ur-info">
         <div class="ur-name">${name}</div>
         <div class="ur-sub ${subCls}">${handle} · ${subText}</div>
+        ${tvBlock}
       </div>
       <div class="ur-btns">
         <button class="ur-btn ur-btn-on" onclick="openActModal(${u.id},'${escHtml(name)}')">+</button>
