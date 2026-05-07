@@ -872,7 +872,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="po-back" onclick="closePost()">‹</div>
     <div class="po-header-title" id="po-header-title">Пост</div>
   </div>
-  <img id="po-img" class="po-img" style="display:none" src="" alt="" onclick="openLightbox(this.src)">
+  <img id="po-img" class="po-img" style="display:none" src="" alt="">
   <div class="po-tag-bar">
     <div class="po-tag" id="po-tag">АНАЛИТИКА</div>
     <div class="po-date" id="po-date"></div>
@@ -1028,7 +1028,7 @@ function postCard(p, featured) {
       </div>
     </div>
     <div class="post-body">
-      ${p.title ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
+      ${(p.title && !imgUrl) ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
       <div class="post-text">${escHtml(p.body || '')}</div>
       <div class="post-read-more">Читать полностью →</div>
     </div>
@@ -1084,8 +1084,17 @@ function openPostDetail(id) {
   if (imgSrc) {
     img.src = imgSrc;
     img.style.display = 'block';
+    // Лайтбокс только на мобиле (touch-устройство)
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    img.onclick = isTouch ? () => openLightbox(img.src) : null;
+    img.style.cursor = isTouch ? 'zoom-in' : 'default';
+    // Заголовок уже в баннере — не дублируем
+    document.getElementById('po-title').style.display = 'none';
   } else {
     img.style.display = 'none';
+    img.onclick = null;
+    img.style.cursor = '';
+    document.getElementById('po-title').style.display = '';
   }
 
   const overlay = document.getElementById('post-overlay');
