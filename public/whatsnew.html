@@ -470,6 +470,16 @@
 
     <div class="hero-date">⏰ &nbsp;08 МАЯ 2026 — ГЛОБАЛЬНЫЙ ЗАПУСК</div>
 
+    <div id="hero-timer" style="
+      font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:800;
+      letter-spacing:.08em; color:var(--white); position:relative; z-index:5;
+      margin-bottom:20px;
+    ">--:--:--</div>
+    <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.2em;
+      color:var(--muted); position:relative; z-index:5; margin-top:-16px; margin-bottom:20px;">
+      ДО ЗАПУСКА
+    </div>
+
     <div class="hero-pills">
       <div class="hero-pill">📊 Новый индикатор</div>
       <div class="hero-pill">⚡️ Сигналы 24/7</div>
@@ -856,6 +866,32 @@
   </div>
 
 </div>
+
+<script>
+  (function() {
+    var launch = new Date('2026-05-08T00:00:00');
+    var timer = document.getElementById('hero-timer');
+    var label = timer ? timer.nextElementSibling : null;
+    function tick() {
+      var diff = launch - new Date();
+      if (!timer) return;
+      if (diff <= 0) {
+        timer.textContent = '00:00:00';
+        if (label) label.textContent = 'ЗАПУЩЕНО';
+        return;
+      }
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      timer.textContent =
+        String(h).padStart(2,'0') + ':' +
+        String(m).padStart(2,'0') + ':' +
+        String(s).padStart(2,'0');
+      setTimeout(tick, 1000);
+    }
+    tick();
+  })();
+</script>
 
 </body>
 </html>
