@@ -996,7 +996,9 @@ function sigCard(s) {
 function postCard(p, featured) {
   const d = new Date(p.sent_at);
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
-  const imgUrl = p.image_data ? p.image_data : (p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null));
+  const imgUrl = p.image_data
+    ? (p.image_data.startsWith('data:') ? p.image_data : 'data:image/jpeg;base64,' + p.image_data)
+    : (p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null));
   const adminDel = isAdmin
     ? `<button onclick="event.stopPropagation();deletePost(${p.id})" style="background:rgba(255,61,127,.12);border:1px solid rgba(255,61,127,.3);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;cursor:pointer;letter-spacing:.08em">✕ УДАЛИТЬ</button>`
     : '';
@@ -1060,7 +1062,9 @@ function openPostDetail(id) {
   document.getElementById('po-body').textContent = p.body || '';
 
   const img = document.getElementById('po-img');
-  const imgSrc = p.image_data ? p.image_data : (p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null));
+  const imgSrc = p.image_data
+    ? (p.image_data.startsWith('data:') ? p.image_data : 'data:image/jpeg;base64,' + p.image_data)
+    : (p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null));
   if (imgSrc) {
     img.src = imgSrc;
     img.style.display = 'block';
@@ -1517,10 +1521,28 @@ function bcRenderCanvas() {
     };
     if (bcChartImg) {
       const img=new Image();
-      img.onload=()=>{ctx.drawImage(img,0,0,W,H);finish();};
-      img.onerror=()=>finish();
+      // Таймаут 8 сек — если картинка не загрузилась, рендерим без неё
+      const t = setTimeout(()=>finish(), 8000);
+      img.onload=()=>{clearTimeout(t);ctx.drawImage(img,0,0,W,H);finish();};
+      img.onerror=()=>{clearTimeout(t);finish();};
       img.src=bcChartImg;
     } else { finish(); }
+  });
+}
+
+// Сжатая версия для отправки (JPEG 0.8, макс 900px) — легче для мобилки
+async function bcRenderForSend() {
+  const dataUrl = await bcRenderCanvas();
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const W2 = 900, H2 = Math.round(900 * img.height / img.width);
+      const c = document.createElement('canvas');
+      c.width = W2; c.height = H2;
+      c.getContext('2d').drawImage(img, 0, 0, W2, H2);
+      resolve(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.src = dataUrl;
   });
 }
 
@@ -1574,8 +1596,8 @@ async function bcSend() {
 
   let image_b64;
   try {
-    const dataUrl = await bcRenderCanvas();
-    image_b64 = dataUrl.replace(/^data:image\/png;base64,/,'');
+    const dataUrl = await bcRenderForSend();
+    image_b64 = dataUrl.replace(/^data:image\/(png|jpeg);base64,/,'');
   } catch(e) {
     btn.disabled=false; btn.innerHTML='📤 Отправить подписчикам';
     toast('Ошибка рендера',true); return;
@@ -1624,8 +1646,8 @@ async function bcTestSend() {
 
   let image_b64;
   try {
-    const dataUrl = await bcRenderCanvas();
-    image_b64 = dataUrl.replace(/^data:image\/png;base64,/,'');
+    const dataUrl = await bcRenderForSend();
+    image_b64 = dataUrl.replace(/^data:image\/(png|jpeg);base64,/,'');
   } catch(e) {
     btn.disabled=false; btn.innerHTML='🧪 Тест → мне';
     res.textContent='❌ Ошибка рендера'; res.style.color='#ff3d7f'; return;
