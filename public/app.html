@@ -997,11 +997,17 @@ function postCard(p, featured) {
   const d = new Date(p.sent_at);
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
   const imgUrl = p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null);
+  const adminDel = isAdmin
+    ? `<button onclick="event.stopPropagation();deletePost(${p.id})" style="background:rgba(255,61,127,.12);border:1px solid rgba(255,61,127,.3);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;cursor:pointer;letter-spacing:.08em">✕ УДАЛИТЬ</button>`
+    : '';
   return `<div class="post-card ${featured?'featured':''}" onclick="openPostDetail(${p.id})">
     ${imgUrl ? `<div class="post-img-wrap"><img class="post-img" src="${imgUrl}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
     <div class="post-tag-bar">
       <div class="post-tag">${p.tag || 'ПОСТ'}</div>
-      <div class="post-date">${dateStr}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="post-date">${dateStr}</div>
+        ${adminDel}
+      </div>
     </div>
     <div class="post-body">
       ${p.title ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
@@ -1009,6 +1015,29 @@ function postCard(p, featured) {
       <div class="post-read-more">Читать полностью →</div>
     </div>
   </div>`;
+}
+
+async function deletePost(id) {
+  if (!confirm('Удалить этот пост из ленты?')) return;
+  try {
+    const aid = userId || ADMIN_ID_FALLBACK;
+    const r = await fetch(`${BASE}/api/admin/posts/${id}?tg_id=${aid}`, { method: 'DELETE' });
+    if (r.ok) {
+      toast('🗑 Пост удалён');
+      // remove from local list and re-render
+      allPosts = allPosts.filter(p => p.id !== id);
+      const postsList = document.getElementById('posts-list');
+      if (allPosts.length) {
+        postsList.innerHTML = allPosts.map((p, i) => postCard(p, i === 0)).join('');
+      } else {
+        postsList.innerHTML = `<div class="empty"><div class="empty-icon">📰</div><div class="empty-text">В ленте пока пусто</div><div class="empty-sub">Посты появятся здесь</div></div>`;
+      }
+    } else {
+      toast('Ошибка удаления', true);
+    }
+  } catch(e) {
+    toast('Ошибка сети', true);
+  }
 }
 
 function escHtml(s) {

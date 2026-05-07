@@ -902,7 +902,7 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
 })
 
-// ─── API: Admin test-send (to admin only) ─────────────────
+// ─── API: Admin test-send (to admin only + save to feed) ──
 app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   const { title, body, tag, image_b64 } = req.body
   if (!image_b64) return res.sendStatus(400)
@@ -919,6 +919,18 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
   const imgBuf = Buffer.from(base64, 'base64')
 
+  // Save test post to feed too — admin can verify and delete later
+  let savedId = null
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `INSERT INTO app_posts (title, body, tag) VALUES ($1,$2,$3) RETURNING id`,
+        [title||null, body||null, tag||'ТЕСТ']
+      )
+      savedId = rows[0].id
+    } catch (e) { console.error('Save test post error:', e.message) }
+  }
+
   try {
     const fd = new FormData()
     fd.append('chat_id', adminChatId)
@@ -931,13 +943,27 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
     })
     const j = await r.json()
     if (j.ok) {
-      res.json({ ok: true, chat_id: adminChatId })
+      res.json({ ok: true, chat_id: adminChatId, savedId })
     } else {
       console.error('test-send error:', j)
-      res.json({ ok: false, error: j.description })
+      res.json({ ok: false, error: j.description, savedId })
     }
   } catch (e) {
-    res.json({ ok: false, error: e.message })
+    res.json({ ok: false, error: e.message, savedId })
+  }
+})
+
+// ─── API: Admin delete post ──────────────────────────────
+app.delete('/api/admin/posts/:id', adminOnly, async (req, res) => {
+  if (!pool) return res.sendStatus(503)
+  const id = parseInt(req.params.id)
+  if (!id) return res.sendStatus(400)
+  try {
+    await pool.query(`DELETE FROM app_posts WHERE id = $1`, [id])
+    res.json({ ok: true })
+  } catch (err) {
+    console.error('Delete post error:', err.message)
+    res.sendStatus(500)
   }
 })
 
