@@ -53,6 +53,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 /* ── signal card ── */
 .sig-card{cursor:pointer;transition:background .15s}
 .sig-card:active{background:rgba(255,255,255,.04)}
+.sc-detail{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)}
+.sc-detail.open{display:block}
+.sc-detail-comment{font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;white-space:pre-line}
+.sc-detail-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:7px;letter-spacing:.04em}
+.sc-arrow{font-size:9px;color:var(--muted2);margin-left:3px}
 .sig-card{margin:0 16px 8px;background:linear-gradient(135deg,#0d1810 0%,#0a0c0a 100%);
   border:1px solid rgba(46,204,113,.2);border-radius:14px;padding:13px 15px;position:relative;overflow:hidden;z-index:1}
 .sig-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--accent);border-radius:3px 0 0 3px}
@@ -191,24 +196,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   color:var(--accent);font-weight:700;letter-spacing:.05em}
 
 /* ── post detail overlay ── */
-#post-overlay,#signal-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;
+#post-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;
   display:none;flex-direction:column;overflow-y:auto}
-#post-overlay.open,#signal-overlay.open{display:flex}
-/* signal overlay body */
-.so-body{padding:24px 20px;display:flex;flex-direction:column;gap:0}
-.so-tag-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.so-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);flex-shrink:0}
-.so-dot.sell{background:var(--accent2);box-shadow:0 0 6px var(--accent2)}
-.so-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
-.so-tag.sell{color:var(--accent2)}
-.so-tf{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);border:1px solid var(--muted2);padding:2px 7px;border-radius:4px}
-.so-pair{font-size:38px;font-weight:900;letter-spacing:-.03em;margin:8px 0 18px}
-.so-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:18px}
-.so-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.1em}
-.so-price{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700;color:#fff}
-.so-divider{height:1px;background:var(--line);margin-bottom:18px}
-.so-comment{font-size:14px;color:rgba(255,255,255,.75);line-height:1.7;white-space:pre-line;margin-bottom:16px}
-.so-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.04em}
+#post-overlay.open{display:flex}
 .po-header{position:sticky;top:0;background:rgba(10,10,12,.97);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line);padding:14px 16px;
   display:flex;align-items:center;gap:12px;z-index:10;flex-shrink:0}
@@ -883,29 +873,6 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   </div>
 </div>
 
-<!-- ════════════ SIGNAL DETAIL ════════════ -->
-<div id="signal-overlay">
-  <div class="po-header">
-    <div class="po-back" onclick="closeSignal()">‹</div>
-    <div class="po-header-title" id="so-header-title">Сигнал</div>
-  </div>
-  <div class="so-body">
-    <div class="so-tag-row">
-      <div class="so-dot" id="so-dot"></div>
-      <div class="so-tag" id="so-tag"></div>
-      <div class="so-tf" id="so-tf"></div>
-    </div>
-    <div class="so-pair" id="so-pair"></div>
-    <div class="so-price-row">
-      <div class="so-label">Цена</div>
-      <div class="so-price" id="so-price"></div>
-    </div>
-    <div class="so-divider"></div>
-    <div class="so-comment" id="so-comment" style="display:none"></div>
-    <div class="so-date" id="so-date"></div>
-  </div>
-</div>
-
 <!-- ════════════ POST DETAIL ════════════ -->
 <div id="post-overlay">
   <div class="po-header">
@@ -1029,7 +996,6 @@ function paidConfirm() {
 
 // ── render signal card ──
 let _sigIdx = 0;
-const _sigData = [];
 function sigCard(s) {
   const isBuy = s.action === 'BUY' || (s.tag||'').includes('BUY');
   const tagClass = isBuy ? '' : 'sell';
@@ -1037,11 +1003,16 @@ function sigCard(s) {
   const btnClass = isBuy ? 'sc-buy' : 'sc-sell-btn';
   const cardClass = isBuy ? '' : 'sell-card';
   const idx = _sigIdx++;
-  _sigData[idx] = s;
-  return `<div class="sig-card ${cardClass}" onclick="openSignal(${idx})">
+  const hasDetail = !!(s.comment || s.date);
+  const detailHtml = hasDetail ? `
+    <div class="sc-detail" id="sc-det-${idx}">
+      ${s.comment ? `<div class="sc-detail-comment">${escHtml(s.comment)}</div>` : ''}
+      ${s.date   ? `<div class="sc-detail-date">🕐 ${s.date}</div>` : ''}
+    </div>` : '';
+  return `<div class="sig-card ${cardClass}" onclick="toggleSigDetail('sc-det-${idx}', this, ${hasDetail})">
     <div class="sc-top">
       <div class="sc-tag ${tagClass}"><span class="sc-dot ${dotClass}"></span>${s.tag || s.action}</div>
-      <div class="sc-time">${s.tf} · ${s.time}</div>
+      <div class="sc-time">${s.tf} · ${s.time}${hasDetail ? ' <span class="sc-arrow">▾</span>' : ''}</div>
     </div>
     <div class="sc-body">
       <div class="sc-pair">${s.pair}</div>
@@ -1049,31 +1020,16 @@ function sigCard(s) {
       <div class="sc-tf">${s.tf}</div>
       <div class="sc-price">${s.price !== '—' ? '$'+s.price : '—'}</div>
     </div>
+    ${detailHtml}
   </div>`;
 }
-function openSignal(idx) {
-  const s = _sigData[idx];
-  if (!s) return;
-  const isBuy = s.action === 'BUY' || (s.tag||'').includes('BUY');
-  document.getElementById('so-header-title').textContent = s.tag || s.action;
-  document.getElementById('so-tag').textContent = s.tag || s.action;
-  document.getElementById('so-tag').className = 'so-tag' + (isBuy ? '' : ' sell');
-  document.getElementById('so-dot').className = 'so-dot' + (isBuy ? '' : ' sell');
-  document.getElementById('so-tf').textContent = s.tf;
-  document.getElementById('so-pair').textContent = s.pair;
-  document.getElementById('so-price').textContent = s.price !== '—' ? '$' + s.price : '—';
-  const commentEl = document.getElementById('so-comment');
-  if (s.comment) { commentEl.textContent = s.comment; commentEl.style.display = 'block'; }
-  else { commentEl.style.display = 'none'; }
-  document.getElementById('so-date').textContent = s.date ? '🕐 ' + s.date : '🕐 ' + s.time + ' назад';
-  const overlay = document.getElementById('signal-overlay');
-  overlay.classList.add('open');
-  overlay.scrollTop = 0;
-  if (tg?.BackButton) { tg.BackButton.show(); tg.BackButton.onClick(closeSignal); }
-}
-function closeSignal() {
-  document.getElementById('signal-overlay').classList.remove('open');
-  if (tg?.BackButton) { tg.BackButton.hide(); tg.BackButton.offClick(closeSignal); }
+function toggleSigDetail(id, card, hasDetail) {
+  if (!hasDetail) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+  const open = el.classList.toggle('open');
+  const arrow = card.querySelector('.sc-arrow');
+  if (arrow) arrow.textContent = open ? '▴' : '▾';
 }
 
 // ── render post card ──
