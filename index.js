@@ -850,16 +850,9 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   ].filter(Boolean).join('\n\n')
 
   // Сохранить пост в БД
-  let savedId = null
-  if (pool) {
-    try {
-      const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, tag, image_data) VALUES ($1,$2,$3,$4) RETURNING id`,
-        [title||null, body||null, tag||'АНАЛИТИКА', image_b64||null]
-      )
-      savedId = rows[0].id
-    } catch (e) { console.error('Save post error:', e.message) }
-  }
+  // Декодировать base64 → Buffer
+  const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
+  const imgBuf = Buffer.from(base64, 'base64')
 
   // Получить подписчиков
   const planFilter = !audience || audience === 'all' ? ''
@@ -874,27 +867,45 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
     } catch (e) { console.error('Get subs error:', e.message) }
   }
 
-  // Декодировать base64 → Buffer
-  const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
-  const imgBuf = Buffer.from(base64, 'base64')
-
-  let sent = 0, failed = 0
+  let sent = 0, failed = 0, fileId = null, savedId = null
   for (const chatId of subscribers) {
     try {
-      // Отправить фото через multipart
       const fd = new FormData()
       fd.append('chat_id', String(chatId))
       fd.append('caption', caption)
       fd.append('parse_mode', 'Markdown')
-      fd.append('photo', new Blob([imgBuf], { type: 'image/png' }), 'banner.png')
+      // После первой отправки можно переиспользовать file_id
+      if (fileId) {
+        fd.append('photo', fileId)
+      } else {
+        fd.append('photo', new Blob([imgBuf], { type: 'image/jpeg' }), 'banner.jpg')
+      }
 
       const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
         method: 'POST', body: fd
       })
       const j = await r.json()
-      if (j.ok) sent++; else { failed++; console.error('sendPhoto error:', j.description) }
+      if (j.ok) {
+        sent++
+        // Берём file_id из первого успешного ответа
+        if (!fileId) {
+          const photos = j.result?.photo || []
+          fileId = photos[photos.length - 1]?.file_id || null
+        }
+      } else { failed++; console.error('sendPhoto error:', j.description) }
       await new Promise(r => setTimeout(r, 60))
     } catch (e) { failed++; console.error('sendPhoto exception:', e.message) }
+  }
+
+  // Сохраняем пост с file_id (не base64)
+  if (pool && (sent > 0 || subscribers.length === 0)) {
+    try {
+      const { rows } = await pool.query(
+        `INSERT INTO app_posts (title, body, tag, file_id) VALUES ($1,$2,$3,$4) RETURNING id`,
+        [title||null, body||null, tag||'АНАЛИТИКА', fileId]
+      )
+      savedId = rows[0].id
+    } catch (e) { console.error('Save post error:', e.message) }
   }
 
   res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
@@ -915,35 +926,38 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
   const imgBuf = Buffer.from(base64, 'base64')
 
-  // Save test post to feed too — admin can verify and delete later
-  let savedId = null
-  if (pool) {
-    try {
-      const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, tag, image_data) VALUES ($1,$2,$3,$4) RETURNING id`,
-        [title||null, body||null, tag||'ТЕСТ', image_b64||null]
-      )
-      savedId = rows[0].id
-    } catch (e) { console.error('Save test post error:', e.message) }
-  }
+  let savedId = null, fileId = null
 
   try {
+    // 1. Шлём фото в Telegram — берём file_id
     const fd = new FormData()
     fd.append('chat_id', adminChatId)
     fd.append('caption', caption)
     fd.append('parse_mode', 'Markdown')
-    fd.append('photo', new Blob([imgBuf], { type: 'image/png' }), 'banner.png')
+    fd.append('photo', new Blob([imgBuf], { type: 'image/jpeg' }), 'banner.jpg')
 
     const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
       method: 'POST', body: fd
     })
     const j = await r.json()
-    if (j.ok) {
-      res.json({ ok: true, chat_id: adminChatId, savedId })
-    } else {
+    if (!j.ok) {
       console.error('test-send error:', j)
-      res.json({ ok: false, error: j.description, savedId })
+      return res.json({ ok: false, error: j.description })
     }
+    // Берём file_id из ответа (самое большое фото)
+    const photos = j.result?.photo || []
+    fileId = photos[photos.length - 1]?.file_id || null
+
+    // 2. Сохраняем пост в ленту с file_id (не base64!)
+    if (pool) {
+      const { rows } = await pool.query(
+        `INSERT INTO app_posts (title, body, tag, file_id) VALUES ($1,$2,$3,$4) RETURNING id`,
+        [title||null, body||null, tag||'ТЕСТ', fileId]
+      ).catch(e => { console.error('Save test post error:', e.message); return { rows: [] } })
+      savedId = rows[0]?.id || null
+    }
+
+    res.json({ ok: true, chat_id: adminChatId, savedId, fileId })
   } catch (e) {
     res.json({ ok: false, error: e.message, savedId })
   }
