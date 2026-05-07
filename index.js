@@ -845,7 +845,10 @@ app.post('/api/payment-request', async (req, res) => {
     // Уведомление админу
     const name = first_name ? `${first_name}${username ? ' @'+username : ''}` : `ID ${uid}`
     const planText = plan ? ` · ${plan}` : ''
-    const adminText = `💳 *Заявка на активацию*\n\nОт: ${name}${planText}\nTxID: \`${txRef}\`\nTV: ${tv_username || '—'}\n${note ? '\n'+note : ''}`
+    const txDisplay = /^https?:\/\//.test(txRef)
+      ? `[Открыть транзакцию](${txRef})`
+      : `\`${txRef}\``
+    const adminText = `💳 *Заявка на активацию*\n\nОт: ${name}${planText}\nTX: ${txDisplay}\nTV: ${tv_username || '—'}${note ? '\n\n'+note : ''}`
     await sendToAdmin(adminText).catch(() => {})
     res.json({ ok: true })
   } catch (err) {
@@ -1111,6 +1114,23 @@ app.post('/api/support', async (req, res) => {
   } catch (e) {
     console.error('support error:', e.message)
     res.status(500).json({ error: 'server error' })
+  }
+})
+
+// GET /api/support/history — история обращений пользователя
+app.get('/api/support/history', async (req, res) => {
+  const tgId = String(req.query.tg_id || '')
+  if (!tgId) return res.status(400).json({ error: 'bad request' })
+  if (!pool) return res.json([])
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, message, reply, status, created_at, replied_at
+       FROM support_messages WHERE user_id = $1 ORDER BY created_at ASC`,
+      [tgId]
+    )
+    res.json(rows)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
   }
 })
 

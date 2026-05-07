@@ -199,6 +199,20 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 #post-overlay, #support-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;
   display:none;flex-direction:column;overflow-y:auto}
 #post-overlay.open, #support-overlay.open{display:flex}
+/* ── support chat ── */
+#support-overlay{overflow:hidden}
+.sup-body{flex:1;overflow-y:auto;padding:14px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.sup-bubble{max-width:82%;padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.55;word-break:break-word}
+.sup-bubble.user{align-self:flex-end;background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.22);color:var(--white);border-bottom-right-radius:4px}
+.sup-bubble.admin{align-self:flex-start;background:var(--card2);border:1px solid var(--line2);color:var(--white);border-bottom-left-radius:4px}
+.sup-bubble-meta{font-size:10px;color:var(--muted);margin-top:4px;text-align:right}
+.sup-bubble.admin .sup-bubble-meta{text-align:left}
+.sup-bubble-label{font-size:10px;font-weight:700;margin-bottom:3px;color:var(--accent)}
+.sup-bubble.user .sup-bubble-label{color:rgba(255,255,255,.4);text-align:right}
+.sup-empty{padding:32px 16px;text-align:center;color:var(--muted);font-size:13px}
+.sup-footer{flex-shrink:0;padding:10px 12px 14px;border-top:1px solid var(--line);background:var(--bg);display:flex;gap:8px;align-items:flex-end}
+.sup-footer textarea{flex:1;background:var(--card);border:1px solid var(--line2);border-radius:12px;padding:11px 13px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;resize:none;height:44px;max-height:120px;outline:none;line-height:1.5;overflow-y:auto}
+.sup-send-btn{flex-shrink:0;width:44px;height:44px;background:var(--accent);border:none;border-radius:50%;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
 .po-header{position:sticky;top:0;background:rgba(10,10,12,.97);backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line);padding:14px 16px;
   display:flex;align-items:center;gap:12px;z-index:10;flex-shrink:0}
@@ -919,23 +933,16 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="po-back" onclick="closeSupport()">‹</div>
     <div class="po-header-title">💬 Поддержка</div>
   </div>
-  <div style="padding:20px 16px;display:flex;flex-direction:column;gap:16px;flex:1">
-    <div style="font-size:14px;color:rgba(255,255,255,.6);line-height:1.6">
-      Опиши свой вопрос или проблему — ответим в течение нескольких часов.
+  <div class="sup-body" id="sup-body">
+    <div class="sup-empty" id="sup-empty">
+      <div style="font-size:32px;margin-bottom:10px">💬</div>
+      Задай свой вопрос — ответим в течение нескольких часов
     </div>
-    <textarea id="support-msg" placeholder="Напиши свой вопрос..."
-      style="background:var(--card);border:1px solid var(--line2);border-radius:12px;
-             padding:14px;color:var(--white);font-size:14px;font-family:'Inter',sans-serif;
-             resize:none;min-height:140px;outline:none;line-height:1.6;width:100%"></textarea>
-    <div id="support-result" style="display:none;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);
-         border-radius:10px;padding:12px 16px;font-size:13px;color:var(--accent)">
-      ✅ Сообщение отправлено! Ответим в Telegram.
-    </div>
-    <button id="support-send-btn" onclick="sendSupport()"
-      style="background:var(--accent);color:#000;border:none;border-radius:12px;
-             padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">
-      Отправить
-    </button>
+  </div>
+  <div class="sup-footer">
+    <textarea id="support-msg" placeholder="Написать сообщение..." rows="1"
+      oninput="this.style.height='44px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+    <button class="sup-send-btn" onclick="sendSupport()">↑</button>
   </div>
 </div>
 
@@ -1019,21 +1026,65 @@ function openExt(type) {
 function openSupport() {
   document.getElementById('support-overlay').classList.add('open');
   document.getElementById('support-msg').value = '';
-  document.getElementById('support-result').style.display = 'none';
-  document.getElementById('support-send-btn').disabled = false;
-  document.getElementById('support-send-btn').textContent = 'Отправить';
   if (tg?.BackButton) { tg.BackButton.show(); tg.BackButton.onClick(closeSupport); }
+  loadSupportHistory();
 }
 function closeSupport() {
   document.getElementById('support-overlay').classList.remove('open');
   if (tg?.BackButton) { tg.BackButton.hide(); tg.BackButton.offClick(closeSupport); }
 }
+function supFmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString('ru-RU', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+}
+function renderSupportHistory(msgs) {
+  const body = document.getElementById('sup-body');
+  const empty = document.getElementById('sup-empty');
+  if (!msgs.length) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  const html = msgs.map(m => {
+    const userBubble = `
+      <div style="display:flex;flex-direction:column;align-items:flex-end">
+        <div class="sup-bubble user">
+          <div class="sup-bubble-label">Вы</div>
+          ${escHtml(m.message).replace(/\n/g,'<br>')}
+          <div class="sup-bubble-meta">${supFmtDate(m.created_at)}</div>
+        </div>
+      </div>`;
+    const replyBubble = m.reply ? `
+      <div style="display:flex;flex-direction:column;align-items:flex-start">
+        <div class="sup-bubble admin">
+          <div class="sup-bubble-label">📬 Поддержка</div>
+          ${escHtml(m.reply).replace(/\n/g,'<br>')}
+          <div class="sup-bubble-meta">${supFmtDate(m.replied_at || m.created_at)}</div>
+        </div>
+      </div>` : '';
+    return userBubble + replyBubble;
+  }).join('');
+  // keep existing content but replace bubbles (not the empty div)
+  body.innerHTML = `<div id="sup-empty" class="sup-empty" style="display:none">
+    <div style="font-size:32px;margin-bottom:10px">💬</div>
+    Задай свой вопрос — ответим в течение нескольких часов
+  </div>${html}`;
+  // scroll to bottom
+  setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50);
+}
+async function loadSupportHistory() {
+  if (!userId) return;
+  try {
+    const r = await fetch(`${BASE}/api/support/history?tg_id=${userId}`);
+    if (r.ok) {
+      const msgs = await r.json();
+      renderSupportHistory(msgs);
+    }
+  } catch(e) {}
+}
 async function sendSupport() {
-  const msg = document.getElementById('support-msg').value.trim();
+  const inp = document.getElementById('support-msg');
+  const msg = inp.value.trim();
   if (!msg) return;
-  const btn = document.getElementById('support-send-btn');
+  const btn = document.querySelector('#support-overlay .sup-send-btn');
   btn.disabled = true;
-  btn.textContent = 'Отправляю...';
   try {
     const r = await fetch(`${BASE}/api/support`, {
       method: 'POST',
@@ -1041,17 +1092,16 @@ async function sendSupport() {
       body: JSON.stringify({ user_id: userId, username: tgUser.username, first_name: tgUser.first_name, message: msg })
     });
     if (r.ok) {
-      document.getElementById('support-result').style.display = 'block';
-      document.getElementById('support-msg').value = '';
-      btn.textContent = '✓ Отправлено';
-      setTimeout(closeSupport, 1800);
+      inp.value = '';
+      inp.style.height = '44px';
+      await loadSupportHistory();
     } else {
-      btn.disabled = false; btn.textContent = 'Отправить';
       toast('Ошибка отправки', true);
     }
   } catch(e) {
-    btn.disabled = false; btn.textContent = 'Отправить';
     toast('Ошибка сети', true);
+  } finally {
+    btn.disabled = false;
   }
 }
 
@@ -1529,7 +1579,7 @@ function renderPayments(payments) {
         <div class="pr-time">${dateStr}</div>
       </div>
       ${p.plan ? `<div class="pr-plan">${p.plan}</div>` : ''}
-      ${p.tx_link ? `<div class="pr-link">🔗 ${escHtml(p.tx_link)}</div>` : ''}
+      ${p.tx_link ? `<div class="pr-link">🔗 ${/^https?:\/\//.test(p.tx_link) ? `<a href="${escHtml(p.tx_link)}" target="_blank" style="color:var(--cyan);word-break:break-all">${escHtml(p.tx_link)}</a>` : `<span style="font-family:monospace;font-size:12px;word-break:break-all">${escHtml(p.tx_link)}</span>`}</div>` : ''}
       ${p.tv_username ? `<div class="pr-note">TradingView: <b>${escHtml(p.tv_username)}</b></div>` : ''}
       ${p.note ? `<div class="pr-note">${escHtml(p.note)}</div>` : ''}
       <button class="pr-approve" onclick="approvePayment(${p.id}, '${escHtml(p.plan || 'PRO')}', this)">✅ Одобрить и активировать</button>
