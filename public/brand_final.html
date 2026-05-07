@@ -2,261 +2,305 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0a0a0a; font-family: 'Arial Black', Arial, sans-serif; }
-  .wide { width:1280px; height:640px; position:relative; overflow:hidden; display:flex; align-items:center; padding:0 88px; }
-  .square { width:640px; height:640px; position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:center; padding:64px 56px; }
-  .blob { position:absolute; border-radius:50%; filter:blur(100px); pointer-events:none; }
-  .chip { display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:30px; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; width:fit-content; }
-  .dot { width:6px; height:6px; border-radius:50%; }
-  .left { flex:1; position:relative; z-index:2; }
-  .wide .l1 { font-size:88px; font-weight:900; color:#fff; line-height:0.95; letter-spacing:-2px; margin-bottom:2px; }
-  .wide .l2 { font-size:88px; font-weight:900; color:#fff; line-height:0.95; letter-spacing:-2px; margin-bottom:22px; }
-  .wide .sub { font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.28); }
-  .right { position:relative; z-index:2; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
-  .ghost { font-size:230px; font-weight:900; line-height:1; color:transparent; letter-spacing:-6px; opacity:0.13; margin-bottom:-8px; }
-  .btc { font-size:22px; font-weight:900; letter-spacing:5px; text-transform:uppercase; }
-  .tf { font-size:11px; font-weight:700; letter-spacing:3px; color:rgba(255,255,255,0.28); }
-  .square .l1 { font-size:64px; font-weight:900; color:#fff; line-height:0.95; letter-spacing:-2px; margin-bottom:2px; }
-  .square .l2 { font-size:64px; font-weight:900; color:#fff; line-height:0.95; letter-spacing:-2px; margin-bottom:26px; }
-  .square .btc { font-size:17px; font-weight:900; letter-spacing:5px; text-transform:uppercase; }
-  .square .ghost { position:absolute; right:20px; bottom:5px; font-size:190px; font-weight:900; line-height:1; color:transparent; letter-spacing:-6px; opacity:0.12; z-index:1; }
-  .content { position:relative; z-index:2; }
-  .lbl { position:absolute; top:12px; left:16px; color:rgba(255,255,255,0.18); font-size:9px; font-weight:700; letter-spacing:1px; z-index:10; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#111; font-family:'Arial Black',Arial,sans-serif; overflow-x:hidden; }
 
-  /* THEME 1 — PINK */
-  .t1 { background: radial-gradient(ellipse at 28% 55%, #170d32 0%, #090916 55%, #03101c 100%); }
-  .t1 .b1 { background:#5e1a72; opacity:.35; }
-  .t1 .b2 { background:#0c4a6e; opacity:.3; }
-  .t1 .acc { color:#f72585; }
-  .t1 .btc-c { color:#4cc9f0; }
-  .t1 .chip-s { background:rgba(76,201,240,.08); border:1px solid rgba(76,201,240,.25); color:#4cc9f0; }
-  .t1 .dot-s { background:#4cc9f0; }
-  .t1 .ghost-s { -webkit-text-stroke: 2px rgba(76,201,240,.45); }
+  /* ── WIDE: 100vw × 50vw (= 1280×640 at full width) ── */
+  .wide {
+    width:100vw; height:50vw;
+    position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 6.25vw;
+    margin-bottom:1px;
+  }
 
-  /* THEME 2 — GREEN */
-  .t2 { background: radial-gradient(ellipse at 28% 55%, #061a10 0%, #08100a 55%, #030d16 100%); }
-  .t2 .b1 { background:#1a4731; opacity:.4; }
-  .t2 .b2 { background:#0c3d5e; opacity:.3; }
-  .t2 .acc { color:#2ecc71; }
-  .t2 .btc-c { color:#4cc9f0; }
-  .t2 .chip-s { background:rgba(76,201,240,.08); border:1px solid rgba(76,201,240,.25); color:#4cc9f0; }
-  .t2 .dot-s { background:#2ecc71; }
-  .t2 .ghost-s { -webkit-text-stroke: 2px rgba(46,204,113,.4); }
+  /* ── SQUARE: shown 3 per row ── */
+  .sq-grid { display:flex; flex-wrap:wrap; }
+  .square {
+    width:33.333vw; height:33.333vw;
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:4.5vw 4vw;
+  }
 
-  /* THEME 3 — GOLD */
-  .t3 { background: radial-gradient(ellipse at 28% 55%, #1a1200 0%, #100e08 55%, #06040e 100%); }
-  .t3 .b1 { background:#5c3a00; opacity:.38; }
-  .t3 .b2 { background:#1a0d4a; opacity:.32; }
-  .t3 .acc { color:#f5a623; }
-  .t3 .btc-c { color:#a78bfa; }
-  .t3 .chip-s { background:rgba(167,139,250,.08); border:1px solid rgba(167,139,250,.25); color:#a78bfa; }
-  .t3 .dot-s { background:#f5a623; }
-  .t3 .ghost-s { -webkit-text-stroke: 2px rgba(245,166,35,.4); }
+  /* blobs */
+  .blob { position:absolute; border-radius:50%; filter:blur(8vw); pointer-events:none; }
 
-  /* THEME 4 — CORAL */
-  .t4 { background: radial-gradient(ellipse at 28% 55%, #1a0a08 0%, #100808 55%, #00100e 100%); }
-  .t4 .b1 { background:#5c1a0f; opacity:.38; }
-  .t4 .b2 { background:#004d40; opacity:.35; }
-  .t4 .acc { color:#ff6b6b; }
-  .t4 .btc-c { color:#26d0ce; }
-  .t4 .chip-s { background:rgba(38,208,206,.08); border:1px solid rgba(38,208,206,.25); color:#26d0ce; }
-  .t4 .dot-s { background:#ff6b6b; }
-  .t4 .ghost-s { -webkit-text-stroke: 2px rgba(255,107,107,.4); }
+  /* chip */
+  .chip {
+    display:inline-flex; align-items:center; gap:.6vw;
+    padding:.5vw 1.1vw; border-radius:100px;
+    font-size:.85vw; font-weight:800; letter-spacing:.15vw; text-transform:uppercase;
+    margin-bottom:1.7vw; width:fit-content;
+  }
+  .pip { width:.5vw; height:.5vw; border-radius:50%; }
 
-  /* THEME 5 — BLUE */
-  .t5 { background: radial-gradient(ellipse at 28% 55%, #070e1a 0%, #080808 55%, #060e05 100%); }
-  .t5 .b1 { background:#0d2a5c; opacity:.42; }
-  .t5 .b2 { background:#1a3a0d; opacity:.38; }
-  .t5 .acc { color:#4f8ef7; }
-  .t5 .btc-c { color:#a8e063; }
-  .t5 .chip-s { background:rgba(168,224,99,.08); border:1px solid rgba(168,224,99,.25); color:#a8e063; }
-  .t5 .dot-s { background:#a8e063; }
-  .t5 .ghost-s { -webkit-text-stroke: 2px rgba(79,142,247,.4); }
+  /* wide columns */
+  .col-l { position:relative; z-index:2; }
+  .col-r { position:relative; z-index:2; display:flex; flex-direction:column; align-items:flex-end; gap:.6vw; flex-shrink:0; }
 
-  /* THEME 6 — VIOLET */
-  .t6 { background: radial-gradient(ellipse at 28% 55%, #120a20 0%, #0d0a0d 55%, #120900 100%); }
-  .t6 .b1 { background:#3d1a5c; opacity:.38; }
-  .t6 .b2 { background:#5c2e00; opacity:.32; }
-  .t6 .acc { color:#c084fc; }
-  .t6 .btc-c { color:#fbbf24; }
-  .t6 .chip-s { background:rgba(251,191,36,.08); border:1px solid rgba(251,191,36,.25); color:#fbbf24; }
-  .t6 .dot-s { background:#c084fc; }
-  .t6 .ghost-s { -webkit-text-stroke: 2px rgba(192,132,252,.4); }
+  /* wide typo */
+  .wide .h1 { font-size:6.4vw; font-weight:900; color:#fff; line-height:1; letter-spacing:-.15vw; white-space:nowrap; }
+  .wide .h2 { font-size:6.4vw; font-weight:900; color:#fff; line-height:1; letter-spacing:-.15vw; white-space:nowrap; margin-bottom:1.5vw; }
+  .wide .sub { font-size:.9vw; font-weight:700; letter-spacing:.25vw; text-transform:uppercase; color:rgba(255,255,255,.28); }
+  .wide .btc { font-size:1.7vw; font-weight:900; letter-spacing:.35vw; text-transform:uppercase; }
+  .ghost { font-size:17vw; font-weight:900; line-height:1; color:transparent; letter-spacing:-.4vw; opacity:.13; margin-bottom:-1.2vw; }
+  .tf { font-size:.85vw; font-weight:700; letter-spacing:.25vw; color:rgba(255,255,255,.28); }
+
+  /* square typo */
+  .square .chip { font-size:1.1vw; padding:.65vw 1.4vw; margin-bottom:2.2vw; gap:.7vw; }
+  .square .pip { width:.65vw; height:.65vw; }
+  .square .h1 { font-size:8.2vw; font-weight:900; color:#fff; line-height:1; letter-spacing:-.2vw; white-space:nowrap; }
+  .square .h2 { font-size:8.2vw; font-weight:900; color:#fff; line-height:1; letter-spacing:-.2vw; white-space:nowrap; margin-bottom:2.8vw; }
+  .square .btc { font-size:2.2vw; font-weight:900; letter-spacing:.45vw; text-transform:uppercase; }
+  .sq-ghost { position:absolute; right:1.5vw; bottom:.8vw; font-size:24vw; font-weight:900; line-height:1; color:transparent; letter-spacing:-.5vw; opacity:.11; z-index:1; }
+  .sq-content { position:relative; z-index:2; }
+
+  /* label */
+  .lbl { position:absolute; top:.8vw; left:1vw; color:rgba(255,255,255,.15); font-size:.7vw; font-weight:700; letter-spacing:.08vw; z-index:10; }
+
+  /* ═══ THEMES ═══ */
+  .c1 { background:radial-gradient(ellipse at 30% 55%, #140c2e 0%, #08091a 50%, #030f1c 100%); }
+  .c1 .b1 { background:#5b1875; opacity:.32; }
+  .c1 .b2 { background:#0b4560; opacity:.28; }
+  .c1 .acc { color:#f72585; }
+  .c1 .c2  { color:#4dc9f0; }
+  .c1 .chip{ background:rgba(77,201,240,.09); border:1px solid rgba(77,201,240,.22); color:#4dc9f0; }
+  .c1 .pip { background:#4dc9f0; }
+  .c1 .gh  { -webkit-text-stroke:.12vw rgba(77,201,240,.4); }
+
+  .c2 { background:radial-gradient(ellipse at 30% 55%, #071a0d 0%, #08100a 50%, #030d14 100%); }
+  .c2 .b1 { background:#164530; opacity:.38; }
+  .c2 .b2 { background:#0a3b57; opacity:.28; }
+  .c2 .acc { color:#2ecc71; }
+  .c2 .c2  { color:#4dc9f0; }
+  .c2 .chip{ background:rgba(77,201,240,.09); border:1px solid rgba(77,201,240,.22); color:#4dc9f0; }
+  .c2 .pip { background:#2ecc71; }
+  .c2 .gh  { -webkit-text-stroke:.12vw rgba(46,204,113,.35); }
+
+  .c3 { background:radial-gradient(ellipse at 30% 55%, #181000 0%, #0f0d08 50%, #06040e 100%); }
+  .c3 .b1 { background:#5a3800; opacity:.36; }
+  .c3 .b2 { background:#190c46; opacity:.3; }
+  .c3 .acc { color:#f5a623; }
+  .c3 .c2  { color:#a78bfa; }
+  .c3 .chip{ background:rgba(167,139,250,.09); border:1px solid rgba(167,139,250,.22); color:#a78bfa; }
+  .c3 .pip { background:#f5a623; }
+  .c3 .gh  { -webkit-text-stroke:.12vw rgba(245,166,35,.35); }
+
+  .c4 { background:radial-gradient(ellipse at 30% 55%, #180a08 0%, #100808 50%, #00100d 100%); }
+  .c4 .b1 { background:#58180e; opacity:.38; }
+  .c4 .b2 { background:#004b3e; opacity:.32; }
+  .c4 .acc { color:#ff6b6b; }
+  .c4 .c2  { color:#26d0ce; }
+  .c4 .chip{ background:rgba(38,208,206,.09); border:1px solid rgba(38,208,206,.22); color:#26d0ce; }
+  .c4 .pip { background:#ff6b6b; }
+  .c4 .gh  { -webkit-text-stroke:.12vw rgba(255,107,107,.35); }
+
+  .c5 { background:radial-gradient(ellipse at 30% 55%, #120a1e 0%, #0d0a0d 50%, #11080a 100%); }
+  .c5 .b1 { background:#3c1858; opacity:.38; }
+  .c5 .b2 { background:#582c00; opacity:.3; }
+  .c5 .acc { color:#c084fc; }
+  .c5 .c2  { color:#fbbf24; }
+  .c5 .chip{ background:rgba(251,191,36,.09); border:1px solid rgba(251,191,36,.22); color:#fbbf24; }
+  .c5 .pip { background:#c084fc; }
+  .c5 .gh  { -webkit-text-stroke:.12vw rgba(192,132,252,.35); }
+
+  .c6 { background:radial-gradient(ellipse at 30% 55%, #060d18 0%, #08080a 50%, #060d06 100%); }
+  .c6 .b1 { background:#0b2858; opacity:.42; }
+  .c6 .b2 { background:#183808; opacity:.36; }
+  .c6 .acc { color:#4f8ef7; }
+  .c6 .c2  { color:#a8e063; }
+  .c6 .chip{ background:rgba(168,224,99,.09); border:1px solid rgba(168,224,99,.22); color:#a8e063; }
+  .c6 .pip { background:#a8e063; }
+  .c6 .gh  { -webkit-text-stroke:.12vw rgba(79,142,247,.35); }
 </style>
 </head>
 <body>
 
-<!-- WIDE -->
-<div class="wide t1"><div class="lbl">WIDE 1 · PINK</div>
-  <div class="blob b1 t1" style="width:520px;height:520px;left:-110px;top:30px;"></div>
-  <div class="blob b2 t1" style="width:420px;height:420px;right:-60px;bottom:-60px;"></div>
-  <div class="left">
-    <div class="chip chip-s t1"><span class="dot dot-s t1"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t1">Товарища</span></div>
+<!-- ══ WIDE BANNERS ══ -->
+
+<div class="wide c1">
+  <div class="lbl">1 · PINK + CYAN</div>
+  <div class="blob b1 c1" style="width:37vw;height:37vw;left:-8vw;top:2vw;"></div>
+  <div class="blob b2 c1" style="width:30vw;height:30vw;right:-4vw;bottom:-4vw;"></div>
+  <div class="col-l">
+    <div class="chip c1"><span class="pip c1"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c1">Товарища</span></div>
     <div class="sub">IT V3 · TRADINGVIEW</div>
   </div>
-  <div class="right">
-    <div class="ghost ghost-s t1">v3</div>
-    <div class="btc btc-c t1">BTC · ETH · SOL</div>
+  <div class="col-r">
+    <div class="ghost gh c1">v3</div>
+    <div class="btc c2 c1">BTC · ETH · SOL</div>
     <div class="tf">1D / 4H / 1H</div>
   </div>
 </div>
 
-<div class="wide t2"><div class="lbl">WIDE 2 · GREEN</div>
-  <div class="blob b1 t2" style="width:520px;height:520px;left:-110px;top:30px;"></div>
-  <div class="blob b2 t2" style="width:420px;height:420px;right:-60px;bottom:-60px;"></div>
-  <div class="left">
-    <div class="chip chip-s t2"><span class="dot dot-s t2"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t2">Товарища</span></div>
+<div class="wide c2">
+  <div class="lbl">2 · GREEN + CYAN</div>
+  <div class="blob b1 c2" style="width:37vw;height:37vw;left:-8vw;top:2vw;"></div>
+  <div class="blob b2 c2" style="width:30vw;height:30vw;right:-4vw;bottom:-4vw;"></div>
+  <div class="col-l">
+    <div class="chip c2"><span class="pip c2"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c2">Товарища</span></div>
     <div class="sub">IT V3 · TRADINGVIEW</div>
   </div>
-  <div class="right">
-    <div class="ghost ghost-s t2">v3</div>
-    <div class="btc btc-c t2">BTC · ETH · SOL</div>
+  <div class="col-r">
+    <div class="ghost gh c2">v3</div>
+    <div class="btc c2 c2">BTC · ETH · SOL</div>
     <div class="tf">1D / 4H / 1H</div>
   </div>
 </div>
 
-<div class="wide t3"><div class="lbl">WIDE 3 · GOLD</div>
-  <div class="blob b1 t3" style="width:520px;height:520px;left:-110px;top:30px;"></div>
-  <div class="blob b2 t3" style="width:420px;height:420px;right:-60px;bottom:-60px;"></div>
-  <div class="left">
-    <div class="chip chip-s t3"><span class="dot dot-s t3"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t3">Товарища</span></div>
+<div class="wide c3">
+  <div class="lbl">3 · GOLD + VIOLET</div>
+  <div class="blob b1 c3" style="width:37vw;height:37vw;left:-8vw;top:2vw;"></div>
+  <div class="blob b2 c3" style="width:30vw;height:30vw;right:-4vw;bottom:-4vw;"></div>
+  <div class="col-l">
+    <div class="chip c3"><span class="pip c3"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c3">Товарища</span></div>
     <div class="sub">IT V3 · TRADINGVIEW</div>
   </div>
-  <div class="right">
-    <div class="ghost ghost-s t3">v3</div>
-    <div class="btc btc-c t3">BTC · ETH · SOL</div>
+  <div class="col-r">
+    <div class="ghost gh c3">v3</div>
+    <div class="btc c2 c3">BTC · ETH · SOL</div>
     <div class="tf">1D / 4H / 1H</div>
   </div>
 </div>
 
-<div class="wide t4"><div class="lbl">WIDE 4 · CORAL</div>
-  <div class="blob b1 t4" style="width:520px;height:520px;left:-110px;top:30px;"></div>
-  <div class="blob b2 t4" style="width:420px;height:420px;right:-60px;bottom:-60px;"></div>
-  <div class="left">
-    <div class="chip chip-s t4"><span class="dot dot-s t4"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t4">Товарища</span></div>
+<div class="wide c4">
+  <div class="lbl">4 · CORAL + TEAL</div>
+  <div class="blob b1 c4" style="width:37vw;height:37vw;left:-8vw;top:2vw;"></div>
+  <div class="blob b2 c4" style="width:30vw;height:30vw;right:-4vw;bottom:-4vw;"></div>
+  <div class="col-l">
+    <div class="chip c4"><span class="pip c4"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c4">Товарища</span></div>
     <div class="sub">IT V3 · TRADINGVIEW</div>
   </div>
-  <div class="right">
-    <div class="ghost ghost-s t4">v3</div>
-    <div class="btc btc-c t4">BTC · ETH · SOL</div>
+  <div class="col-r">
+    <div class="ghost gh c4">v3</div>
+    <div class="btc c2 c4">BTC · ETH · SOL</div>
     <div class="tf">1D / 4H / 1H</div>
   </div>
 </div>
 
-<div class="wide t5"><div class="lbl">WIDE 5 · BLUE</div>
-  <div class="blob b1 t5" style="width:520px;height:520px;left:-110px;top:30px;"></div>
-  <div class="blob b2 t5" style="width:420px;height:420px;right:-60px;bottom:-60px;"></div>
-  <div class="left">
-    <div class="chip chip-s t5"><span class="dot dot-s t5"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t5">Товарища</span></div>
+<div class="wide c5">
+  <div class="lbl">5 · VIOLET + AMBER</div>
+  <div class="blob b1 c5" style="width:37vw;height:37vw;left:-8vw;top:2vw;"></div>
+  <div class="blob b2 c5" style="width:30vw;height:30vw;right:-4vw;bottom:-4vw;"></div>
+  <div class="col-l">
+    <div class="chip c5"><span class="pip c5"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c5">Товарища</span></div>
     <div class="sub">IT V3 · TRADINGVIEW</div>
   </div>
-  <div class="right">
-    <div class="ghost ghost-s t5">v3</div>
-    <div class="btc btc-c t5">BTC · ETH · SOL</div>
+  <div class="col-r">
+    <div class="ghost gh c5">v3</div>
+    <div class="btc c2 c5">BTC · ETH · SOL</div>
     <div class="tf">1D / 4H / 1H</div>
   </div>
 </div>
 
-<div class="wide t6"><div class="lbl">WIDE 6 · VIOLET</div>
-  <div class="blob b1 t6" style="width:520px;height:520px;left:-110px;top:30px;"></div>
-  <div class="blob b2 t6" style="width:420px;height:420px;right:-60px;bottom:-60px;"></div>
-  <div class="left">
-    <div class="chip chip-s t6"><span class="dot dot-s t6"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t6">Товарища</span></div>
+<div class="wide c6">
+  <div class="lbl">6 · BLUE + LIME</div>
+  <div class="blob b1 c6" style="width:37vw;height:37vw;left:-8vw;top:2vw;"></div>
+  <div class="blob b2 c6" style="width:30vw;height:30vw;right:-4vw;bottom:-4vw;"></div>
+  <div class="col-l">
+    <div class="chip c6"><span class="pip c6"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c6">Товарища</span></div>
     <div class="sub">IT V3 · TRADINGVIEW</div>
   </div>
-  <div class="right">
-    <div class="ghost ghost-s t6">v3</div>
-    <div class="btc btc-c t6">BTC · ETH · SOL</div>
+  <div class="col-r">
+    <div class="ghost gh c6">v3</div>
+    <div class="btc c2 c6">BTC · ETH · SOL</div>
     <div class="tf">1D / 4H / 1H</div>
   </div>
 </div>
 
-<!-- SQUARE -->
-<div style="display:grid;grid-template-columns:repeat(3,640px);">
+<!-- ══ SQUARE ══ -->
+<div class="sq-grid">
 
-<div class="square t1"><div class="lbl">SQ 1 · PINK</div>
-  <div class="blob b1 t1" style="width:340px;height:340px;left:-80px;top:30px;"></div>
-  <div class="blob b2 t1" style="width:280px;height:280px;right:-40px;bottom:-40px;"></div>
-  <div class="ghost ghost-s t1">v3</div>
-  <div class="content">
-    <div class="chip chip-s t1"><span class="dot dot-s t1"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t1">Товарища</span></div>
-    <div class="btc btc-c t1">BTC · ETH · SOL</div>
+<div class="square c1">
+  <div class="lbl">SQ1 · PINK</div>
+  <div class="blob b1 c1" style="width:26vw;height:26vw;left:-5vw;top:3vw;"></div>
+  <div class="blob b2 c1" style="width:20vw;height:20vw;right:-3vw;bottom:-3vw;"></div>
+  <div class="sq-ghost gh c1">v3</div>
+  <div class="sq-content">
+    <div class="chip c1"><span class="pip c1"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c1">Товарища</span></div>
+    <div class="btc c2 c1">BTC · ETH · SOL</div>
   </div>
 </div>
 
-<div class="square t2"><div class="lbl">SQ 2 · GREEN</div>
-  <div class="blob b1 t2" style="width:340px;height:340px;left:-80px;top:30px;"></div>
-  <div class="blob b2 t2" style="width:280px;height:280px;right:-40px;bottom:-40px;"></div>
-  <div class="ghost ghost-s t2">v3</div>
-  <div class="content">
-    <div class="chip chip-s t2"><span class="dot dot-s t2"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t2">Товарища</span></div>
-    <div class="btc btc-c t2">BTC · ETH · SOL</div>
+<div class="square c2">
+  <div class="lbl">SQ2 · GREEN</div>
+  <div class="blob b1 c2" style="width:26vw;height:26vw;left:-5vw;top:3vw;"></div>
+  <div class="blob b2 c2" style="width:20vw;height:20vw;right:-3vw;bottom:-3vw;"></div>
+  <div class="sq-ghost gh c2">v3</div>
+  <div class="sq-content">
+    <div class="chip c2"><span class="pip c2"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c2">Товарища</span></div>
+    <div class="btc c2 c2">BTC · ETH · SOL</div>
   </div>
 </div>
 
-<div class="square t3"><div class="lbl">SQ 3 · GOLD</div>
-  <div class="blob b1 t3" style="width:340px;height:340px;left:-80px;top:30px;"></div>
-  <div class="blob b2 t3" style="width:280px;height:280px;right:-40px;bottom:-40px;"></div>
-  <div class="ghost ghost-s t3">v3</div>
-  <div class="content">
-    <div class="chip chip-s t3"><span class="dot dot-s t3"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t3">Товарища</span></div>
-    <div class="btc btc-c t3">BTC · ETH · SOL</div>
+<div class="square c3">
+  <div class="lbl">SQ3 · GOLD</div>
+  <div class="blob b1 c3" style="width:26vw;height:26vw;left:-5vw;top:3vw;"></div>
+  <div class="blob b2 c3" style="width:20vw;height:20vw;right:-3vw;bottom:-3vw;"></div>
+  <div class="sq-ghost gh c3">v3</div>
+  <div class="sq-content">
+    <div class="chip c3"><span class="pip c3"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c3">Товарища</span></div>
+    <div class="btc c2 c3">BTC · ETH · SOL</div>
   </div>
 </div>
 
-<div class="square t4"><div class="lbl">SQ 4 · CORAL</div>
-  <div class="blob b1 t4" style="width:340px;height:340px;left:-80px;top:30px;"></div>
-  <div class="blob b2 t4" style="width:280px;height:280px;right:-40px;bottom:-40px;"></div>
-  <div class="ghost ghost-s t4">v3</div>
-  <div class="content">
-    <div class="chip chip-s t4"><span class="dot dot-s t4"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t4">Товарища</span></div>
-    <div class="btc btc-c t4">BTC · ETH · SOL</div>
+<div class="square c4">
+  <div class="lbl">SQ4 · CORAL</div>
+  <div class="blob b1 c4" style="width:26vw;height:26vw;left:-5vw;top:3vw;"></div>
+  <div class="blob b2 c4" style="width:20vw;height:20vw;right:-3vw;bottom:-3vw;"></div>
+  <div class="sq-ghost gh c4">v3</div>
+  <div class="sq-content">
+    <div class="chip c4"><span class="pip c4"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c4">Товарища</span></div>
+    <div class="btc c2 c4">BTC · ETH · SOL</div>
   </div>
 </div>
 
-<div class="square t5"><div class="lbl">SQ 5 · BLUE</div>
-  <div class="blob b1 t5" style="width:340px;height:340px;left:-80px;top:30px;"></div>
-  <div class="blob b2 t5" style="width:280px;height:280px;right:-40px;bottom:-40px;"></div>
-  <div class="ghost ghost-s t5">v3</div>
-  <div class="content">
-    <div class="chip chip-s t5"><span class="dot dot-s t5"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t5">Товарища</span></div>
-    <div class="btc btc-c t5">BTC · ETH · SOL</div>
+<div class="square c5">
+  <div class="lbl">SQ5 · VIOLET</div>
+  <div class="blob b1 c5" style="width:26vw;height:26vw;left:-5vw;top:3vw;"></div>
+  <div class="blob b2 c5" style="width:20vw;height:20vw;right:-3vw;bottom:-3vw;"></div>
+  <div class="sq-ghost gh c5">v3</div>
+  <div class="sq-content">
+    <div class="chip c5"><span class="pip c5"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c5">Товарища</span></div>
+    <div class="btc c2 c5">BTC · ETH · SOL</div>
   </div>
 </div>
 
-<div class="square t6"><div class="lbl">SQ 6 · VIOLET</div>
-  <div class="blob b1 t6" style="width:340px;height:340px;left:-80px;top:30px;"></div>
-  <div class="blob b2 t6" style="width:280px;height:280px;right:-40px;bottom:-40px;"></div>
-  <div class="ghost ghost-s t6">v3</div>
-  <div class="content">
-    <div class="chip chip-s t6"><span class="dot dot-s t6"></span>LIVE · PRO SIGNALS</div>
-    <div class="l1">Индикатор</div>
-    <div class="l2">от <span class="acc t6">Товарища</span></div>
-    <div class="btc btc-c t6">BTC · ETH · SOL</div>
+<div class="square c6">
+  <div class="lbl">SQ6 · BLUE</div>
+  <div class="blob b1 c6" style="width:26vw;height:26vw;left:-5vw;top:3vw;"></div>
+  <div class="blob b2 c6" style="width:20vw;height:20vw;right:-3vw;bottom:-3vw;"></div>
+  <div class="sq-ghost gh c6">v3</div>
+  <div class="sq-content">
+    <div class="chip c6"><span class="pip c6"></span>LIVE · PRO SIGNALS</div>
+    <div class="h1">Индикатор</div>
+    <div class="h2">от <span class="acc c6">Товарища</span></div>
+    <div class="btc c2 c6">BTC · ETH · SOL</div>
   </div>
 </div>
 

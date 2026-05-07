@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini App Mockup — IT v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0d0d0f;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  font-family: 'Inter', sans-serif;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+/* ─── Phone shell ─── */
+.phone {
+  width: 390px;
+  background: #111114;
+  border-radius: 44px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 40px 100px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 2px 0 rgba(255,255,255,0.06) inset;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Telegram top bar */
+.tg-bar {
+  background: #1c1c1f;
+  padding: 14px 20px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.tg-bar-arrow {
+  color: #2ea6f0;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.tg-bar-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff3d7f, #2ecc71);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800; color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+}
+.tg-bar-info { flex: 1; }
+.tg-bar-name { font-size: 15px; font-weight: 600; color: #fff; }
+.tg-bar-sub { font-size: 11px; color: rgba(255,255,255,0.35); }
+.tg-bar-dots { color: rgba(255,255,255,0.35); font-size: 18px; letter-spacing: 2px; }
+
+/* Scrollable content area */
+.app-content {
+  background: #0a0a0c;
+  min-height: 680px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Grid background */
+.app-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(46,204,113,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,204,113,0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ─── SCREEN 1: Home ─── */
+.screen { padding: 0; }
+
+/* Hero section */
+.app-hero {
+  padding: 28px 20px 24px;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.app-hero-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: .28em;
+  text-transform: uppercase; color: #ff3d7f;
+  margin-bottom: 14px;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.app-hero-kicker::before, .app-hero-kicker::after {
+  content: ''; width: 16px; height: 1.5px; background: #ff3d7f;
+  opacity: 0.7;
+}
+
+.app-hero-title {
+  font-size: 42px; font-weight: 900;
+  letter-spacing: -.04em; line-height: .95;
+  color: #fff; margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.app-hero-title .accent {
+  background: linear-gradient(180deg, #6FFFB2 0%, #2ecc71 50%, #126638 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+.app-hero-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3);
+  letter-spacing: .2em; text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+/* Status strip */
+.app-status-strip {
+  display: flex; gap: 8px; align-items: center;
+}
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.badge-live {
+  background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.3);
+  color: #2ecc71;
+}
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #2ecc71;
+  box-shadow: 0 0 6px #2ecc71; }
+.badge-pro {
+  background: rgba(255,61,127,0.1);
+  border: 1px solid rgba(255,61,127,0.3);
+  color: #ff3d7f;
+}
+.coin-pill {
+  margin-left: auto;
+  display: inline-flex; align-items: center;
+  padding: 5px 12px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.04);
+  letter-spacing: .15em;
+}
+
+/* ─── Nav tiles ─── */
+.nav-tiles {
+  padding: 20px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tile {
+  background: #13131a;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 16px 14px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .2s;
+}
+.tile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 0% 0%, var(--tile-glow, transparent) 0%, transparent 65%);
+  pointer-events: none;
+}
+/* corner brackets */
+.tile::after {
+  content: '';
+  position: absolute;
+  top: 7px; right: 7px;
+  width: 8px; height: 8px;
+  border-top: 1.5px solid rgba(255,255,255,0.12);
+  border-right: 1.5px solid rgba(255,255,255,0.12);
+}
+
+.tile-icon {
+  font-size: 22px; margin-bottom: 10px;
+  display: block;
+  line-height: 1;
+}
+.tile-label {
+  font-size: 13px; font-weight: 700;
+  color: #fff; margin-bottom: 3px;
+}
+.tile-desc {
+  font-size: 10px; color: rgba(255,255,255,0.35);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .05em; line-height: 1.4;
+}
+.tile-accent { color: var(--tile-color, #2ecc71); }
+.tile-badge {
+  position: absolute; top: 10px; right: 10px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #ff3d7f;
+  font-size: 9px; font-weight: 800; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* tile colors */
+.tile-green { --tile-glow: rgba(46,204,113,0.12); --tile-color: #2ecc71; border-color: rgba(46,204,113,0.15); }
+.tile-pink  { --tile-glow: rgba(255,61,127,0.12); --tile-color: #ff3d7f; border-color: rgba(255,61,127,0.15); }
+.tile-cyan  { --tile-glow: rgba(77,201,240,0.12); --tile-color: #4dc9f0; border-color: rgba(77,201,240,0.15); }
+.tile-gold  { --tile-glow: rgba(255,204,0,0.12); --tile-color: #ffcc00; border-color: rgba(255,204,0,0.15); }
+
+/* Tile WIDE */
+.tile-wide {
+  grid-column: 1 / -1;
+}
+.tile-wide .tile-inner {
+  display: flex; align-items: center; gap: 14px;
+}
+.tile-wide .tile-icon { margin: 0; font-size: 24px; }
+.tile-wide .tile-text { flex: 1; }
+.tile-wide .tile-arrow {
+  color: rgba(255,255,255,0.2); font-size: 16px;
+}
+
+/* ─── Signal ticker ─── */
+.signal-ticker {
+  margin: 0 16px 16px;
+  background: #0e1a14;
+  border: 1px solid rgba(46,204,113,0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.signal-ticker::before {
+  content: '';
+  position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
+  background: #2ecc71;
+  border-radius: 3px 0 0 3px;
+}
+.sig-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sig-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .2em;
+  text-transform: uppercase; color: #2ecc71;
+  display: flex; align-items: center; gap: 5px;
+}
+.sig-dot { width: 5px; height: 5px; border-radius: 50%; background: #2ecc71;
+  box-shadow: 0 0 6px #2ecc71; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.sig-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: rgba(255,255,255,0.25);
+}
+.sig-row { display: flex; align-items: baseline; gap: 8px; }
+.sig-pair {
+  font-size: 18px; font-weight: 800; color: #fff;
+  letter-spacing: -.02em;
+}
+.sig-action-buy {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  color: #2ecc71;
+  background: rgba(46,204,113,0.12);
+  border: 1px solid rgba(46,204,113,0.3);
+  padding: 2px 8px; border-radius: 4px;
+  letter-spacing: .1em;
+}
+.sig-action-sell {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700;
+  color: #ff3d7f;
+  background: rgba(255,61,127,0.12);
+  border: 1px solid rgba(255,61,127,0.3);
+  padding: 2px 8px; border-radius: 4px;
+  letter-spacing: .1em;
+}
+.sig-tf {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 2px 6px; border-radius: 4px;
+}
+.sig-price {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+
+/* ─── Bottom nav ─── */
+.app-bottom-nav {
+  background: #111116;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  padding: 10px 0 16px;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; cursor: pointer;
+}
+.nav-item-icon { font-size: 20px; }
+.nav-item-label {
+  font-size: 9px; font-weight: 600;
+  color: rgba(255,255,255,0.25);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.nav-item.active .nav-item-label { color: #2ecc71; }
+.nav-item.active .nav-item-icon { filter: drop-shadow(0 0 6px #2ecc71); }
+
+/* ─── SCREEN 2: Profile ─── */
+.profile-header {
+  padding: 28px 20px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.profile-kicker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: .28em;
+  text-transform: uppercase; color: #ff3d7f;
+  margin-bottom: 20px;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.profile-kicker::before, .profile-kicker::after {
+  content: ''; width: 16px; height: 1.5px; background: #ff3d7f; opacity: .7;
+}
+.profile-avatar-wrap {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+}
+.profile-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, #ff3d7f 0%, #2ecc71 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 800; color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  border: 2px solid rgba(46,204,113,0.3);
+  box-shadow: 0 0 20px rgba(46,204,113,0.2);
+}
+.profile-name { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.profile-handle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: .1em;
+}
+.profile-plan-card {
+  background: linear-gradient(135deg, #0e1a14 0%, #0a0a0c 100%);
+  border: 1px solid rgba(46,204,113,0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.plan-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); margin-bottom: 4px;
+}
+.plan-name { font-size: 16px; font-weight: 800; color: #2ecc71; }
+.plan-expires {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; color: rgba(255,255,255,0.3);
+  text-align: right;
+}
+.plan-days {
+  font-size: 20px; font-weight: 800; color: #fff;
+  display: block;
+}
+
+/* Stats row */
+.profile-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px; margin: 16px 20px;
+}
+.stat-card {
+  background: #13131a; border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px; padding: 10px 12px; text-align: center;
+}
+.stat-val {
+  font-size: 18px; font-weight: 800; color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 2px;
+}
+.stat-val.green { color: #2ecc71; }
+.stat-val.pink { color: #ff3d7f; }
+.stat-label {
+  font-size: 8px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: rgba(255,255,255,0.25);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Menu list */
+.menu-list { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 6px; }
+.menu-item {
+  background: #13131a; border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.menu-item-icon { font-size: 16px; }
+.menu-item-text { flex: 1; font-size: 13px; font-weight: 600; color: #fff; }
+.menu-item-arrow { color: rgba(255,255,255,0.15); font-size: 14px; }
+.menu-item-badge {
+  background: rgba(255,61,127,0.15); border: 1px solid rgba(255,61,127,0.3);
+  color: #ff3d7f; font-size: 8px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace; letter-spacing: .1em;
+  padding: 2px 7px; border-radius: 4px;
+}
+
+/* ─── Labels ─── */
+.screen-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.35);
+  text-align: center; margin-bottom: 16px;
+  letter-spacing: .1em;
+}
+
+/* ─── Layout ─── */
+.mockup-col { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.page-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 24px; font-weight: 800; color: #fff;
+  text-align: center; width: 100%;
+  margin-bottom: 8px;
+}
+.page-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: rgba(255,255,255,0.3);
+  text-align: center; width: 100%;
+  letter-spacing: .15em; text-transform: uppercase;
+  margin-bottom: 40px;
+}
+</style>
+</head>
+<body>
+
+<!-- PHONE 1: Home Screen -->
+<div class="mockup-col">
+  <div class="page-title">— IT v3 MINI APP —</div>
+  <div class="page-sub">ГЛАВНАЯ · СИГНАЛЫ</div>
+
+  <div class="screen-label">ГЛАВНАЯ</div>
+  <div class="phone">
+    <!-- Telegram bar -->
+    <div class="tg-bar">
+      <span class="tg-bar-arrow">‹</span>
+      <div class="tg-bar-avatar">IT</div>
+      <div class="tg-bar-info">
+        <div class="tg-bar-name">Индикатор IT v3</div>
+        <div class="tg-bar-sub">Mini App</div>
+      </div>
+      <div class="tg-bar-dots">···</div>
+    </div>
+
+    <!-- App content -->
+    <div class="app-content">
+      <div class="app-grid"></div>
+
+      <!-- Hero -->
+      <div class="app-hero">
+        <div class="app-hero-kicker">Индикатор</div>
+        <div class="app-hero-title"><span class="accent">IT v3</span></div>
+        <div class="app-hero-sub">TRADINGVIEW · SIGNALS</div>
+        <div class="app-status-strip">
+          <div class="status-badge badge-live">
+            <span class="badge-dot"></span>LIVE
+          </div>
+          <div class="status-badge badge-pro">PRO</div>
+          <div class="coin-pill">BTC · ETH · SOL</div>
+        </div>
+      </div>
+
+      <!-- Last signal -->
+      <div style="padding: 16px 16px 4px;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,0.25); margin-bottom:8px;">ПОСЛЕДНИЙ СИГНАЛ</div>
+      </div>
+      <div class="signal-ticker">
+        <div class="sig-header">
+          <div class="sig-label"><span class="sig-dot"></span>STRONG BUY</div>
+          <div class="sig-time">1H · 14:32</div>
+        </div>
+        <div class="sig-row">
+          <div class="sig-pair">BTC/USDT</div>
+          <div class="sig-action-buy">BUY</div>
+          <div class="sig-tf">1H</div>
+          <div class="sig-price">$96,240</div>
+        </div>
+      </div>
+
+      <!-- Nav tiles -->
+      <div class="nav-tiles">
+
+        <div class="tile tile-wide tile-green">
+          <div class="tile-inner">
+            <span class="tile-icon">📡</span>
+            <div class="tile-text">
+              <div class="tile-label">Мои сигналы</div>
+              <div class="tile-desc"><span class="tile-accent">BTC · ETH · SOL</span> · 1D / 4H / 1H</div>
+            </div>
+            <div class="tile-arrow">›</div>
+          </div>
+          <div class="tile-badge">3</div>
+        </div>
+
+        <div class="tile tile-cyan">
+          <span class="tile-icon">📖</span>
+          <div class="tile-label">О индикаторе</div>
+          <div class="tile-desc">Что такое<br><span class="tile-accent">IT v3</span></div>
+        </div>
+
+        <div class="tile tile-pink">
+          <span class="tile-icon">⚙️</span>
+          <div class="tile-label">Установка</div>
+          <div class="tile-desc">Пошаговая<br><span class="tile-accent">инструкция</span></div>
+        </div>
+
+        <div class="tile tile-gold">
+          <span class="tile-icon">📊</span>
+          <div class="tile-label">Аналитика</div>
+          <div class="tile-desc">Обзоры<br><span class="tile-accent">BTC · рынок</span></div>
+        </div>
+
+        <div class="tile tile-green">
+          <span class="tile-icon">💳</span>
+          <div class="tile-label">Тарифы</div>
+          <div class="tile-desc">STANDARD<br><span class="tile-accent">PRO · 50 USDT</span></div>
+        </div>
+
+      </div>
+
+      <!-- Bottom nav -->
+      <div class="app-bottom-nav">
+        <div class="nav-item active">
+          <div class="nav-item-icon">🏠</div>
+          <div class="nav-item-label">Главная</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-item-icon">📡</div>
+          <div class="nav-item-label">Сигналы</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-item-icon">📊</div>
+          <div class="nav-item-label">Обзоры</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-item-icon">👤</div>
+          <div class="nav-item-label">Профиль</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHONE 2: Profile Screen -->
+<div class="mockup-col">
+  <div class="page-title" style="visibility:hidden">x</div>
+  <div class="page-sub" style="visibility:hidden">x</div>
+
+  <div class="screen-label">ПРОФИЛЬ</div>
+  <div class="phone">
+    <!-- Telegram bar -->
+    <div class="tg-bar">
+      <span class="tg-bar-arrow">‹</span>
+      <div class="tg-bar-avatar">IT</div>
+      <div class="tg-bar-info">
+        <div class="tg-bar-name">Индикатор IT v3</div>
+        <div class="tg-bar-sub">Mini App</div>
+      </div>
+      <div class="tg-bar-dots">···</div>
+    </div>
+
+    <div class="app-content">
+      <div class="app-grid"></div>
+
+      <!-- Profile header -->
+      <div class="profile-header">
+        <div class="profile-kicker">Профиль</div>
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar">M</div>
+          <div>
+            <div class="profile-name">Максим</div>
+            <div class="profile-handle">@maxim_trader · ID 562914492</div>
+          </div>
+        </div>
+        <div class="profile-plan-card">
+          <div>
+            <div class="plan-label">Текущий тариф</div>
+            <div class="plan-name">💎 PRO</div>
+          </div>
+          <div class="plan-expires">
+            <span class="plan-days">23</span>
+            дня осталось
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="profile-stats">
+        <div class="stat-card">
+          <div class="stat-val green">147</div>
+          <div class="stat-label">Сигналов</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">68%</div>
+          <div class="stat-label">Win Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val pink">3</div>
+          <div class="stat-label">Рефералов</div>
+        </div>
+      </div>
+
+      <!-- Menu -->
+      <div class="menu-list">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,0.2); padding: 4px 4px 8px;">УПРАВЛЕНИЕ</div>
+
+        <div class="menu-item">
+          <span class="menu-item-icon">📡</span>
+          <div class="menu-item-text">Мои сигналы</div>
+          <div class="menu-item-badge">НОВЫЕ 3</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+        <div class="menu-item">
+          <span class="menu-item-icon">💳</span>
+          <div class="menu-item-text">Продлить подписку</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+        <div class="menu-item">
+          <span class="menu-item-icon">👥</span>
+          <div class="menu-item-text">Реферальная программа</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+        <div class="menu-item">
+          <span class="menu-item-icon">⚙️</span>
+          <div class="menu-item-text">Установка индикатора</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+        <div class="menu-item">
+          <span class="menu-item-icon">🎓</span>
+          <div class="menu-item-text">Обучение</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+        <div class="menu-item">
+          <span class="menu-item-icon">💬</span>
+          <div class="menu-item-text">Поддержка</div>
+          <div class="menu-item-arrow">›</div>
+        </div>
+      </div>
+
+      <!-- Bottom nav -->
+      <div class="app-bottom-nav">
+        <div class="nav-item">
+          <div class="nav-item-icon">🏠</div>
+          <div class="nav-item-label">Главная</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-item-icon">📡</div>
+          <div class="nav-item-label">Сигналы</div>
+        </div>
+        <div class="nav-item">
+          <div class="nav-item-icon">📊</div>
+          <div class="nav-item-label">Обзоры</div>
+        </div>
+        <div class="nav-item active">
+          <div class="nav-item-icon">👤</div>
+          <div class="nav-item-label">Профиль</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

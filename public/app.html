@@ -860,6 +860,38 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   </div>
 </div>
 
+<!-- Payment info modal -->
+<div class="act-modal" id="paid-modal">
+  <div class="act-sheet">
+    <div class="act-title">💳 Подтверждение оплаты</div>
+    <div class="act-sub">Заполни данные — мы активируем подписку в течение 24 часов</div>
+    <div class="bm-ctrl" style="margin-bottom:10px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Username TradingView *</div>
+      <input type="text" id="paid-tv" placeholder="например: NoviCrypto"
+        style="background:var(--card);border:1px solid var(--line);color:#fff;padding:11px 14px;
+               border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;outline:none;width:100%;box-sizing:border-box">
+    </div>
+    <div class="bm-ctrl" style="margin-bottom:10px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Ссылка или Hash транзакции *</div>
+      <input type="text" id="paid-txid" placeholder="https://tronscan.org/... или txid"
+        style="background:var(--card);border:1px solid var(--line);color:#fff;padding:11px 14px;
+               border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;outline:none;width:100%;box-sizing:border-box">
+    </div>
+    <div class="bm-ctrl" style="margin-bottom:14px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px">Комментарий (необязательно)</div>
+      <textarea id="paid-note" placeholder="Любые дополнительные сведения..."
+        style="background:var(--card);border:1px solid var(--line);color:#fff;padding:11px 14px;
+               border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;outline:none;
+               width:100%;box-sizing:border-box;resize:none;height:64px;line-height:1.4"></textarea>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5">
+      ⏱ После отправки заявка появится в панели администратора — ответим в течение 24ч
+    </div>
+    <button class="act-do" onclick="submitPaidForm()">📨 Отправить заявку</button>
+    <button class="act-cancel" onclick="closePaidModal()">Отмена</button>
+  </div>
+</div>
+
 <!-- Activate modal -->
 <div class="act-modal" id="act-modal">
   <div class="act-sheet">
@@ -1061,8 +1093,50 @@ function selectPlan(plan) {
 
 function paidConfirm() {
   if (!selectedPlan) { toast('Выбери тариф выше', true); return; }
-  if (tg) tg.sendData(JSON.stringify({ action:'paid_confirm', plan: selectedPlan }));
-  toast('✅ Отправлено! Проверим в течение 24ч');
+  // Pre-fill TradingView username if already saved
+  const tvVal = userData.tv_username || '';
+  document.getElementById('paid-tv').value = tvVal;
+  document.getElementById('paid-txid').value = '';
+  document.getElementById('paid-note').value = '';
+  document.getElementById('paid-modal').classList.add('open');
+}
+function closePaidModal() {
+  document.getElementById('paid-modal').classList.remove('open');
+}
+async function submitPaidForm() {
+  const tv = document.getElementById('paid-tv').value.trim();
+  const txid = document.getElementById('paid-txid').value.trim();
+  const note = document.getElementById('paid-note').value.trim();
+  if (!tv) { toast('Укажи TradingView username', true); return; }
+  if (!txid) { toast('Укажи ссылку или hash транзакции', true); return; }
+  const btn = document.querySelector('#paid-modal .act-do');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Отправка...'; }
+  try {
+    const tgUser = tg?.initDataUnsafe?.user || {};
+    const res = await fetch(BASE + '/api/payment-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tg_id: userId,
+        username: tgUser.username || null,
+        first_name: tgUser.first_name || null,
+        plan: selectedPlan,
+        tv_username: tv,
+        txid: txid,
+        note: note
+      })
+    });
+    if (res.ok) {
+      closePaidModal();
+      toast('✅ Заявка отправлена! Активируем в течение 24ч');
+    } else {
+      toast('Ошибка отправки, попробуй снова', true);
+    }
+  } catch(e) {
+    toast('Ошибка сети', true);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '📨 Отправить заявку'; }
+  }
 }
 
 // ── render signal card ──
@@ -1798,7 +1872,7 @@ function adminTab(tab) {
 
 async function loadSupport() {
   const aid = userId || ADMIN_ID_FALLBACK;
-  const data = await adminApi(`/api/admin/support?tg_id=${aid}`);
+  const data = await adminApi(`/api/admin/support`);
   if (!data) return;
   const list = document.getElementById('support-list');
   const open = data.filter(m => m.status === 'open');
@@ -1847,7 +1921,7 @@ async function sendReply(id, replyUserId) {
   const reply = inp?.value?.trim();
   if (!reply) return;
   const aid = userId || ADMIN_ID_FALLBACK;
-  const r = await adminApi(`/api/admin/support/${id}/reply?tg_id=${aid}`, 'POST', { reply });
+  const r = await adminApi(`/api/admin/support/${id}/reply`, 'POST', { reply });
   if (r?.ok) { toast('✅ Ответ отправлен'); loadSupport(); }
   else toast('Ошибка', true);
 }
@@ -1858,6 +1932,9 @@ document.getElementById('act-modal').addEventListener('click', function(e) {
 });
 document.getElementById('tv-modal').addEventListener('click', function(e) {
   if (e.target === this) closeTvModal();
+});
+document.getElementById('paid-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePaidModal();
 });
 
 // ── TradingView username ──

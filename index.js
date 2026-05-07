@@ -823,16 +823,30 @@ app.get('/api/admin/payments', adminOnly, async (req, res) => {
 
 // ─── API: Save payment request (from bot) ────────────────
 app.post('/api/payment-request', async (req, res) => {
-  if (req.headers['x-api-key'] !== API_KEY) return res.sendStatus(401)
-  if (!pool) return res.sendStatus(503)
-  const { user_id, username, first_name, plan, tx_link, tv_username, note } = req.body
-  if (!user_id) return res.sendStatus(400)
+  // Accept both API key (bot) and tg_id (mini-app)
+  const isBot = req.headers['x-api-key'] === API_KEY
+  const tgId = String(req.body?.tg_id || '')
+  if (!isBot && !tgId) return res.sendStatus(401)
+
+  const { user_id, username, first_name, plan, tx_link, txid, tv_username, note } = req.body
+  // mini-app sends tg_id as user identifier; bot sends user_id
+  const uid = user_id || tgId
+  const txRef = tx_link || txid
+  if (!uid || !txRef) return res.status(400).json({ error: 'bad request' })
+
   try {
-    await pool.query(
-      `INSERT INTO payment_requests (user_id, username, first_name, plan, tx_link, tv_username, note)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [user_id, username, first_name, plan, tx_link, tv_username, note]
-    )
+    if (pool) {
+      await pool.query(
+        `INSERT INTO payment_requests (user_id, username, first_name, plan, tx_link, tv_username, note)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [uid, username || null, first_name || null, plan || null, txRef, tv_username || null, note || null]
+      )
+    }
+    // Уведомление админу
+    const name = first_name ? `${first_name}${username ? ' @'+username : ''}` : `ID ${uid}`
+    const planText = plan ? ` · ${plan}` : ''
+    const adminText = `💳 *Заявка на активацию*\n\nОт: ${name}${planText}\nTxID: \`${txRef}\`\nTV: ${tv_username || '—'}\n${note ? '\n'+note : ''}`
+    await sendToAdmin(adminText).catch(() => {})
     res.json({ ok: true })
   } catch (err) {
     console.error('Payment request save error:', err.message)

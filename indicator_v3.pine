@@ -405,7 +405,7 @@ grpPivot     = "Структура рынка (HH/LH/HL/LL)"
 showPivots   = input.bool(true,  "Показывать структуру",        group=grpPivot)
 showZigzag   = input.bool(true,  "Зигзаг",                      group=grpPivot)
 showPivotLvl = input.bool(true,  "Горизонтальные уровни",       group=grpPivot)
-pivotLen     = input.int(5,      "Период пивота", minval=2,      group=grpPivot)
+pivotLen     = input.int(5,      "Период пивота", minval=1,      group=grpPivot)
 pivotLvlLen  = input.int(40,     "Длина уровня (баров)",        group=grpPivot)
 colorHH      = input.color(color.new(#00e676, 0),  "Цвет HH",   group=grpPivot)
 colorLH      = input.color(color.new(#ff5252, 0),  "Цвет LH",   group=grpPivot)
