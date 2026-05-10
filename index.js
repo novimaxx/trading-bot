@@ -62,6 +62,7 @@ async function runMigrations() {
       );
       ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'ALL';
       ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS post_type TEXT DEFAULT 'analytics';
+      UPDATE app_posts SET visibility = 'STANDARD' WHERE visibility = 'ALL' OR visibility IS NULL;
 
       CREATE TABLE IF NOT EXISTS users (
         id                  BIGINT PRIMARY KEY,
@@ -935,7 +936,7 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
 
   // Сохранить пост в БД
   const audience = req.body.audience || 'all'
-  const visibility = audience === 'PRO' ? 'PRO' : audience === 'STANDARD' ? 'STANDARD' : 'ALL'
+  const visibility = audience === 'PRO' ? 'PRO' : (audience === 'STANDARD' || audience === 'subscribed') ? 'STANDARD' : 'ALL'
   if (pool) {
     try {
       const { rows } = await pool.query(
@@ -1093,7 +1094,7 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
   const { title, body, audience, image_b64 } = req.body
   if (!body && !title && !image_b64) return res.sendStatus(400)
 
-  const visibility = audience === 'PRO' ? 'PRO' : audience === 'STANDARD' ? 'STANDARD' : 'ALL'
+  const visibility = audience === 'PRO' ? 'PRO' : (audience === 'STANDARD' || audience === 'subscribed') ? 'STANDARD' : 'ALL'
   let savedId = null, fileId = null, sent = 0, failed = 0
   const subscribers = await getRecipients(audience || 'all')
 
