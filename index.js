@@ -47,6 +47,7 @@ async function runMigrations() {
         sent_at    TIMESTAMP NOT NULL DEFAULT NOW()
       );
       ALTER TABLE app_signals ADD COLUMN IF NOT EXISTS comment TEXT;
+      ALTER TABLE app_signals ADD COLUMN IF NOT EXISTS direction TEXT;
 
       CREATE TABLE IF NOT EXISTS app_posts (
         id         SERIAL PRIMARY KEY,
@@ -55,8 +56,12 @@ async function runMigrations() {
         image_url  TEXT,
         file_id    TEXT,
         tag        TEXT DEFAULT 'АНАЛИТИКА',
+        visibility TEXT DEFAULT 'ALL',
+        post_type  TEXT DEFAULT 'analytics',
         sent_at    TIMESTAMP NOT NULL DEFAULT NOW()
       );
+      ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'ALL';
+      ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS post_type TEXT DEFAULT 'analytics';
 
       CREATE TABLE IF NOT EXISTS users (
         id                  BIGINT PRIMARY KEY,
@@ -452,9 +457,10 @@ app.post('/webhook', async (req, res) => {
       if (data.sm_level) commentParts.push(`📍 Уровень: ${fmtPrice(data.sm_level)}`)
       const comment = commentParts.join('\n') || null
 
+      const direction = isBuy ? 'BUY' : 'SELL'
       pool.query(
-        `INSERT INTO app_signals (pair, action, tag, timeframe, price, comment) VALUES ($1,$2,$3,$4,$5,$6)`,
-        [pair, actionLabel, actionLabel, normalize(data.interval || ''), fmtPrice(data.price), comment]
+        `INSERT INTO app_signals (pair, action, tag, timeframe, price, comment, direction) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [pair, actionLabel, actionLabel, normalize(data.interval || ''), fmtPrice(data.price), comment, direction]
       ).catch(e => console.error('Signal save error:', e.message))
     }
 
@@ -569,7 +575,7 @@ app.get('/api/signals', async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT pair, action, tag, timeframe, price, comment, sent_at FROM app_signals ORDER BY sent_at DESC LIMIT 30`
+      `SELECT pair, action, tag, timeframe, price, comment, direction, sent_at FROM app_signals ORDER BY sent_at DESC LIMIT 30`
     )
     res.json(rows.length ? rows.map(formatSignalRow) : getDemoSignals())
   } catch (err) {
@@ -588,10 +594,12 @@ function formatSignalRow(r) {
   const d = new Date(r.sent_at)
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })
     + ', ' + d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' })
+  const direction = r.direction || (action.includes('BUY') ? 'BUY' : 'SELL')
   return {
     pair: r.pair || 'BTC/USDT',
-    action: action.includes('BUY') ? 'BUY' : 'SELL',
+    action: action.includes('BUY') ? 'BUY' : action.includes('SELL') ? 'SELL' : action,
     tag: r.tag || action,
+    direction,
     tf: r.timeframe || '1H',
     time,
     price: r.price || '—',
@@ -613,8 +621,31 @@ app.get('/api/posts', async (req, res) => {
   if (!pool) return res.json(getDemoPosts())
 
   try {
+    // Определяем план пользователя для фильтрации
+    const tgId = String(req.query.tg_id || '')
+    let userPlan = null
+    if (tgId) {
+      try {
+        const { rows: urows } = await pool.query(
+          `SELECT subscription_plan, subscription_until FROM users WHERE id = $1`, [tgId]
+        )
+        if (urows.length && urows[0].subscription_until && new Date(urows[0].subscription_until) > new Date()) {
+          userPlan = urows[0].subscription_plan
+        }
+      } catch (_) {}
+    }
+
+    // Фильтр видимости по подписке
+    let visFilter = `visibility = 'ALL'`
+    if (userPlan === 'PRO') {
+      visFilter = `visibility IN ('ALL','STANDARD','PRO')`
+    } else if (userPlan === 'STANDARD') {
+      visFilter = `visibility IN ('ALL','STANDARD')`
+    }
+
     const { rows } = await pool.query(
-      `SELECT id, title, body, file_id, image_data, tag, sent_at FROM app_posts ORDER BY sent_at DESC LIMIT 20`
+      `SELECT id, title, body, file_id, image_data, tag, visibility, post_type, sent_at
+       FROM app_posts WHERE ${visFilter} ORDER BY sent_at DESC LIMIT 30`
     )
     res.json(rows.length ? rows : getDemoPosts())
   } catch (err) {
@@ -865,11 +896,13 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
   let savedId = null
 
   // Сохранить пост в БД
+  const audience = req.body.audience || 'all'
+  const visibility = audience === 'PRO' ? 'PRO' : audience === 'STANDARD' ? 'STANDARD' : 'ALL'
   if (pool) {
     try {
       const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, image_url, tag) VALUES ($1,$2,$3,$4) RETURNING id`,
-        [title||null, body||null, image_url||null, tag||'АНАЛИТИКА']
+        `INSERT INTO app_posts (title, body, image_url, tag, visibility) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
+        [title||null, body||null, image_url||null, tag||'АНАЛИТИКА', visibility]
       )
       savedId = rows[0].id
     } catch (err) {
@@ -878,7 +911,6 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
   }
 
   // Собрать список подписчиков (audience: all | PRO | STANDARD)
-  const audience = req.body.audience || 'all'
   let subscribers = []
   if (pool) {
     try {
@@ -976,11 +1008,12 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   }
 
   // Сохраняем пост с file_id (не base64)
+  const visibilityPhoto = !audience || audience === 'all' ? 'ALL' : audience
   if (pool && (sent > 0 || subscribers.length === 0)) {
     try {
       const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, tag, file_id) VALUES ($1,$2,$3,$4) RETURNING id`,
-        [title||null, body||null, tag||'АНАЛИТИКА', fileId]
+        `INSERT INTO app_posts (title, body, tag, file_id, visibility) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
+        [title||null, body||null, tag||'АНАЛИТИКА', fileId, visibilityPhoto]
       )
       savedId = rows[0].id
     } catch (e) { console.error('Save post error:', e.message) }
@@ -1039,6 +1072,91 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   } catch (e) {
     res.json({ ok: false, error: e.message, savedId })
   }
+})
+
+// ─── API: Admin news post (simple image + text, no banner) ──
+app.post('/api/admin/news', adminOnly, async (req, res) => {
+  const { title, body, audience, image_b64 } = req.body
+  if (!body && !title && !image_b64) return res.sendStatus(400)
+
+  const visibility = audience === 'PRO' ? 'PRO' : audience === 'STANDARD' ? 'STANDARD' : 'ALL'
+  const planFilter = !audience || audience === 'all' ? ''
+    : `AND subscription_plan = '${audience}'`
+
+  let savedId = null, fileId = null, sent = 0, failed = 0
+
+  // Получаем подписчиков
+  let subscribers = []
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() ${planFilter}`
+      )
+      subscribers = rows.map(r => r.id)
+    } catch (e) { console.error('News get subs error:', e.message) }
+  }
+
+  const text = [title ? `*${title}*` : null, body || null, '\n📱 _IT v3_'].filter(Boolean).join('\n\n')
+  const caption = [title ? `*${title}*` : null, body || null].filter(Boolean).join('\n\n')
+
+  if (image_b64) {
+    const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
+    const imgBuf = Buffer.from(base64, 'base64')
+
+    for (const id of subscribers) {
+      try {
+        const fd = new FormData()
+        fd.append('chat_id', String(id))
+        fd.append('caption', caption)
+        fd.append('parse_mode', 'Markdown')
+        if (fileId) {
+          fd.append('photo', fileId)
+        } else {
+          fd.append('photo', new Blob([imgBuf], { type: 'image/jpeg' }), 'news.jpg')
+        }
+        const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd })
+        const j = await r.json()
+        if (j.ok) {
+          sent++
+          if (!fileId) fileId = j.result?.photo?.slice(-1)[0]?.file_id || null
+        } else { failed++ }
+        await new Promise(r => setTimeout(r, 60))
+      } catch (e) { failed++ }
+    }
+
+    if (pool) {
+      try {
+        const { rows } = await pool.query(
+          `INSERT INTO app_posts (title, body, tag, file_id, visibility, post_type) VALUES ($1,$2,$3,$4,$5,'news') RETURNING id`,
+          [title||null, body||null, 'НОВОСТЬ', fileId, visibility]
+        )
+        savedId = rows[0].id
+      } catch (e) { console.error('Save news error:', e.message) }
+    }
+  } else {
+    // Без фото — текст
+    for (const id of subscribers) {
+      try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: id, text, parse_mode: 'Markdown' })
+        })
+        sent++
+        await new Promise(r => setTimeout(r, 50))
+      } catch (_) { failed++ }
+    }
+    if (pool) {
+      try {
+        const { rows } = await pool.query(
+          `INSERT INTO app_posts (title, body, tag, visibility, post_type) VALUES ($1,$2,'НОВОСТЬ',$3,'news') RETURNING id`,
+          [title||null, body||null, visibility]
+        )
+        savedId = rows[0].id
+      } catch (e) { console.error('Save news error:', e.message) }
+    }
+  }
+
+  res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
 })
 
 // ─── API: Admin delete post ──────────────────────────────

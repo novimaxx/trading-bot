@@ -852,6 +852,46 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px"></div>
       <div class="bm-copy-toast" id="bc-copy-toast"></div>
 
+      <!-- ══ NEWS POST SECTION ══ -->
+      <div style="border-top:1px solid rgba(255,255,255,.1);margin-top:4px;padding-top:18px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:14px;display:flex;align-items:center;gap:8px">
+          <span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span>
+          📰 ОТПРАВИТЬ НОВОСТЬ
+          <span style="flex:1;height:1px;background:rgba(255,255,255,.08)"></span>
+        </div>
+        <div class="bm-ctrl" style="margin-bottom:10px">
+          <label>Заголовок новости</label>
+          <input type="text" id="news-title" placeholder="🔥 BTC пробил $100K...">
+        </div>
+        <div class="bm-ctrl" style="margin-bottom:10px">
+          <label>📝 Текст</label>
+          <textarea id="news-body" style="height:90px" placeholder="Текст новости..."></textarea>
+        </div>
+        <!-- Image upload -->
+        <label for="news-file" style="display:flex;align-items:center;justify-content:center;gap:8px;
+          background:#13131a;border:1.5px dashed rgba(46,204,113,.35);color:var(--accent);
+          border-radius:10px;padding:11px;font-family:'JetBrains Mono',monospace;font-size:11px;
+          font-weight:700;letter-spacing:.12em;cursor:pointer;margin-bottom:10px" id="news-file-label">
+          🖼 Прикрепить картинку
+        </label>
+        <input type="file" id="news-file" accept="image/*" style="display:none" onchange="newsLoadImg(this)">
+        <div id="news-img-preview" style="display:none;margin-bottom:10px">
+          <img id="news-preview-img" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover">
+          <button onclick="newsClearImg()" style="margin-top:6px;background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.3);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;cursor:pointer;width:100%">✕ Убрать картинку</button>
+        </div>
+        <!-- Audience -->
+        <div class="bm-ctrl" style="margin-bottom:10px">
+          <label>Аудитория</label>
+          <div style="display:flex;gap:8px">
+            <button class="aud-btn active" id="news-aud-all" onclick="setNewsAudience('all',this)">👥 Все</button>
+            <button class="aud-btn" id="news-aud-std" onclick="setNewsAudience('STANDARD',this)">📊 Standard</button>
+            <button class="aud-btn" id="news-aud-pro" onclick="setNewsAudience('PRO',this)">💎 PRO</button>
+          </div>
+        </div>
+        <button class="bm-send-btn" id="news-send-btn" onclick="newsSend()" style="width:100%">📰 Отправить новость</button>
+        <div id="news-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px;margin-top:6px"></div>
+      </div>
+
     </div>
   </div>
 
@@ -1195,7 +1235,10 @@ async function submitPaidForm() {
 // ── render signal card ──
 let _sigIdx = 0;
 function sigCard(s) {
-  const isBuy = s.action === 'BUY' || (s.tag||'').includes('BUY');
+  const isBuy = (s.direction === 'BUY') ||
+                s.action === 'BUY' ||
+                (s.action||'').includes('BUY') ||
+                (s.tag||'').includes('BUY');
   const tagClass = isBuy ? '' : 'sell';
   const dotClass = isBuy ? '' : 'sell';
   const btnClass = isBuy ? 'sc-buy' : 'sc-sell-btn';
@@ -1342,7 +1385,7 @@ async function boot() {
   const [user, signals, posts] = await Promise.all([
     userId ? api(`/api/user/${userId}`) : null,
     api('/api/signals'),
-    api('/api/posts'),
+    userId ? api(`/api/posts?tg_id=${userId}`) : api('/api/posts'),
     new Promise(r => setTimeout(r, 300)),
   ]);
 
@@ -1404,8 +1447,8 @@ async function boot() {
 
   if (isPro && allSignals.length) {
     _sigIdx = 0;
-    lastWrap.innerHTML = '<div style="padding:0 16px 0">' + sigCard(allSignals[0]) + '</div>';
-    // НЕ сбрасываем _sigIdx — иначе дублируются id sc-det-N
+    const last3 = allSignals.slice(0, 3);
+    lastWrap.innerHTML = '<div style="padding:0 16px 0">' + last3.map(s => sigCard(s)).join('') + '</div>';
     sigList.innerHTML = allSignals.map(s => sigCard(s)).join('');
     document.getElementById('sig-count-badge').style.display = 'flex';
     document.getElementById('sig-count-badge').textContent = allSignals.length;
@@ -1656,8 +1699,64 @@ async function deactivateUser(uid) {
 let bcAudience = 'all';
 function setAudience(val, el) {
   bcAudience = val;
-  document.querySelectorAll('.aud-btn').forEach(b => b.classList.remove('active'));
+  ['aud-all','aud-std','aud-pro'].forEach(id => document.getElementById(id)?.classList.remove('active'));
   el.classList.add('active');
+}
+
+// ── News post ──────────────────────────────────────────────
+let newsAudience = 'all';
+let newsImgB64 = null;
+
+function setNewsAudience(val, el) {
+  newsAudience = val;
+  ['news-aud-all','news-aud-std','news-aud-pro'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  el.classList.add('active');
+}
+function newsLoadImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    newsImgB64 = e.target.result;
+    document.getElementById('news-preview-img').src = newsImgB64;
+    document.getElementById('news-img-preview').style.display = 'block';
+    document.getElementById('news-file-label').textContent = '✅ Картинка загружена';
+  };
+  reader.readAsDataURL(file);
+}
+function newsClearImg() {
+  newsImgB64 = null;
+  document.getElementById('news-file').value = '';
+  document.getElementById('news-img-preview').style.display = 'none';
+  document.getElementById('news-file-label').textContent = '🖼 Прикрепить картинку';
+}
+async function newsSend() {
+  const title = document.getElementById('news-title').value.trim();
+  const body  = document.getElementById('news-body').value.trim();
+  if (!title && !body) { toast('Добавь заголовок или текст', true); return; }
+  const btn = document.getElementById('news-send-btn');
+  btn.disabled = true; btn.textContent = '⏳ Отправка...';
+  const result = document.getElementById('news-result');
+  result.style.display = 'none';
+  try {
+    const aid = userId || ADMIN_ID_FALLBACK;
+    const r = await fetch(`${BASE}/api/admin/news?tg_id=${aid}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, body, audience: newsAudience, image_b64: newsImgB64 || undefined })
+    });
+    const j = await r.json();
+    if (j.ok) {
+      result.style.display = 'block';
+      result.style.color = 'var(--accent)';
+      result.textContent = `✅ Отправлено ${j.sent} из ${j.total}`;
+      document.getElementById('news-title').value = '';
+      document.getElementById('news-body').value = '';
+      newsClearImg();
+      toast('📰 Новость отправлена!');
+    } else { toast('Ошибка отправки', true); }
+  } catch(e) { toast('Ошибка сети', true); }
+  finally { btn.disabled = false; btn.textContent = '📰 Отправить новость'; }
 }
 
 // ── Banner maker (Send tab) — mirrors banner_maker.html logic ────
