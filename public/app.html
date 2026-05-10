@@ -839,7 +839,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
         <label>Аудитория рассылки</label>
         <div style="display:flex;gap:8px">
           <button class="aud-btn active" id="aud-all" onclick="setAudience('all',this)">👥 Все</button>
-          <button class="aud-btn" id="aud-std" onclick="setAudience('STANDARD',this)">📊 Standard</button>
+          <button class="aud-btn" id="aud-std" onclick="setAudience('subscribed',this)">📊 Std+PRO</button>
           <button class="aud-btn" id="aud-pro" onclick="setAudience('PRO',this)">💎 PRO</button>
         </div>
       </div>
@@ -884,7 +884,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
           <label>Аудитория</label>
           <div style="display:flex;gap:8px">
             <button class="aud-btn active" id="news-aud-all" onclick="setNewsAudience('all',this)">👥 Все</button>
-            <button class="aud-btn" id="news-aud-std" onclick="setNewsAudience('STANDARD',this)">📊 Standard</button>
+            <button class="aud-btn" id="news-aud-std" onclick="setNewsAudience('subscribed',this)">📊 Std+PRO</button>
             <button class="aud-btn" id="news-aud-pro" onclick="setNewsAudience('PRO',this)">💎 PRO</button>
           </div>
         </div>

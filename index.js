@@ -898,6 +898,34 @@ app.post('/api/payment-request', async (req, res) => {
   }
 })
 
+// ─── Хелпер: получить список получателей по аудитории ────
+// audience: 'all' | 'subscribed' | 'STANDARD' | 'PRO'
+// 'all'        → все зарегистрированные пользователи
+// 'subscribed' → Standard + PRO (активные подписчики)
+// 'STANDARD'   → только Standard (активные)
+// 'PRO'        → только PRO (активные)
+async function getRecipients(audience) {
+  if (!pool) return []
+  try {
+    let query
+    if (audience === 'all') {
+      query = `SELECT id FROM users`
+    } else if (audience === 'PRO') {
+      query = `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() AND subscription_plan = 'PRO'`
+    } else if (audience === 'STANDARD') {
+      query = `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() AND subscription_plan = 'STANDARD'`
+    } else {
+      // 'subscribed' = Standard + PRO
+      query = `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW()`
+    }
+    const { rows } = await pool.query(query)
+    return rows.map(r => r.id)
+  } catch (e) {
+    console.error('getRecipients error:', e.message)
+    return []
+  }
+}
+
 // ─── API: Admin broadcast post ───────────────────────────
 app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
   const { title, body, tag, image_url } = req.body
@@ -920,20 +948,7 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
     }
   }
 
-  // Собрать список подписчиков (audience: all | PRO | STANDARD)
-  let subscribers = []
-  if (pool) {
-    try {
-      const planFilter = audience === 'all'
-        ? '' : `AND subscription_plan = '${audience === 'PRO' ? 'PRO' : 'STANDARD'}'`
-      const { rows } = await pool.query(
-        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() ${planFilter}`
-      )
-      subscribers = rows.map(r => r.id)
-    } catch (err) {
-      console.error('Broadcast get subs error:', err.message)
-    }
-  }
+  const subscribers = await getRecipients(audience)
 
   // Отправить через бота
   const text = [
@@ -974,18 +989,7 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
   const imgBuf = Buffer.from(base64, 'base64')
 
-  // Получить подписчиков
-  const planFilter = !audience || audience === 'all' ? ''
-    : `AND subscription_plan = '${audience}'`
-  let subscribers = []
-  if (pool) {
-    try {
-      const { rows } = await pool.query(
-        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() ${planFilter}`
-      )
-      subscribers = rows.map(r => r.id)
-    } catch (e) { console.error('Get subs error:', e.message) }
-  }
+  const subscribers = await getRecipients(audience || 'all')
 
   let sent = 0, failed = 0, fileId = null, savedId = null
   for (const chatId of subscribers) {
@@ -1090,21 +1094,8 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
   if (!body && !title && !image_b64) return res.sendStatus(400)
 
   const visibility = audience === 'PRO' ? 'PRO' : audience === 'STANDARD' ? 'STANDARD' : 'ALL'
-  const planFilter = !audience || audience === 'all' ? ''
-    : `AND subscription_plan = '${audience}'`
-
   let savedId = null, fileId = null, sent = 0, failed = 0
-
-  // Получаем подписчиков
-  let subscribers = []
-  if (pool) {
-    try {
-      const { rows } = await pool.query(
-        `SELECT id FROM users WHERE subscribed = TRUE AND subscription_until > NOW() ${planFilter}`
-      )
-      subscribers = rows.map(r => r.id)
-    } catch (e) { console.error('News get subs error:', e.message) }
-  }
+  const subscribers = await getRecipients(audience || 'all')
 
   const text = [title ? `*${title}*` : null, body || null, '\n📱 _IT v3_'].filter(Boolean).join('\n\n')
   const caption = [title ? `*${title}*` : null, body || null].filter(Boolean).join('\n\n')
