@@ -1175,21 +1175,6 @@ app.delete('/api/admin/posts/:id', adminOnly, async (req, res) => {
   }
 })
 
-// ─── TEMP: cleanup posts (one-time use) ──────────────────
-app.post('/api/admin/cleanup-posts', adminOnly, async (req, res) => {
-  if (!pool) return res.sendStatus(503)
-  try {
-    // Оставить только 1 последний пост
-    await pool.query(`DELETE FROM app_posts WHERE id NOT IN (SELECT id FROM app_posts ORDER BY sent_at DESC LIMIT 1)`)
-    // Поставить visibility = STANDARD для оставшегося
-    await pool.query(`UPDATE app_posts SET visibility = 'STANDARD'`)
-    const { rows } = await pool.query(`SELECT id, title, visibility, sent_at FROM app_posts`)
-    res.json({ ok: true, remaining: rows })
-  } catch(e) {
-    res.status(500).json({ error: e.message })
-  }
-})
-
 // ─── API: Approve payment request ────────────────────────
 app.post('/api/admin/payments/:id/approve', adminOnly, async (req, res) => {
   if (!pool) return res.sendStatus(503)
