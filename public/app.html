@@ -1235,10 +1235,14 @@ async function submitPaidForm() {
 // ── render signal card ──
 let _sigIdx = 0;
 function sigCard(s) {
-  const isBuy = (s.direction === 'BUY') ||
-                s.action === 'BUY' ||
-                (s.action||'').includes('BUY') ||
-                (s.tag||'').includes('BUY');
+  const tag = (s.tag||'').toLowerCase();
+  const act = (s.action||'').toLowerCase();
+  const isBuy = s.direction === 'BUY' ||
+    act.includes('buy') ||
+    tag.includes('buy') ||
+    tag.includes('вверх') ||      // Тренд вверх
+    tag.includes('разворот') ||   // structure_hl = бычий разворот
+    tag.includes('sellside');     // Sellside liq = цель BUY
   const tagClass = isBuy ? '' : 'sell';
   const dotClass = isBuy ? '' : 'sell';
   const btnClass = isBuy ? 'sc-buy' : 'sc-sell-btn';

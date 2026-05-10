@@ -457,7 +457,17 @@ app.post('/webhook', async (req, res) => {
       if (data.sm_level) commentParts.push(`📍 Уровень: ${fmtPrice(data.sm_level)}`)
       const comment = commentParts.join('\n') || null
 
-      const direction = isBuy ? 'BUY' : 'SELL'
+      // Явный маппинг направления по типу сигнала
+      const direction =
+        signal === 'trend_up'         ? 'BUY'  :
+        signal === 'structure_hl'     ? 'BUY'  :  // HL = higher low = бычий разворот
+        signal === 'liq_sell_found'   ? 'BUY'  :  // sellside liq ниже = цель BUY
+        signal === 'liq_sell_breach'  ? 'BUY'  :  // пробой sellside = разворот вверх
+        signal === 'trend_down'       ? 'SELL' :
+        signal === 'structure_lh'     ? 'SELL' :  // LH = lower high = медвежий слом
+        signal === 'liq_buy_found'    ? 'SELL' :  // buyside liq выше = цель SELL
+        signal === 'liq_buy_breach'   ? 'SELL' :  // пробой buyside = разворот вниз
+        isBuy ? 'BUY' : 'SELL'
       pool.query(
         `INSERT INTO app_signals (pair, action, tag, timeframe, price, comment, direction) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
         [pair, actionLabel, actionLabel, normalize(data.interval || ''), fmtPrice(data.price), comment, direction]
