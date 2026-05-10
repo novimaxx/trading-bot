@@ -607,7 +607,7 @@ function formatSignalRow(r) {
   const direction = r.direction || (action.includes('BUY') ? 'BUY' : 'SELL')
   return {
     pair: r.pair || 'BTC/USDT',
-    action: action.includes('BUY') ? 'BUY' : action.includes('SELL') ? 'SELL' : action,
+    action: direction,   // всегда BUY или SELL для кнопки
     tag: r.tag || action,
     direction,
     tf: r.timeframe || '1H',
