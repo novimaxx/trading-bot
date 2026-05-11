@@ -1386,9 +1386,6 @@ async function api(path) {
 }
 
 async function boot() {
-  // debug
-  toast(`ID: ${userId || 'null'} | tg: ${tg ? 'ok' : 'no'}`, false);
-
   const [user, signals, posts] = await Promise.all([
     userId ? api(`/api/user/${userId}`) : null,
     api('/api/signals'),
