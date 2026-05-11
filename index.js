@@ -605,7 +605,19 @@ function formatSignalRow(r) {
   const d = new Date(r.sent_at)
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })
     + ', ' + d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' })
-  const direction = r.direction || (action.includes('BUY') ? 'BUY' : 'SELL')
+  const tag = r.tag || ''
+  const direction = r.direction ||
+    (action.includes('BUY')  ? 'BUY'  :
+     action.includes('SELL') ? 'SELL' :
+     tag === 'Разворот'                        ? 'BUY'  :
+     tag === 'Тренд вверх'                     ? 'BUY'  :
+     tag === 'Buyside ликвидность НАЙДЕНА'      ? 'SELL' :
+     tag === 'Buyside ликвидность ПРОБИТА'      ? 'SELL' :
+     tag === 'Sellside ликвидность НАЙДЕНА'     ? 'BUY'  :
+     tag === 'Sellside ликвидность ПРОБИТА'     ? 'BUY'  :
+     tag === 'Слом структуры'                   ? 'SELL' :
+     tag === 'Тренд вниз'                       ? 'SELL' :
+     'SELL')
   return {
     pair: r.pair || 'BTC/USDT',
     action: direction,   // всегда BUY или SELL для кнопки
