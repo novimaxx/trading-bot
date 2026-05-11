@@ -586,7 +586,7 @@ app.get('/api/signals', async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT pair, action, tag, timeframe, price, comment, direction, sent_at FROM app_signals ORDER BY sent_at DESC LIMIT 30`
+      `SELECT pair, action, tag, timeframe, price, comment, direction, sent_at FROM app_signals WHERE tag NOT IN ('Тренд вверх','Тренд вниз') ORDER BY sent_at DESC LIMIT 30`
     )
     res.json(rows.length ? rows.map(formatSignalRow) : getDemoSignals())
   } catch (err) {
