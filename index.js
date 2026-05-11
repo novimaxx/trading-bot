@@ -1146,28 +1146,31 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
     } catch (e) { console.error('Save news error:', e.message) }
   }
 
-  // 2. Отправляем подписчикам уведомление с кнопкой открыть приложение
+  // 2. Отвечаем сразу — рассылку запускаем в фоне
+  res.json({ ok: true, savedId, total: subscribers.length })
+
+  // Фоновая рассылка уведомлений
   const notifyText = title ? `🔔 *${title}*\n\nНовое в приложении IT V3` : `🔔 Новое в приложении IT V3`
   const appUrl = `${BASE_URL}/app.html`
   const inlineKeyboard = { inline_keyboard: [[{ text: '📱 Открыть IT V3', web_app: { url: appUrl } }]] }
 
-  for (const id of subscribers) {
-    try {
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: id,
-          text: notifyText,
-          parse_mode: 'Markdown',
-          reply_markup: inlineKeyboard
+  ;(async () => {
+    for (const id of subscribers) {
+      try {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: id,
+            text: notifyText,
+            parse_mode: 'Markdown',
+            reply_markup: inlineKeyboard
+          })
         })
-      })
-      sent++
-      await new Promise(r => setTimeout(r, 50))
-    } catch (_) { failed++ }
-  }
-
-  res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
+        await new Promise(r => setTimeout(r, 50))
+      } catch (_) {}
+    }
+    console.log(`News broadcast done: ${subscribers.length} users notified`)
+  })()
 })
 
 // ─── API: Admin delete post ──────────────────────────────
