@@ -1155,9 +1155,22 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
   const inlineKeyboard = { inline_keyboard: [[{ text: '📱 Открыть IT V3', web_app: { url: appUrl } }]] }
 
   ;(async () => {
+    let sent = 0, failed = 0
+    // Логируем начало рассылки
+    let logId = null
+    if (pool) {
+      try {
+        const { rows } = await pool.query(
+          `INSERT INTO broadcast_log (post_id, title, audience, total, sent, failed) VALUES ($1,$2,$3,$4,0,0) RETURNING id`,
+          [savedId, title||null, audience||'all', subscribers.length]
+        )
+        logId = rows[0].id
+      } catch (_) {}
+    }
+
     for (const id of subscribers) {
       try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: id,
@@ -1166,11 +1179,35 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
             reply_markup: inlineKeyboard
           })
         })
+        const j = await r.json()
+        if (j.ok) sent++; else failed++
         await new Promise(r => setTimeout(r, 50))
+      } catch (_) { failed++ }
+    }
+
+    // Логируем завершение
+    if (pool && logId) {
+      try {
+        await pool.query(
+          `UPDATE broadcast_log SET sent=$1, failed=$2, finished_at=NOW() WHERE id=$3`,
+          [sent, failed, logId]
+        )
       } catch (_) {}
     }
-    console.log(`News broadcast done: ${subscribers.length} users notified`)
+    console.log(`Broadcast done: ${sent} sent, ${failed} failed`)
   })()
+})
+
+// ─── API: Broadcast stats ────────────────────────────────
+app.get('/api/admin/broadcast-stats', adminOnly, async (req, res) => {
+  if (!pool) return res.json([])
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, post_id, title, audience, total, sent, failed, started_at, finished_at
+       FROM broadcast_log ORDER BY started_at DESC LIMIT 20`
+    )
+    res.json(rows)
+  } catch (e) { res.json([]) }
 })
 
 // ─── API: Admin delete post ──────────────────────────────

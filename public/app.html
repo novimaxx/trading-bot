@@ -897,6 +897,17 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
         <div id="news-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px;margin-top:6px"></div>
       </div>
 
+      <!-- Статистика рассылок -->
+      <div style="margin-top:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;color:#666">📊 СТАТИСТИКА РАССЫЛОК</div>
+          <button onclick="loadBroadcastStats()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#888;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;cursor:pointer">↻ Обновить</button>
+        </div>
+        <div id="broadcast-stats" style="display:flex;flex-direction:column;gap:8px">
+          <div style="color:#444;font-family:'JetBrains Mono',monospace;font-size:11px;text-align:center;padding:12px">Загрузка...</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1782,6 +1793,41 @@ async function newsSend() {
   finally { btn.disabled = false; btn.textContent = '📰 Отправить новость'; }
 }
 
+// ── Broadcast stats ──────────────────────────────────────────────
+async function loadBroadcastStats() {
+  const el = document.getElementById('broadcast-stats');
+  if (!el) return;
+  try {
+    const aid = userId || ADMIN_ID_FALLBACK;
+    const r = await fetch(`${BASE}/api/admin/broadcast-stats?tg_id=${aid}`);
+    const rows = await r.json();
+    if (!rows.length) {
+      el.innerHTML = '<div style="color:#444;font-family:\'JetBrains Mono\',monospace;font-size:11px;text-align:center;padding:12px">Нет данных</div>';
+      return;
+    }
+    el.innerHTML = rows.map(row => {
+      const pct = row.total > 0 ? Math.round(row.sent / row.total * 100) : 0;
+      const done = !!row.finished_at;
+      const date = new Date(row.started_at).toLocaleString('ru', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return `<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-size:13px;font-weight:600;color:#e8e8e8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%">${row.title || 'Без названия'}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555">${date}</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${done ? '#2ecc71' : '#cc8800'}">
+            ${done ? '✅' : '⏳'} ${row.sent}/${row.total} · ${pct}%
+          </div>
+          ${row.failed > 0 ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#555">❌ ${row.failed} ошибок</div>` : ''}
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#444">${row.audience || 'all'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:#f55;font-size:11px;text-align:center">Ошибка загрузки</div>';
+  }
+}
+
 // ── Banner maker (Send tab) — mirrors banner_maker.html logic ────
 let bcChartImg = null;
 
@@ -2058,6 +2104,7 @@ function adminTab(tab) {
   if (tab === 'users' && !adminData.users.length) loadAdminUsers();
   if (tab === 'payments' && !adminData.payments.length) loadAdminPayments();
   if (tab === 'send') { bcUpdate(); }
+  if (tab === 'news') loadBroadcastStats();
   if (tab === 'support') loadSupport();
 }
 
