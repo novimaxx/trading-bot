@@ -879,6 +879,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
           <img id="news-preview-img" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover">
           <button onclick="newsClearImg()" style="margin-top:6px;background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.3);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border-radius:6px;cursor:pointer;width:100%">✕ Убрать картинку</button>
         </div>
+        <!-- Link URL -->
+        <div class="bm-ctrl" style="margin-bottom:10px">
+          <label>Кнопка-ссылка (необязательно)</label>
+          <input type="url" id="news-link" placeholder="https://... (появится кнопка «Подробнее»)" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;color:#e8e8e8;font-size:14px;width:100%;outline:none;font-family:'JetBrains Mono',monospace;font-size:12px">
+        </div>
         <!-- Audience -->
         <div class="bm-ctrl" style="margin-bottom:10px">
           <label>Аудитория</label>
@@ -1748,8 +1753,9 @@ function newsClearImg() {
   document.getElementById('news-file-label').textContent = '🖼 Прикрепить картинку';
 }
 async function newsSend() {
-  const title = document.getElementById('news-title').value.trim();
-  const body  = document.getElementById('news-body').value.trim();
+  const title    = document.getElementById('news-title').value.trim();
+  const body     = document.getElementById('news-body').value.trim();
+  const link_url = document.getElementById('news-link').value.trim() || undefined;
   if (!title && !body) { toast('Добавь заголовок или текст', true); return; }
   const btn = document.getElementById('news-send-btn');
   btn.disabled = true; btn.textContent = '⏳ Отправка...';
@@ -1760,7 +1766,7 @@ async function newsSend() {
     const r = await fetch(`${BASE}/api/admin/news?tg_id=${aid}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, body, audience: newsAudience, image_b64: newsImgB64 || undefined })
+      body: JSON.stringify({ title, body, audience: newsAudience, image_b64: newsImgB64 || undefined, link_url })
     });
     const j = await r.json();
     if (j.ok) {

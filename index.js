@@ -1128,7 +1128,7 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
 
 // ─── API: Admin news post (simple image + text, no banner) ──
 app.post('/api/admin/news', adminOnly, async (req, res) => {
-  const { title, body, audience, image_b64 } = req.body
+  const { title, body, audience, image_b64, link_url } = req.body
   if (!body && !title && !image_b64) return res.sendStatus(400)
 
   const visibility = audience === 'PRO' ? 'PRO' : (audience === 'STANDARD' || audience === 'subscribed') ? 'STANDARD' : 'ALL'
@@ -1166,8 +1166,8 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
     if (pool) {
       try {
         const { rows } = await pool.query(
-          `INSERT INTO app_posts (title, body, tag, file_id, image_data, visibility, post_type) VALUES ($1,$2,$3,$4,$5,$6,'news') RETURNING id`,
-          [title||null, body||null, 'НОВОСТЬ', fileId||null, fileId ? null : image_b64, visibility]
+          `INSERT INTO app_posts (title, body, tag, file_id, image_data, visibility, post_type, link_url) VALUES ($1,$2,$3,$4,$5,$6,'news',$7) RETURNING id`,
+          [title||null, body||null, 'НОВОСТЬ', fileId||null, fileId ? null : image_b64, visibility, link_url||null]
         )
         savedId = rows[0].id
       } catch (e) { console.error('Save news error:', e.message) }
@@ -1187,8 +1187,8 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
     if (pool) {
       try {
         const { rows } = await pool.query(
-          `INSERT INTO app_posts (title, body, tag, visibility, post_type) VALUES ($1,$2,'НОВОСТЬ',$3,'news') RETURNING id`,
-          [title||null, body||null, visibility]
+          `INSERT INTO app_posts (title, body, tag, visibility, post_type, link_url) VALUES ($1,$2,'НОВОСТЬ',$3,'news',$4) RETURNING id`,
+          [title||null, body||null, visibility, link_url||null]
         )
         savedId = rows[0].id
       } catch (e) { console.error('Save news error:', e.message) }
