@@ -1282,7 +1282,7 @@ function postCard(p, featured) {
   const d = new Date(p.sent_at);
   const dateStr = d.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
   const imgUrl = p.image_data
-    ? (p.image_data.startsWith('data:') ? p.image_data : 'data:image/jpeg;base64,' + p.image_data)
+    ? (p.image_data.startsWith('http') ? p.image_data : p.image_data.startsWith('data:') ? p.image_data : 'data:image/jpeg;base64,' + p.image_data)
     : (p.file_id ? `${BASE}/api/image/${p.file_id}` : (p.image_url || null));
   const adminDel = isAdmin
     ? `<button onclick="event.stopPropagation();deletePost(${p.id})" style="background:rgba(255,61,127,.12);border:1px solid rgba(255,61,127,.3);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;cursor:pointer;letter-spacing:.08em">✕ УДАЛИТЬ</button>`

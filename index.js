@@ -17,6 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 const BOT_TOKEN   = process.env.INDICATOR_BOT_TOKEN || process.env.BOT_TOKEN
 const CHAT_ID     = process.env.CHAT_ID
 const PORT        = process.env.PORT || 3000
+const BASE_URL    = process.env.BASE_URL || 'https://trading-bot-production-7d20.up.railway.app'
 
 // ─── PostgreSQL ───────────────────────────────────────────
 let pool = null
@@ -667,13 +668,37 @@ app.get('/api/posts', async (req, res) => {
     }
 
     const { rows } = await pool.query(
-      `SELECT id, title, body, file_id, image_data, tag, visibility, post_type, link_url, sent_at
+      `SELECT id, title, body, file_id,
+        CASE WHEN image_data IS NOT NULL THEN TRUE ELSE FALSE END as has_image_data,
+        tag, visibility, post_type, link_url, sent_at
        FROM app_posts WHERE ${visFilter} ORDER BY sent_at DESC LIMIT 30`
     )
-    res.json(rows)
+    // заменяем image_data на URL endpoint чтобы не раздувать ответ
+    const posts = rows.map(r => ({
+      ...r,
+      image_data: r.has_image_data ? `${BASE_URL}/api/post-image/${r.id}` : null,
+    }))
+    res.json(posts)
   } catch (err) {
     console.error('API /posts error:', err.message)
     res.json(getDemoPosts())
+  }
+})
+
+// ─── Изображение поста ───────────────────────────────────────
+app.get('/api/post-image/:id', async (req, res) => {
+  if (!pool) return res.sendStatus(404)
+  try {
+    const { rows } = await pool.query(`SELECT image_data FROM app_posts WHERE id = $1`, [req.params.id])
+    if (!rows.length || !rows[0].image_data) return res.sendStatus(404)
+    const raw = rows[0].image_data
+    const b64 = raw.replace(/^data:image\/\w+;base64,/, '')
+    const mime = raw.startsWith('data:image/png') ? 'image/png' : 'image/jpeg'
+    res.set('Content-Type', mime)
+    res.set('Cache-Control', 'public, max-age=86400')
+    res.send(Buffer.from(b64, 'base64'))
+  } catch (e) {
+    res.sendStatus(500)
   }
 })
 
