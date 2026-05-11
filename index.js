@@ -1135,64 +1135,36 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
   let savedId = null, fileId = null, sent = 0, failed = 0
   const subscribers = await getRecipients(audience || 'all')
 
-  const text = [title ? `*${title}*` : null, body || null, '\n📱 _IT v3_'].filter(Boolean).join('\n\n')
-  const caption = [title ? `*${title}*` : null, body || null].filter(Boolean).join('\n\n')
+  // 1. Сохраняем пост в мини-апп
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `INSERT INTO app_posts (title, body, tag, image_data, visibility, post_type, link_url) VALUES ($1,$2,'НОВОСТЬ',$3,$4,'news',$5) RETURNING id`,
+        [title||null, body||null, image_b64||null, visibility, link_url||null]
+      )
+      savedId = rows[0].id
+    } catch (e) { console.error('Save news error:', e.message) }
+  }
 
-  if (image_b64) {
-    const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
-    const imgBuf = Buffer.from(base64, 'base64')
+  // 2. Отправляем подписчикам уведомление с кнопкой открыть приложение
+  const notifyText = title ? `🔔 *${title}*\n\nНовое в приложении IT V3` : `🔔 Новое в приложении IT V3`
+  const appUrl = `${BASE_URL}/app.html`
+  const inlineKeyboard = { inline_keyboard: [[{ text: '📱 Открыть IT V3', web_app: { url: appUrl } }]] }
 
-    for (const id of subscribers) {
-      try {
-        const fd = new FormData()
-        fd.append('chat_id', String(id))
-        fd.append('caption', caption)
-        fd.append('parse_mode', 'Markdown')
-        if (fileId) {
-          fd.append('photo', fileId)
-        } else {
-          fd.append('photo', new Blob([imgBuf], { type: 'image/jpeg' }), 'news.jpg')
-        }
-        const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd })
-        const j = await r.json()
-        if (j.ok) {
-          sent++
-          if (!fileId) fileId = j.result?.photo?.slice(-1)[0]?.file_id || null
-        } else { failed++ }
-        await new Promise(r => setTimeout(r, 60))
-      } catch (e) { failed++ }
-    }
-
-    if (pool) {
-      try {
-        const { rows } = await pool.query(
-          `INSERT INTO app_posts (title, body, tag, file_id, image_data, visibility, post_type, link_url) VALUES ($1,$2,$3,$4,$5,$6,'news',$7) RETURNING id`,
-          [title||null, body||null, 'НОВОСТЬ', fileId||null, fileId ? null : image_b64, visibility, link_url||null]
-        )
-        savedId = rows[0].id
-      } catch (e) { console.error('Save news error:', e.message) }
-    }
-  } else {
-    // Без фото — текст
-    for (const id of subscribers) {
-      try {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: id, text, parse_mode: 'Markdown' })
+  for (const id of subscribers) {
+    try {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: id,
+          text: notifyText,
+          parse_mode: 'Markdown',
+          reply_markup: inlineKeyboard
         })
-        sent++
-        await new Promise(r => setTimeout(r, 50))
-      } catch (_) { failed++ }
-    }
-    if (pool) {
-      try {
-        const { rows } = await pool.query(
-          `INSERT INTO app_posts (title, body, tag, visibility, post_type, link_url) VALUES ($1,$2,'НОВОСТЬ',$3,'news',$4) RETURNING id`,
-          [title||null, body||null, visibility, link_url||null]
-        )
-        savedId = rows[0].id
-      } catch (e) { console.error('Save news error:', e.message) }
-    }
+      })
+      sent++
+      await new Promise(r => setTimeout(r, 50))
+    } catch (_) { failed++ }
   }
 
   res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
