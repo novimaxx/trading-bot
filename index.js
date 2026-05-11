@@ -670,7 +670,7 @@ app.get('/api/posts', async (req, res) => {
       `SELECT id, title, body, file_id, image_data, tag, visibility, post_type, sent_at
        FROM app_posts WHERE ${visFilter} ORDER BY sent_at DESC LIMIT 30`
     )
-    res.json(rows.length ? rows : getDemoPosts())
+    res.json(rows)
   } catch (err) {
     console.error('API /posts error:', err.message)
     res.json(getDemoPosts())
