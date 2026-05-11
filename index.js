@@ -1141,8 +1141,8 @@ app.post('/api/admin/news', adminOnly, async (req, res) => {
     if (pool) {
       try {
         const { rows } = await pool.query(
-          `INSERT INTO app_posts (title, body, tag, file_id, visibility, post_type) VALUES ($1,$2,$3,$4,$5,'news') RETURNING id`,
-          [title||null, body||null, 'НОВОСТЬ', fileId, visibility]
+          `INSERT INTO app_posts (title, body, tag, file_id, image_data, visibility, post_type) VALUES ($1,$2,$3,$4,$5,$6,'news') RETURNING id`,
+          [title||null, body||null, 'НОВОСТЬ', fileId||null, fileId ? null : image_b64, visibility]
         )
         savedId = rows[0].id
       } catch (e) { console.error('Save news error:', e.message) }
