@@ -1299,7 +1299,7 @@ function postCard(p, featured) {
     <div class="post-body">
       ${p.title ? `<div class="post-title">${escHtml(p.title)}</div>` : ''}
       <div class="post-text">${escHtml(p.body || '')}</div>
-      <div class="post-read-more">Читать полностью →</div>
+      ${p.link_url ? `<a href="${p.link_url}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:9px 18px;background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.35);border-radius:8px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;text-decoration:none">🔗 ПОДРОБНЕЕ</a>` : `<div class="post-read-more">Читать полностью →</div>`}
     </div>
   </div>`;
 }

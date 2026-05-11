@@ -667,7 +667,7 @@ app.get('/api/posts', async (req, res) => {
     }
 
     const { rows } = await pool.query(
-      `SELECT id, title, body, file_id, image_data, tag, visibility, post_type, sent_at
+      `SELECT id, title, body, file_id, image_data, tag, visibility, post_type, link_url, sent_at
        FROM app_posts WHERE ${visFilter} ORDER BY sent_at DESC LIMIT 30`
     )
     res.json(rows)
