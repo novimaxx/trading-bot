@@ -676,7 +676,7 @@ app.get('/api/posts', async (req, res) => {
     // заменяем image_data на URL endpoint чтобы не раздувать ответ
     const posts = rows.map(r => ({
       ...r,
-      image_data: r.has_image_data ? `${BASE_URL}/api/post-image/${r.id}` : null,
+      image_data: r.has_image_data ? `${BASE_URL}/api/post-image/${r.id}?v=${Date.now()}` : null,
     }))
     res.json(posts)
   } catch (err) {
@@ -695,7 +695,7 @@ app.get('/api/post-image/:id', async (req, res) => {
     const b64 = raw.replace(/^data:image\/\w+;base64,/, '')
     const mime = raw.startsWith('data:image/png') ? 'image/png' : 'image/jpeg'
     res.set('Content-Type', mime)
-    res.set('Cache-Control', 'public, max-age=86400')
+    res.set('Cache-Control', 'no-cache')
     res.send(Buffer.from(b64, 'base64'))
   } catch (e) {
     res.sendStatus(500)
