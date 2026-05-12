@@ -1122,8 +1122,8 @@ function initChart() {
   const container = document.getElementById('tradingview_chart');
   if (!container) return;
   container.innerHTML = '';
-  // Высота = экран минус шапка (92) минус кнопки (57) минус навбар (80) минус запас (20)
-  const h = Math.max(window.innerHeight - 249, 400);
+  // Высота = экран минус шапка (92) минус кнопки (57) минус навбар (65)
+  const h = Math.max(window.innerHeight - 214, 400);
   container.style.height = h + 'px';
   const doInit = () => {
     new TradingView.widget({
