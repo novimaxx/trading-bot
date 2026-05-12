@@ -477,33 +477,6 @@
     </div>
   </div>
 
-  <div style="text-align:center;margin:-16px 0 32px">
-    <button onclick="downloadHero()" style="background:#13131a;border:1px solid rgba(46,204,113,.3);color:#2ecc71;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:10px 24px;border-radius:10px;cursor:pointer">⬇ Скачать баннер PNG</button>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script>
-    function downloadHero() {
-      var hero = document.querySelector('.hero');
-      var btn = document.querySelector('[onclick="downloadHero()"]');
-      btn.textContent = '⏳ Рендер...'; btn.disabled = true;
-      var accents = hero.querySelectorAll('.accent');
-      accents.forEach(function(el){ el.style.webkitTextFillColor='#2ecc71';el.style.color='#2ecc71';el.style.background='none'; });
-      html2canvas(hero, { scale: 2, useCORS: true, backgroundColor: '#0a0a0c' }).then(function(canvas) {
-        accents.forEach(function(el){ el.style.webkitTextFillColor='';el.style.color='';el.style.background=''; });
-        var radius = 56, W = canvas.width, H = canvas.height;
-        var out = document.createElement('canvas'); out.width = W; out.height = H;
-        var ctx = out.getContext('2d');
-        ctx.beginPath();ctx.moveTo(radius,0);ctx.lineTo(W-radius,0);ctx.quadraticCurveTo(W,0,W,radius);
-        ctx.lineTo(W,H-radius);ctx.quadraticCurveTo(W,H,W-radius,H);ctx.lineTo(radius,H);
-        ctx.quadraticCurveTo(0,H,0,H-radius);ctx.lineTo(0,radius);ctx.quadraticCurveTo(0,0,radius,0);
-        ctx.closePath();ctx.clip();ctx.drawImage(canvas,0,0);
-        var a = document.createElement('a'); a.download = 'itv3-zapusheno-banner.png'; a.href = out.toDataURL('image/png'); a.click();
-        btn.textContent = '⬇ Скачать баннер PNG'; btn.disabled = false;
-      });
-    }
-  </script>
-
   <!-- HOOK: LIVE STATS -->
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:48px">
     <div style="background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:20px 16px;text-align:center;position:relative;overflow:hidden">
