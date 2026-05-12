@@ -1124,6 +1124,9 @@ function initChart() {
   const container = document.getElementById('tradingview_chart');
   if (!container) return;
   container.innerHTML = '';
+  // Высота = экран минус шапка (~160px) минус навбар (~60px)
+  const h = Math.max(window.innerHeight - 220, 400);
+  container.style.height = h + 'px';
   const doInit = () => {
     new TradingView.widget({
       container_id: 'tradingview_chart',
@@ -1136,7 +1139,8 @@ function initChart() {
       toolbar_bg: '#0d0d12',
       enable_publishing: false,
       save_image: false,
-      autosize: true,
+      width: window.innerWidth,
+      height: h,
     });
   };
   if (window.TradingView) {
