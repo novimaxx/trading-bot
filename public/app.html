@@ -340,9 +340,12 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;white-space:nowrap}
 .pr-reject:active{opacity:.8}
 
-.chart-pair-btn{flex:1;padding:9px 6px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;
+.chart-pair-btn{padding:8px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;
   border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#888;font-family:'JetBrains Mono',monospace;letter-spacing:.06em}
 .chart-pair-btn.active{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.4);color:var(--accent)}
+.chart-tf-btn{padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#666;font-family:'JetBrains Mono',monospace;letter-spacing:.08em}
+.chart-tf-btn.active{background:rgba(46,204,113,.12);border-color:rgba(46,204,113,.3);color:var(--accent)}
 .aud-btn{flex:1;padding:9px 6px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;
   font-family:'JetBrains Mono',monospace;border:1px solid var(--line);background:var(--card);
   color:var(--muted);transition:all .15s}
@@ -546,25 +549,29 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 </div>
 
 <!-- ════════════ CHART ════════════ -->
-<div class="screen" id="screen-chart">
-  <div class="screen-header">
-    <div class="kicker">Рынок</div>
-    <div class="screen-h1">График</div>
-  </div>
-  <!-- Переключатель пар -->
-  <div style="display:flex;gap:8px;padding:14px 16px 0">
-    <button onclick="setChartPair('BTCUSDT')" id="chart-btn-BTC" class="chart-pair-btn active">BTC</button>
-    <button onclick="setChartPair('ETHUSDT')" id="chart-btn-ETH" class="chart-pair-btn">ETH</button>
-    <button onclick="setChartPair('SOLUSDT')" id="chart-btn-SOL" class="chart-pair-btn">SOL</button>
-  </div>
-  <!-- TradingView Widget -->
-  <div style="padding:12px 16px;flex:1">
-    <div id="tv-chart-container" style="border-radius:12px;overflow:hidden;height:calc(100vh - 220px)">
-      <div class="tradingview-widget-container" style="height:100%">
-        <div id="tradingview_chart" style="height:100%"></div>
+<div class="screen" id="screen-chart" style="padding-bottom:80px">
+  <!-- Верхняя панель: пара + цена -->
+  <div style="padding:16px 16px 10px;border-bottom:1px solid var(--line)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button onclick="setChartPair('BTCUSDT')" id="chart-btn-BTC" class="chart-pair-btn active">BTC</button>
+        <button onclick="setChartPair('ETHUSDT')" id="chart-btn-ETH" class="chart-pair-btn">ETH</button>
+        <button onclick="setChartPair('SOLUSDT')" id="chart-btn-SOL" class="chart-pair-btn">SOL</button>
+      </div>
+      <div style="text-align:right">
+        <div id="chart-price" style="font-size:20px;font-weight:800;color:#e8e8e8;font-family:'Inter',sans-serif">—</div>
+        <div id="chart-change" style="font-size:12px;font-family:'JetBrains Mono',monospace">—</div>
       </div>
     </div>
+    <!-- Таймфреймы -->
+    <div style="display:flex;gap:6px">
+      <button onclick="setChartTF('1d')" id="chart-tf-1d" class="chart-tf-btn active">1D</button>
+      <button onclick="setChartTF('4h')" id="chart-tf-4h" class="chart-tf-btn">4H</button>
+      <button onclick="setChartTF('1h')" id="chart-tf-1h" class="chart-tf-btn">1H</button>
+    </div>
   </div>
+  <!-- Канвас графика -->
+  <div id="lwc-container" style="width:100%;height:calc(100vh - 240px)"></div>
 </div>
 
 <!-- ════════════ BUY ════════════ -->
@@ -1108,48 +1115,132 @@ function navigate(screen) {
   if (screen === 'chart') initChart();
 }
 
-// ── TradingView Chart ──
+// ── Lightweight Chart ──────────────────────────────────────
 let chartSymbol = 'BTCUSDT';
-let tvWidget = null;
+let chartTF     = '1d';
+let lwcChart    = null;
+let lwcSeries   = null;
+let lwcLoaded   = false;
 
 function setChartPair(symbol) {
   chartSymbol = symbol;
   document.querySelectorAll('.chart-pair-btn').forEach(b => b.classList.remove('active'));
-  const coin = symbol.replace('USDT','');
-  document.getElementById('chart-btn-' + coin)?.classList.add('active');
-  initChart();
+  document.getElementById('chart-btn-' + symbol.replace('USDT',''))?.classList.add('active');
+  loadChartData();
+}
+
+function setChartTF(tf) {
+  chartTF = tf;
+  document.querySelectorAll('.chart-tf-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('chart-tf-' + tf)?.classList.add('active');
+  loadChartData();
 }
 
 function initChart() {
-  const container = document.getElementById('tradingview_chart');
+  if (!lwcLoaded) {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js';
+    script.onload = () => { lwcLoaded = true; createChart(); };
+    document.head.appendChild(script);
+  } else {
+    createChart();
+  }
+}
+
+function createChart() {
+  const container = document.getElementById('lwc-container');
   if (!container) return;
   container.innerHTML = '';
-  const script = document.createElement('script');
-  script.src = 'https://s3.tradingview.com/tv.js';
-  script.onload = () => {
-    new TradingView.widget({
-      container_id: 'tradingview_chart',
-      symbol: 'BYBIT:' + chartSymbol,
-      interval: 'D',
-      timezone: 'Europe/Moscow',
-      theme: 'dark',
-      style: '1',
-      locale: 'ru',
-      toolbar_bg: '#0d0d12',
-      enable_publishing: false,
-      hide_top_toolbar: false,
-      hide_legend: false,
-      save_image: false,
-      height: '100%',
-      width: '100%',
-      studies: ['PUB;ZlmG3Txy'],
-    });
-  };
-  if (window.TradingView) {
-    script.onload();
-  } else {
-    document.head.appendChild(script);
+  if (lwcChart) { try { lwcChart.remove(); } catch(_){} }
+
+  lwcChart = LightweightCharts.createChart(container, {
+    width:  container.clientWidth,
+    height: container.clientHeight,
+    layout: { background: { color: '#0d0d12' }, textColor: '#888' },
+    grid:   { vertLines: { color: '#1a1a22' }, horzLines: { color: '#1a1a22' } },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    rightPriceScale: { borderColor: '#1a1a22' },
+    timeScale: { borderColor: '#1a1a22', timeVisible: true },
+  });
+
+  lwcSeries = lwcChart.addCandlestickSeries({
+    upColor: '#2ecc71', downColor: '#ff4757',
+    borderUpColor: '#2ecc71', borderDownColor: '#ff4757',
+    wickUpColor: '#2ecc71', wickDownColor: '#ff4757',
+  });
+
+  loadChartData();
+
+  window.addEventListener('resize', () => {
+    if (lwcChart) lwcChart.applyOptions({ width: container.clientWidth, height: container.clientHeight });
+  });
+}
+
+async function loadChartData() {
+  if (!lwcSeries) return;
+
+  // Binance interval mapping
+  const tfMap = { '1d': '1d', '4h': '4h', '1h': '1h' };
+  const interval = tfMap[chartTF] || '1d';
+  const limit = chartTF === '1d' ? 120 : 200;
+
+  try {
+    const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${chartSymbol}&interval=${interval}&limit=${limit}`);
+    const klines = await r.json();
+
+    const candles = klines.map(k => ({
+      time:  Math.floor(k[0] / 1000),
+      open:  parseFloat(k[1]),
+      high:  parseFloat(k[2]),
+      low:   parseFloat(k[3]),
+      close: parseFloat(k[4]),
+    }));
+
+    lwcSeries.setData(candles);
+
+    // Текущая цена и изменение
+    const last  = candles[candles.length - 1];
+    const prev  = candles[candles.length - 2];
+    const pct   = prev ? ((last.close - prev.close) / prev.close * 100) : 0;
+    const priceEl  = document.getElementById('chart-price');
+    const changeEl = document.getElementById('chart-change');
+    if (priceEl)  priceEl.textContent  = '$' + last.close.toLocaleString('en', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    if (changeEl) {
+      changeEl.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+      changeEl.style.color = pct >= 0 ? '#2ecc71' : '#ff4757';
+    }
+
+    // Добавляем маркеры сигналов
+    addSignalMarkers(candles);
+
+  } catch(e) {
+    console.error('Chart load error:', e);
   }
+}
+
+function addSignalMarkers(candles) {
+  if (!lwcSeries || !allSignals.length) return;
+
+  const coin = chartSymbol.replace('USDT', '');
+  const tfLabel = chartTF === '1d' ? '1D' : chartTF === '4h' ? '4H' : '1H';
+
+  const markers = allSignals
+    .filter(s => s.pair && s.pair.includes(coin) && s.tf === tfLabel)
+    .map(s => {
+      const ts = Math.floor(new Date(s.time).getTime() / 1000);
+      const isBuy = s.action === 'BUY';
+      return {
+        time:     ts,
+        position: isBuy ? 'belowBar' : 'aboveBar',
+        color:    isBuy ? '#2ecc71'  : '#ff4757',
+        shape:    isBuy ? 'arrowUp'  : 'arrowDown',
+        text:     s.tag || s.action,
+      };
+    })
+    .filter(m => m.time > 0)
+    .sort((a, b) => a.time - b.time);
+
+  if (markers.length) lwcSeries.setMarkers(markers);
 }
 
 // ── external ──
