@@ -1596,7 +1596,7 @@ async function boot() {
   }
 
   // ── chart tab — только для подписчиков ──
-  if (u.subscribed) {
+  if (userData.plan) {
     document.getElementById('nav-chart').style.display = 'flex';
   } else {
     document.getElementById('nav-chart').style.display = 'none';
