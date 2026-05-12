@@ -480,13 +480,17 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="kicker">Индикатор</div>
     <div class="hero-title" onclick="adminTap()"><span class="grad">IT v3</span></div>
     <div class="status-row">
-      <div class="badge badge-live"><span class="badge-dot"></span>LIVE</div>
-      <div class="badge badge-pro" id="hero-plan-badge" style="display:none">PRO</div>
-    </div>
-    <div style="display:flex;gap:6px;margin-top:10px">
-      <div class="coin-price-pill" id="price-BTC">BTC <span>—</span></div>
-      <div class="coin-price-pill" id="price-ETH">ETH <span>—</span></div>
-      <div class="coin-price-pill" id="price-SOL">SOL <span>—</span></div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;gap:7px">
+          <div class="badge badge-live"><span class="badge-dot"></span>LIVE</div>
+          <div class="badge badge-pro" id="hero-plan-badge" style="display:none">PRO</div>
+        </div>
+      </div>
+      <div style="margin-left:auto;display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <div class="coin-price-pill" id="price-BTC">BTC <span>—</span></div>
+        <div class="coin-price-pill" id="price-ETH">ETH <span>—</span></div>
+        <div class="coin-price-pill" id="price-SOL">SOL <span>—</span></div>
+      </div>
     </div>
   </div>
 
