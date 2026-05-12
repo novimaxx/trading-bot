@@ -476,19 +476,19 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
 <!-- ════════════ HOME ════════════ -->
 <div class="screen active" id="screen-home">
-  <div class="hero">
-    <div class="kicker">Индикатор</div>
-    <div class="hero-title" onclick="adminTap()"><span class="grad">IT v3</span></div>
-    <div class="status-row" style="align-items:flex-end">
-      <div style="display:flex;gap:7px">
+  <div class="hero" style="display:flex;gap:16px;align-items:stretch">
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div class="kicker">Индикатор</div>
+      <div class="hero-title" onclick="adminTap()"><span class="grad">IT v3</span></div>
+      <div style="display:flex;gap:7px;margin-top:auto">
         <div class="badge badge-live"><span class="badge-dot"></span>LIVE</div>
         <div class="badge badge-pro" id="hero-plan-badge" style="display:none">PRO</div>
       </div>
-      <div style="margin-left:auto;display:flex;flex-direction:column;gap:4px">
-        <div class="coin-price-pill" id="price-BTC" style="width:136px;justify-content:space-between">BTC <span>—</span></div>
-        <div class="coin-price-pill" id="price-ETH" style="width:136px;justify-content:space-between">ETH <span>—</span></div>
-        <div class="coin-price-pill" id="price-SOL" style="width:136px;justify-content:space-between">SOL <span>—</span></div>
-      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:4px">
+      <div class="coin-price-pill" id="price-BTC" style="width:136px;justify-content:space-between">BTC <span>—</span></div>
+      <div class="coin-price-pill" id="price-ETH" style="width:136px;justify-content:space-between">ETH <span>—</span></div>
+      <div class="coin-price-pill" id="price-SOL" style="width:136px;justify-content:space-between">SOL <span>—</span></div>
     </div>
   </div>
 
