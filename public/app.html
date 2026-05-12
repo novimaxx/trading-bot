@@ -1061,7 +1061,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <span class="nav-icon">📰</span><span class="nav-label">Лента</span>
     <div class="nav-notif" id="nav-notif-posts"></div>
   </div>
-  <div class="nav-item" id="nav-chart" onclick="navigate('chart')">
+  <div class="nav-item" id="nav-chart" onclick="navigate('chart')" style="display:none">
     <span class="nav-icon">📈</span><span class="nav-label">График</span>
   </div>
   <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
@@ -1593,6 +1593,13 @@ async function boot() {
     document.getElementById('nav-notif-posts').classList.add('show');
   } else {
     postsList.innerHTML = `<div class="empty"><div class="empty-icon">📰</div><div class="empty-text">В ленте пока пусто</div><div class="empty-sub">Посты появятся здесь</div></div>`;
+  }
+
+  // ── chart tab — только для подписчиков ──
+  if (u.subscribed) {
+    document.getElementById('nav-chart').style.display = 'flex';
+  } else {
+    document.getElementById('nav-chart').style.display = 'none';
   }
 
   // ── admin check ──
