@@ -42,6 +42,10 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 .badge-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent);animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .badge-pro{background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.3);color:var(--accent2)}
+.coin-price-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:16px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#888;letter-spacing:.04em;white-space:nowrap}
+.coin-price-pill span{color:#e8e8e8}
 .coin-pill{margin-left:auto;display:inline-flex;align-items:center;padding:5px 11px;border-radius:20px;
   border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;
   color:var(--muted);background:rgba(255,255,255,.03);letter-spacing:.12em}
@@ -478,7 +482,11 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div class="status-row">
       <div class="badge badge-live"><span class="badge-dot"></span>LIVE</div>
       <div class="badge badge-pro" id="hero-plan-badge" style="display:none">PRO</div>
-      <div class="coin-pill">BTC · ETH · SOL</div>
+      <div style="display:flex;gap:6px;margin-left:auto">
+        <div class="coin-price-pill" id="price-BTC">BTC <span>—</span></div>
+        <div class="coin-price-pill" id="price-ETH">ETH <span>—</span></div>
+        <div class="coin-price-pill" id="price-SOL">SOL <span>—</span></div>
+      </div>
     </div>
   </div>
 
@@ -1476,6 +1484,22 @@ async function api(path) {
   return null;
 }
 
+async function loadPrices() {
+  try {
+    const symbols = ['BTCUSDT','ETHUSDT','SOLUSDT'];
+    const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+    const data = await r.json();
+    data.forEach(item => {
+      const coin = item.symbol.replace('USDT','');
+      const el = document.getElementById('price-' + coin);
+      if (!el) return;
+      const price = parseFloat(item.price);
+      const fmt = price > 1000 ? '$' + Math.round(price).toLocaleString('en') : '$' + price.toFixed(2);
+      el.querySelector('span').textContent = fmt;
+    });
+  } catch(_) {}
+}
+
 async function boot() {
   const [user, signals, posts] = await Promise.all([
     userId ? api(`/api/user/${userId}`) : null,
@@ -2279,6 +2303,8 @@ async function saveTvUsername() {
 }
 
 boot();
+loadPrices();
+setInterval(loadPrices, 30000); // обновляем каждые 30 сек
 </script>
 
 <!-- Лайтбокс для картинок -->
