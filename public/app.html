@@ -1122,8 +1122,14 @@ function initChart() {
   const container = document.getElementById('tradingview_chart');
   if (!container) return;
   container.innerHTML = '';
-  // Высота = экран минус шапка (92) минус кнопки (57) минус навбар (65)
-  const h = Math.max(window.innerHeight - 214, 400);
+  // Высота = экран минус шапка (92) минус кнопки (57) минус навбар (65) - берём navEl высоту динамически
+  const navEl = document.querySelector('.bottom-nav');
+  const navH = navEl ? navEl.offsetHeight : 65;
+  const headerEl = document.getElementById('screen-chart').querySelector('.screen-header');
+  const headerH = headerEl ? headerEl.offsetHeight : 92;
+  const btnEl = document.getElementById('screen-chart').querySelector('div[style*="gap:8px"]');
+  const btnH = btnEl ? btnEl.offsetHeight : 57;
+  const h = Math.max(window.innerHeight - headerH - btnH - navH - 12, 400);
   container.style.height = h + 'px';
   const doInit = () => {
     new TradingView.widget({
