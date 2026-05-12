@@ -340,6 +340,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;white-space:nowrap}
 .pr-reject:active{opacity:.8}
 
+.chart-pair-btn{flex:1;padding:9px 6px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#888;font-family:'JetBrains Mono',monospace;letter-spacing:.06em}
+.chart-pair-btn.active{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.4);color:var(--accent)}
 .aud-btn{flex:1;padding:9px 6px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;
   font-family:'JetBrains Mono',monospace;border:1px solid var(--line);background:var(--card);
   color:var(--muted);transition:all .15s}
@@ -540,6 +543,28 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   </div>
   <div class="slabel">ОТ КОМАНДЫ · ОБНОВЛЯЕТСЯ</div>
   <div class="posts" id="posts-list"></div>
+</div>
+
+<!-- ════════════ CHART ════════════ -->
+<div class="screen" id="screen-chart">
+  <div class="screen-header">
+    <div class="kicker">Рынок</div>
+    <div class="screen-h1">График</div>
+  </div>
+  <!-- Переключатель пар -->
+  <div style="display:flex;gap:8px;padding:14px 16px 0">
+    <button onclick="setChartPair('BTCUSDT')" id="chart-btn-BTC" class="chart-pair-btn active">BTC</button>
+    <button onclick="setChartPair('ETHUSDT')" id="chart-btn-ETH" class="chart-pair-btn">ETH</button>
+    <button onclick="setChartPair('SOLUSDT')" id="chart-btn-SOL" class="chart-pair-btn">SOL</button>
+  </div>
+  <!-- TradingView Widget -->
+  <div style="padding:12px 16px;flex:1">
+    <div id="tv-chart-container" style="border-radius:12px;overflow:hidden;height:calc(100vh - 220px)">
+      <div class="tradingview-widget-container" style="height:100%">
+        <div id="tradingview_chart" style="height:100%"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ════════════ BUY ════════════ -->
@@ -1036,6 +1061,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <span class="nav-icon">📰</span><span class="nav-label">Лента</span>
     <div class="nav-notif" id="nav-notif-posts"></div>
   </div>
+  <div class="nav-item" id="nav-chart" onclick="navigate('chart')">
+    <span class="nav-icon">📈</span><span class="nav-label">График</span>
+  </div>
   <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
     <span class="nav-icon">👤</span><span class="nav-label">Профиль</span>
   </div>
@@ -1077,6 +1105,51 @@ function navigate(screen) {
   const notif = document.getElementById('nav-notif-' + screen);
   if (notif) notif.classList.remove('show');
   window.scrollTo(0, 0);
+  if (screen === 'chart') initChart();
+}
+
+// ── TradingView Chart ──
+let chartSymbol = 'BTCUSDT';
+let tvWidget = null;
+
+function setChartPair(symbol) {
+  chartSymbol = symbol;
+  document.querySelectorAll('.chart-pair-btn').forEach(b => b.classList.remove('active'));
+  const coin = symbol.replace('USDT','');
+  document.getElementById('chart-btn-' + coin)?.classList.add('active');
+  initChart();
+}
+
+function initChart() {
+  const container = document.getElementById('tradingview_chart');
+  if (!container) return;
+  container.innerHTML = '';
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/tv.js';
+  script.onload = () => {
+    new TradingView.widget({
+      container_id: 'tradingview_chart',
+      symbol: 'BYBIT:' + chartSymbol,
+      interval: 'D',
+      timezone: 'Europe/Moscow',
+      theme: 'dark',
+      style: '1',
+      locale: 'ru',
+      toolbar_bg: '#0d0d12',
+      enable_publishing: false,
+      hide_top_toolbar: false,
+      hide_legend: false,
+      save_image: false,
+      height: '100%',
+      width: '100%',
+      studies: [],
+    });
+  };
+  if (window.TradingView) {
+    script.onload();
+  } else {
+    document.head.appendChild(script);
+  }
 }
 
 // ── external ──
