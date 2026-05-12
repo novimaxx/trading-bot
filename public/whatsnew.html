@@ -450,85 +450,20 @@
 <body>
 <div class="page">
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-grid"></div>
-    <div class="hero-glow"></div>
-    <div class="hero-glow2"></div>
-    <div class="bk tl"></div><div class="bk tr"></div>
-    <div class="bk bl"></div><div class="bk br"></div>
-    <div class="hero-topbar">
-      <div class="hero-topbar-live"><div class="hero-topbar-dot"></div>LIVE · PRO SIGNALS</div>
-    </div>
-
-    <div class="hero-kicker">IT V3 · LIVE</div>
-
-    <h1><span class="accent">Запущено.</span><br><span style="color:var(--white)">Работает.</span></h1>
-
-    <div class="hero-tagline">Система активна. Сигналы идут. Аппу растёт.</div>
-    <div class="hero-sub">Автосигналы 24/7 · Мини-апп в Telegram · График BTC/ETH/SOL · Живые цены</div>
-
-    <div class="hero-date" style="background:rgba(46,204,113,.1);border-color:rgba(46,204,113,.3);color:var(--accent)">✅ &nbsp;ЗАПУЩЕНО 08 МАЯ 2026 · УЖЕ РАБОТАЕТ</div>
-
-    <div class="hero-pills">
-      <div class="hero-pill">📊 Индикатор активен</div>
-      <div class="hero-pill">⚡️ Сигналы 24/7</div>
-      <div class="hero-pill">📱 Мини-апп</div>
-      <div class="hero-pill">📈 Live график</div>
-    </div>
-
-    <div class="hero-footer">
-      <div>IT V3</div>
-      <div class="hero-footer-r">TRADINGVIEW</div>
+  <!-- HERO CTA -->
+  <div class="cta-block" style="margin-bottom:32px">
+    <div class="cta-glow"></div>
+    <div style="position:relative;z-index:2">
+      <div class="cta-tag">✅ ЗАПУЩЕНО · РАБОТАЕТ ПРЯМО СЕЙЧАС</div>
+      <div class="cta-title" style="font-size:52px;margin-bottom:14px">Всё готово.<br><span class="g">Заходи.</span></div>
+      <div class="cta-sub" style="margin-bottom:28px">IT v3 работает пока ты спишь.<br>Автосигналы 24/7, live график, цены BTC/ETH/SOL — всё в одном месте.</div>
+      <div class="cta-btns">
+        <a href="https://t.me/Ind_icator_Bot" class="cta-btn-primary" target="_blank">🚀 Открыть мини-апп</a>
+        <a href="install.html" class="cta-btn-secondary">⚙️ Установить индикатор</a>
+      </div>
+      <div class="cta-pro-note" style="margin-top:16px">💎 <strong>PRO-подписчики</strong> — расширенные сигналы и аналитика без ограничений</div>
     </div>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script>
-    function downloadHero() {
-      var hero = document.querySelector('.hero');
-      var accents = hero.querySelectorAll('.accent');
-      accents.forEach(function(el) {
-        el.style.webkitBackgroundClip = 'unset';
-        el.style.backgroundClip = 'unset';
-        el.style.webkitTextFillColor = '#2ecc71';
-        el.style.color = '#2ecc71';
-        el.style.background = 'none';
-      });
-      html2canvas(hero, { scale: 2, useCORS: true, backgroundColor: null }).then(function(canvas) {
-        accents.forEach(function(el) {
-          el.style.webkitBackgroundClip = '';
-          el.style.backgroundClip = '';
-          el.style.webkitTextFillColor = '';
-          el.style.color = '';
-          el.style.background = '';
-        });
-        // Скругляем углы
-        var radius = 56;
-        var rounded = document.createElement('canvas');
-        rounded.width = canvas.width;
-        rounded.height = canvas.height;
-        var ctx = rounded.getContext('2d');
-        ctx.beginPath();
-        ctx.moveTo(radius, 0);
-        ctx.lineTo(canvas.width - radius, 0);
-        ctx.quadraticCurveTo(canvas.width, 0, canvas.width, radius);
-        ctx.lineTo(canvas.width, canvas.height - radius);
-        ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - radius, canvas.height);
-        ctx.lineTo(radius, canvas.height);
-        ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - radius);
-        ctx.lineTo(0, radius);
-        ctx.quadraticCurveTo(0, 0, radius, 0);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(canvas, 0, 0);
-        var link = document.createElement('a');
-        link.download = 'it-v3-banner.png';
-        link.href = rounded.toDataURL('image/png');
-        link.click();
-      });
-    }
-  </script>
 
   <!-- HOOK: LIVE STATS -->
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:48px">
@@ -902,17 +837,9 @@
     </div>
   </div>
 
-  <!-- CTA -->
-  <div class="cta-block">
-    <div class="cta-glow"></div>
-    <div class="cta-tag">✅ ЗАПУЩЕНО · РАБОТАЕТ ПРЯМО СЕЙЧАС</div>
-    <div class="cta-title">Всё готово.<br><span class="g">Заходи.</span></div>
-    <div class="cta-sub">IT v3 работает пока ты спишь. Автосигналы, мини-апп, live график и цены — всё в одном.</div>
-    <div class="cta-btns">
-      <a href="https://t.me/Ind_icator_Bot" class="cta-btn-primary" target="_blank">🚀 Открыть мини-апп</a>
-      <a href="install.html" class="cta-btn-secondary">⚙️ Установить индикатор</a>
-    </div>
-    <div class="cta-pro-note">💎 <strong>PRO-подписчики</strong> — расширенные сигналы и аналитика без ограничений</div>
+  <!-- CTA bottom repeat -->
+  <div style="text-align:center;padding:40px 0 8px;position:relative;z-index:2">
+    <a href="https://t.me/Ind_icator_Bot" class="cta-btn-primary" target="_blank" style="font-size:15px">🚀 Открыть мини-апп</a>
   </div>
 
   <div class="footer">
