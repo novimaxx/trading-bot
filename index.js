@@ -465,10 +465,12 @@ app.post('/webhook', async (req, res) => {
         signal === 'structure_hl'     ? 'BUY'  :  // HL = higher low = бычий разворот
         signal === 'liq_sell_found'   ? 'BUY'  :  // sellside liq ниже = цель BUY
         signal === 'liq_sell_breach'  ? 'BUY'  :  // пробой sellside = разворот вверх
+        signal === 'pivot_ll'         ? 'BUY'  :  // LL = локальный лой = зона покупки
         signal === 'trend_down'       ? 'SELL' :
         signal === 'structure_lh'     ? 'SELL' :  // LH = lower high = медвежий слом
         signal === 'liq_buy_found'    ? 'SELL' :  // buyside liq выше = цель SELL
         signal === 'liq_buy_breach'   ? 'SELL' :  // пробой buyside = разворот вниз
+        signal === 'pivot_hh'         ? 'SELL' :  // HH = локальный хай = зона продажи
         isBuy ? 'BUY' : 'SELL'
       pool.query(
         `INSERT INTO app_signals (pair, action, tag, timeframe, price, comment, direction) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
@@ -1123,6 +1125,43 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
     res.json({ ok: true, chat_id: adminChatId, savedId, fileId })
   } catch (e) {
     res.json({ ok: false, error: e.message, savedId })
+  }
+})
+
+// ─── API: Admin announcement preview (admin only, no feed save) ──
+app.post('/api/admin/announce-admin', adminOnly, async (req, res) => {
+  const { body, tag, image_b64 } = req.body
+  if (!image_b64) return res.sendStatus(400)
+
+  const adminChatId = String(req.query.tg_id || req.body?.tg_id || '562914492')
+
+  const caption = [
+    body || null,
+    tag ? `🏷 ${tag}` : null,
+  ].filter(Boolean).join('\n\n')
+
+  const base64 = image_b64.replace(/^data:image\/\w+;base64,/, '')
+  const imgBuf = Buffer.from(base64, 'base64')
+
+  try {
+    const fd = new FormData()
+    fd.append('chat_id', adminChatId)
+    fd.append('caption', caption)
+    fd.append('parse_mode', 'Markdown')
+    fd.append('photo', new Blob([imgBuf], { type: 'image/jpeg' }), 'banner.jpg')
+
+    const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+      method: 'POST', body: fd
+    })
+    const j = await r.json()
+    if (!j.ok) {
+      console.error('announce-admin error:', j)
+      return res.json({ ok: false, error: j.description })
+    }
+
+    res.json({ ok: true, chat_id: adminChatId })
+  } catch (e) {
+    res.json({ ok: false, error: e.message })
   }
 })
 
