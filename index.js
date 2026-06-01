@@ -432,6 +432,7 @@ app.post('/webhook', async (req, res) => {
       const isHold   = signal.includes('holding')
       const isStruct = signal.includes('structure')
       const isLiq    = signal.startsWith('liq_')
+      const isPivot  = signal === 'pivot_hh' || signal === 'pivot_ll'
       const actionLabel = isStrong
         ? (isBuy ? 'STRONG BUY' : 'STRONG SELL')
         : (isBuy ? 'BUY' : isSell ? 'SELL' : meta.title)
