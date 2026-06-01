@@ -49,6 +49,8 @@ async function runMigrations() {
       );
       ALTER TABLE app_signals ADD COLUMN IF NOT EXISTS comment TEXT;
       ALTER TABLE app_signals ADD COLUMN IF NOT EXISTS direction TEXT;
+      UPDATE app_signals SET direction = 'BUY'  WHERE (tag ILIKE '%лой%' OR tag ILIKE '% ll%' OR tag = 'LL');
+      UPDATE app_signals SET direction = 'SELL' WHERE (tag ILIKE '%хай%' OR tag ILIKE '% hh%' OR tag = 'HH');
 
       CREATE TABLE IF NOT EXISTS app_posts (
         id         SERIAL PRIMARY KEY,
@@ -457,6 +459,14 @@ app.post('/webhook', async (req, res) => {
           : (isBuyside ? '💡 Скопление покупок выше этой зоны'        : '💡 Скопление продаж ниже этой зоны'))
       }
       if (data.sm_level) commentParts.push(`📍 Уровень: ${fmtPrice(data.sm_level)}`)
+      if (isPivot) {
+        commentParts.push(signal === 'pivot_ll'
+          ? '📍 Локальный лой зафиксирован — возможная зона накопления'
+          : '📍 Локальный хай зафиксирован — возможная зона распределения')
+        if (data.f382) commentParts.push(`Fib 0.382: ${fmtPrice(data.f382)}`)
+        if (data.f500) commentParts.push(`Fib 0.5:   ${fmtPrice(data.f500)}`)
+        if (data.f618) commentParts.push(`Fib 0.618: ${fmtPrice(data.f618)}`)
+      }
       const comment = commentParts.join('\n') || null
 
       // Явный маппинг направления по типу сигнала

@@ -875,6 +875,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div style="display:flex;gap:8px">
         <button class="bm-send-btn" id="bc-send-btn" onclick="bcSend()" style="flex:2">📤 Отправить подписчикам</button>
         <button class="bm-send-btn" id="bc-test-btn" onclick="bcTestSend()" style="flex:1;background:#1a1a24;border:1px solid rgba(255,255,255,.15);font-size:13px">🧪 Тест → мне</button>
+        <button class="bm-send-btn" id="bc-admin-btn" onclick="bcAdminAnnounce()" style="flex:1;background:#162016;border:1px solid rgba(46,204,113,.25);font-size:13px">📣 Анонс админу</button>
       </div>
       <div id="bc-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px"></div>
       <div class="bm-copy-toast" id="bc-copy-toast"></div>
@@ -1341,7 +1342,8 @@ function sigCard(s) {
     tag.includes('buy') ||
     tag.includes('вверх') ||      // Тренд вверх
     tag.includes('разворот') ||   // structure_hl = бычий разворот
-    tag.includes('sellside');     // Sellside liq = цель BUY
+    tag.includes('sellside') ||   // Sellside liq = цель BUY
+    tag.includes('лой');          // LL — локальный лой = BUY зона
   const tagClass = isBuy ? '' : 'sell';
   const dotClass = isBuy ? '' : 'sell';
   const btnClass = isBuy ? 'sc-buy' : 'sc-sell-btn';
@@ -2180,6 +2182,41 @@ async function bcTestSend() {
     res.textContent=`✅ Тест отправлен в Telegram + сохранён в ленту`;
     res.style.color='#2ecc71';
     await refreshFeed();
+  } else {
+    res.textContent=`❌ ${r?.error||'adminApi null — смотри консоль'}`;
+    res.style.color='#ff3d7f';
+  }
+}
+
+async function bcAdminAnnounce() {
+  const title = document.getElementById('bc-title').value.trim();
+  const body  = document.getElementById('bc-body').value.trim();
+  const tag   = document.getElementById('bc-tag').value.trim();
+
+  if (!body && !title) { toast('Напиши текст анонса', true); return; }
+
+  const btn = document.getElementById('bc-admin-btn');
+  btn.disabled = true; btn.innerHTML = '⏳';
+
+  const res = document.getElementById('bc-result');
+  res.style.display='block'; res.style.color='rgba(255,255,255,.4)'; res.textContent='⏳ Отправляю админу...';
+
+  let image_b64;
+  try {
+    const dataUrl = await bcRenderForSend();
+    image_b64 = dataUrl.replace(/^data:image\/(png|jpeg);base64,/,'');
+  } catch(e) {
+    btn.disabled=false; btn.innerHTML='📣 Анонс админу';
+    res.textContent='❌ Ошибка рендера'; res.style.color='#ff3d7f'; return;
+  }
+
+  const r = await adminApi('/api/admin/announce-admin','POST',{title,body,tag,image_b64});
+  btn.disabled=false; btn.innerHTML='📣 Анонс админу';
+
+  if (r?.ok) {
+    res.textContent='✅ Анонс отправлен только админу';
+    res.style.color='#2ecc71';
+    toast('✅ Анонс отправлен админу');
   } else {
     res.textContent=`❌ ${r?.error||'adminApi null — смотри консоль'}`;
     res.style.color='#ff3d7f';
