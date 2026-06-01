@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTC / 1D — Обновление · IT v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0c; --bg2: #0e0e12; --card: #0e0e12; --card2: #121216;
+    --line: #1c1c22; --line2: #252530; --muted: #6b6b78; --lg: #a0a0b0;
+    --white: #e8e8f0; --accent: #2ecc71; --accent2: #ff3d7f;
+    --orange: #f5a623; --yellow: #fbbf24;
+  }
+
+  body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
+  .page { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  /* ─── HEADER ─── */
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .brand { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .badge-live { display: flex; align-items: center; gap: 5px;
+    background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.2);
+    color: var(--accent); font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em;
+    padding: 4px 10px; border-radius: 20px; }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+    animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ─── TITLE ─── */
+  .title-block { margin-bottom: 24px; }
+  .asset-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .2em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+  .title { font-size: 28px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+  .title span { color: var(--accent); }
+  .subtitle { font-size: 13px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── CHART ─── */
+  .chart-wrap {
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--line2); margin-bottom: 32px;
+    background: #0d0d10;
+  }
+  .chart-wrap img { width: 100%; display: block; }
+
+  /* ─── OPINION ─── */
+  .opinion-block {
+    background: rgba(46,204,113,.04); border: 1px solid rgba(46,204,113,.12);
+    border-radius: 16px; padding: 20px; margin-bottom: 24px;
+  }
+  .opinion-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 12px; }
+  .opinion-text { font-size: 14px; line-height: 1.7; color: var(--lg); font-style: italic; }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 28px; }
+  .section-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--line); }
+
+  /* ─── LEVELS ─── */
+  .levels { display: flex; flex-direction: column; gap: 8px; }
+  .level-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card2); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 14px;
+  }
+  .level-label { font-size: 13px; color: var(--white); font-weight: 500; }
+  .level-price { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; }
+  .level-price.green { color: var(--accent); }
+  .level-price.red { color: var(--accent2); }
+  .level-price.orange { color: var(--orange); }
+  .level-note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* ─── TEXT BLOCKS ─── */
+  .text-block { font-size: 14px; line-height: 1.8; color: var(--lg); }
+  .text-block p { margin-bottom: 12px; }
+  .text-block strong { color: var(--white); font-weight: 600; }
+  .text-block .arrow { color: var(--accent); margin-right: 4px; }
+
+  /* ─── SCENARIO ─── */
+  .scenario-card {
+    background: var(--card2); border: 1px solid var(--line2);
+    border-radius: 14px; padding: 16px; margin-bottom: 10px;
+  }
+  .scenario-card.bull { border-color: rgba(46,204,113,.2); background: rgba(46,204,113,.03); }
+  .scenario-card.bear { border-color: rgba(255,61,127,.15); background: rgba(255,61,127,.03); }
+  .scenario-head { display: flex; align-items: center; gap: 8px;
+    font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .scenario-body { font-size: 13px; line-height: 1.7; color: var(--lg); }
+
+  /* ─── RSI BADGE ─── */
+  .rsi-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card2); border: 1px solid var(--line2);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 24px;
+  }
+  .rsi-val { font-family: 'JetBrains Mono', monospace; font-size: 28px;
+    font-weight: 800; color: var(--orange); }
+  .rsi-info { flex: 1; }
+  .rsi-label { font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: .15em; color: var(--muted); text-transform: uppercase; }
+  .rsi-desc { font-size: 13px; color: var(--lg); margin-top: 2px; }
+
+  /* ─── NEWS ─── */
+  .news-item {
+    background: var(--card2); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px; margin-bottom: 8px;
+  }
+  .news-source { font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--muted); letter-spacing: .1em; margin-bottom: 4px; }
+  .news-text { font-size: 13px; color: var(--lg); line-height: 1.6; }
+
+  /* ─── CONCLUSION ─── */
+  .conclusion {
+    background: var(--card2); border: 1px solid var(--line2);
+    border-radius: 16px; padding: 20px; margin-top: 28px;
+    text-align: center;
+  }
+  .conclusion p { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .conclusion span { font-size: 13px; color: var(--muted); }
+
+  /* ─── CTA ─── */
+  .cta-wrap { margin-top: 32px; text-align: center; }
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #000; font-weight: 800;
+    font-size: 14px; padding: 14px 28px; border-radius: 14px;
+    text-decoration: none; font-family: 'Inter', sans-serif;
+    transition: opacity .2s;
+  }
+  .cta-btn:active { opacity: .8; }
+  .date-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--muted); letter-spacing: .15em; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">IT v3 · TradingView</div>
+    <div class="badge-live"><span class="badge-dot"></span>LIVE</div>
+  </div>
+
+  <!-- Title -->
+  <div class="title-block">
+    <div class="asset-tag">💎 BTC / USDT · 1D · Binance</div>
+    <div class="title"><span>BTC</span> — обновление</div>
+    <div class="subtitle">22 мая 2026 · Дневной таймфрейм</div>
+  </div>
+
+  <!-- Chart -->
+  <div class="chart-wrap">
+    <img src="/btc-update-0601.png" alt="BTC 1D chart IT v3">
+  </div>
+
+  <!-- Opinion -->
+  <div class="opinion-block">
+    <div class="opinion-label">📣 Мнение</div>
+    <div class="opinion-text">
+      Реально самый лучший инструмент для технического анализа рынка. Если надо узнать технические данные, понять куда пойдёт биткоин или весь рынок — это лучшее на сегодняшний день.
+    </div>
+  </div>
+
+  <!-- Levels -->
+  <div class="section">
+    <div class="section-title">Ключевые уровни IT v3</div>
+    <div class="levels">
+      <div class="level-row">
+        <div>
+          <div class="level-label">SM1 — SELL 100%</div>
+          <div class="level-note">Верхняя цель / зона продажи</div>
+        </div>
+        <div class="level-price red">$95 677</div>
+      </div>
+      <div class="level-row">
+        <div>
+          <div class="level-label">SM2 — SELL 50%</div>
+          <div class="level-note">Медвежий блок 82–84K</div>
+        </div>
+        <div class="level-price red">$84 832</div>
+      </div>
+      <div class="level-row" style="border-color:rgba(245,166,35,.3)">
+        <div>
+          <div class="level-label">SM3 — BUY 25% ★</div>
+          <div class="level-note">Оранжевая SM / ключевая граница</div>
+        </div>
+        <div class="level-price orange">$75 216</div>
+      </div>
+      <div class="level-row" style="border-color:rgba(46,204,113,.2)">
+        <div>
+          <div class="level-label">SM4 — BUY 50%</div>
+          <div class="level-note">Зона набора ~70.5K</div>
+        </div>
+        <div class="level-price green">$68 360</div>
+      </div>
+      <div class="level-row" style="border-color:rgba(46,204,113,.3)">
+        <div>
+          <div class="level-label">SM5 — BUY 100%</div>
+          <div class="level-note">Глубокая поддержка</div>
+        </div>
+        <div class="level-price green">$60 906</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSI -->
+  <div class="rsi-row">
+    <div class="rsi-val">36</div>
+    <div class="rsi-info">
+      <div class="rsi-label">RSI · 1D</div>
+      <div class="rsi-desc">Близко к зоне перепроданности. Входить агрессивно рано — только частями, лесенкой, от зоны с подтверждением.</div>
+    </div>
+  </div>
+
+  <!-- Analysis -->
+  <div class="section">
+    <div class="section-title">Анализ</div>
+    <div class="text-block">
+      <p>BTC торгуется около <strong>$73 300</strong>. Прошлый сценарий остаётся в работе: цена не смогла вернуть зону <strong>75–76K</strong>, осталась ниже оранжевой SM и продолжает торговаться под давлением.</p>
+      <p>Главная зона внимания снизу:</p>
+      <p><span class="arrow">→</span> <strong>70–71.5K</strong> — первая зона реакции<br>
+      <span class="arrow">→</span> <strong>68.4K / SM4</strong> — актуальный уровень по индикатору</p>
+      <p>Смотрим область <strong>68.5–71.5K</strong> как зону возможного набора и реакции.</p>
+    </div>
+  </div>
+
+  <!-- Scenario -->
+  <div class="section">
+    <div class="section-title">Сценарий</div>
+    <div class="scenario-card bull">
+      <div class="scenario-head"><span>✅</span> Бычий</div>
+      <div class="scenario-body">BTC удерживает область <strong>68.5–71.5K</strong> → технический отскок обратно к <strong>75–76K</strong>.</div>
+    </div>
+    <div class="scenario-card bear">
+      <div class="scenario-head"><span>⚠️</span> Осторожно</div>
+      <div class="scenario-body">Пробой <strong>68.4K (SM4)</strong> открывает путь к <strong>60.9K (SM5)</strong>. При агрессивном движении вниз ждём полную перепроданность RSI и сигнал BUY 100%.</div>
+    </div>
+  </div>
+
+  <!-- News -->
+  <div class="section">
+    <div class="section-title">Новостной фон</div>
+    <div class="news-item">
+      <div class="news-source">CoinDesk</div>
+      <div class="news-text">BTC ETF — рекордная серия оттоков: 10 торговых дней подряд, около <strong>$2.97B</strong> с 15 по 29 мая.</div>
+    </div>
+    <div class="news-item">
+      <div class="news-source">CoinShares</div>
+      <div class="news-text">Крупные недельные оттоки по BTC — около <strong>$1.315B</strong>. Давление сохраняется.</div>
+    </div>
+    <div class="news-item">
+      <div class="news-source">Макро</div>
+      <div class="news-text">Впереди важный <strong>CPI США — 10 июня</strong>. Рынок может оставаться нервным до публикации данных.</div>
+    </div>
+  </div>
+
+  <!-- Conclusion -->
+  <div class="conclusion">
+    <p>Работаем от уровней. Без эмоций.</p>
+    <span>IT v3 показывает зоны — ты принимаешь решение.</span>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-wrap">
+    <a href="https://t.me/Ind_icator_Bot" class="cta-btn">📱 Открыть IT V3</a>
+    <div class="date-tag">22 МАЯ 2026 · IT V3</div>
+  </div>
+
+</div>
+</body>
+</html>
