@@ -3,217 +3,374 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IT v3 — Попробовать бесплатно</title>
+<title>IT v3 — Попробовать бесплатно 48ч</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg: #0a0a0c; --card: #0e0e12; --card2: #121216;
+    --bg: #0a0a0c; --bg2: #0e0e12; --card: #0e0e12; --card2: #121216;
     --line: #1c1c22; --line2: #252530; --muted: #6b6b78; --lg: #a0a0b0;
     --white: #e8e8f0; --accent: #2ecc71; --accent2: #ff3d7f;
-    --orange: #f5a623;
+    --cyan: #4dc9f0; --blue: #4f8ef7; --orange: #f5a623;
+    --yellow: #fbbf24; --green: #2ecc71; --green2: #6fffb2; --pink: #ff3d7f;
   }
 
-  body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; min-height: 100vh; }
-  .page { max-width: 680px; margin: 0 auto; padding: 40px 20px 80px; }
-
-  /* ─── HEADER ─── */
-  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 48px; }
-  .logo { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 800;
-    letter-spacing: .12em; color: var(--accent); }
-  .badge-live { display: flex; align-items: center; gap: 5px;
-    background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.2);
-    color: var(--accent); font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700; letter-spacing: .12em;
-    padding: 4px 10px; border-radius: 20px; }
-  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-    animation: pulse 1.8s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
+  .page { max-width: 880px; margin: 0 auto; padding: 56px 28px 80px; }
 
   /* ─── HERO ─── */
-  .hero { text-align: center; margin-bottom: 48px; }
-  .hero-kicker { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
-    letter-spacing: .22em; text-transform: uppercase; color: var(--accent);
-    margin-bottom: 16px; }
-  .hero-title { font-size: 52px; font-weight: 900; line-height: 1.05;
-    margin-bottom: 8px; letter-spacing: -.02em; }
-  .hero-title .green { background: linear-gradient(180deg,#6FFFB2 0%,#2ecc71 60%,#126638 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hero-sub { font-size: 18px; color: var(--lg); margin-bottom: 24px; font-weight: 400; }
-  .hero-free-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(245,166,35,.1); border: 1px solid rgba(245,166,35,.3);
-    color: var(--orange); font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; font-weight: 700; letter-spacing: .1em;
-    padding: 8px 18px; border-radius: 20px; margin-bottom: 32px;
+  .hero {
+    background: var(--bg); border: 1px solid var(--line2);
+    border-radius: 28px; padding: 72px 48px 56px;
+    text-align: center; margin-bottom: 48px;
+    position: relative; overflow: hidden;
   }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 30%, transparent 95%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, #000 30%, transparent 95%);
+    opacity: .5; pointer-events: none; z-index: 1;
+  }
+  .hero-glow {
+    position: absolute; width: 70%; height: 280px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,204,113,.2) 0%, transparent 65%);
+    left: 50%; bottom: -140px; transform: translateX(-50%);
+    filter: blur(50px); pointer-events: none; z-index: 1;
+  }
+  .hero-glow2 {
+    position: absolute; width: 40%; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,166,35,.12) 0%, transparent 65%);
+    right: -5%; top: -60px; filter: blur(40px); pointer-events: none; z-index: 1;
+  }
+  .bk { position: absolute; width: 18px; height: 18px; border: 2px solid var(--accent); z-index: 6; }
+  .bk.tl { top:22px; left:22px; border-right:none; border-bottom:none; }
+  .bk.tr { top:22px; right:22px; border-left:none; border-bottom:none; }
+  .bk.bl { bottom:22px; left:22px; border-right:none; border-top:none; }
+  .bk.br { bottom:22px; right:22px; border-left:none; border-top:none; }
+
+  .hero-topbar {
+    position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: 2.5px; color: rgba(255,255,255,.55); white-space: nowrap; z-index: 6;
+  }
+  .hero-topbar-live { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; letter-spacing: 2.8px; }
+  .hero-topbar-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(255,61,127,.22); animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+  .hero-kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700;
+    letter-spacing: .28em; text-transform: uppercase; color: var(--orange);
+    margin-bottom: 20px; display: inline-flex; align-items: center; gap: 14px;
+    position: relative; z-index: 5;
+  }
+  .hero-kicker::before, .hero-kicker::after { content: ''; width: 22px; height: 2px; background: var(--orange); }
+
+  .hero h1 {
+    font-size: 80px; font-weight: 900; letter-spacing: -.04em; line-height: .95;
+    color: var(--white); margin-bottom: 24px; position: relative; z-index: 5; text-transform: uppercase;
+  }
+  .hero h1 .accent {
+    display: inline-block;
+    background: linear-gradient(180deg, #6FFFB2 0%, #2ecc71 50%, #126638 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero h1 .orange {
+    background: linear-gradient(180deg, #fdd89a 0%, #f5a623 50%, #7a4f0d 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .hero-tagline { font-size: 15px; color: var(--lg); margin-bottom: 6px; font-weight: 500; position: relative; z-index: 5; }
+  .hero-sub { font-size: 12px; color: var(--muted); margin-bottom: 32px; position: relative; z-index: 5; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 10px 28px; border-radius: 100px;
+    background: rgba(245,166,35,.1); border: 1px solid rgba(245,166,35,.35);
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+    color: var(--orange); position: relative; z-index: 5; margin-bottom: 20px;
+    letter-spacing: .1em;
+  }
+  .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); animation: pulse-dot 1.8s infinite; }
+
+  .hero-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; position: relative; z-index: 5; }
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 7px 16px; border-radius: 100px;
+    border: 1px solid var(--line2); background: var(--card2);
+    font-size: 12px; font-weight: 600; color: var(--lg);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .1em;
+  }
+  .hero-footer {
+    position: absolute; bottom: 28px; left: 40px; right: 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.3); z-index: 6;
+  }
+  .hero-footer-r { display: flex; align-items: center; gap: 8px; }
+  .hero-footer-r::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* ─── SECTION ─── */
+  .section { margin-bottom: 56px; }
+  .sec-label {
+    display: flex; align-items: center; gap: 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .sec-title { font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 8px; line-height: 1.2; }
+  .sec-desc { font-size: 15px; color: var(--lg); margin-bottom: 24px; }
+
+  /* ─── GRIDS ─── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
+
+  /* ─── FEATURE CARD ─── */
+  .fcard {
+    background: var(--card); border: 1px solid var(--line2);
+    border-radius: 16px; padding: 22px 20px 18px; position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .fcard-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
+  .fcard-icon { font-size: 32px; margin-bottom: 14px; display: block; }
+  .fcard-title { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+  .fcard-text { font-size: 12px; color: var(--lg); line-height: 1.6; }
 
   /* ─── WHAT YOU GET ─── */
-  .section-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
-    letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
-    margin-bottom: 16px; }
-  .features { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
-  .feature-row {
-    display: flex; align-items: flex-start; gap: 14px;
-    background: var(--card2); border: 1px solid var(--line2);
-    border-radius: 14px; padding: 16px;
+  .include-list { display: flex; flex-direction: column; gap: 10px; }
+  .include-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card); border: 1px solid var(--line2);
+    border-radius: 14px; padding: 16px 20px;
   }
-  .feature-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
-  .feature-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 3px; }
-  .feature-desc { font-size: 13px; color: var(--lg); line-height: 1.5; }
-
-  /* ─── TIMER BLOCK ─── */
-  .timer-block {
-    background: var(--card2); border: 1px solid rgba(46,204,113,.15);
-    border-radius: 18px; padding: 28px 24px; text-align: center; margin-bottom: 28px;
+  .include-left { display: flex; align-items: center; gap: 14px; }
+  .include-ico { font-size: 24px; }
+  .include-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .include-desc { font-size: 12px; color: var(--muted); }
+  .include-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; padding: 4px 12px; border-radius: 20px; white-space: nowrap;
   }
-  .timer-label { font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: .2em; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
-  .timer-val { font-family: 'JetBrains Mono', monospace; font-size: 48px;
-    font-weight: 800; color: var(--accent); letter-spacing: .05em; margin-bottom: 6px; }
-  .timer-sub { font-size: 13px; color: var(--muted); }
+  .ib-green { background: rgba(46,204,113,.1); border: 1px solid rgba(46,204,113,.25); color: var(--accent); }
+  .ib-orange { background: rgba(245,166,35,.1); border: 1px solid rgba(245,166,35,.25); color: var(--orange); }
 
   /* ─── CTA ─── */
-  .cta-wrap { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-  .cta-main {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    background: var(--accent); color: #000; font-weight: 800;
-    font-size: 16px; padding: 18px 28px; border-radius: 16px;
-    text-decoration: none; transition: opacity .2s;
+  .cta-block {
+    background: linear-gradient(135deg, rgba(245,166,35,.08) 0%, rgba(46,204,113,.05) 100%);
+    border: 1px solid rgba(245,166,35,.25); border-radius: 24px;
+    padding: 48px 40px; text-align: center; position: relative; overflow: hidden;
   }
-  .cta-main:active { opacity: .85; }
-  .cta-note { text-align: center; font-size: 12px; color: var(--muted);
-    font-family: 'JetBrains Mono', monospace; letter-spacing: .06em; }
-
-  /* ─── SCREENSHOTS / PREVIEW ─── */
-  .preview-block { margin-bottom: 40px; }
-  .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .preview-card {
-    background: var(--card2); border: 1px solid var(--line2);
-    border-radius: 14px; padding: 18px; text-align: center;
+  .cta-glow {
+    position: absolute; width: 60%; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,166,35,.12) 0%, transparent 70%);
+    left: 50%; bottom: -100px; transform: translateX(-50%);
+    filter: blur(40px); pointer-events: none;
   }
-  .preview-emoji { font-size: 28px; margin-bottom: 8px; }
-  .preview-title { font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
-  .preview-desc { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .cta-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .3em; color: var(--orange); text-transform: uppercase; margin-bottom: 14px;
+  }
+  .cta-title { font-size: 36px; font-weight: 900; color: var(--white); margin-bottom: 10px; line-height: 1.1; }
+  .cta-title .g {
+    background: linear-gradient(180deg, #6FFFB2, #2ecc71);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .cta-sub { font-size: 15px; color: var(--lg); margin-bottom: 32px; }
+  .cta-btn-primary {
+    padding: 16px 40px; border-radius: 14px; border: none;
+    background: var(--accent); color: #000; font-size: 16px; font-weight: 800;
+    cursor: pointer; font-family: 'Inter', sans-serif; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: opacity .15s, transform .1s;
+  }
+  .cta-btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+  .cta-note {
+    margin-top: 16px; font-size: 12px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: .05em;
+    position: relative; z-index: 2;
+  }
 
-  /* ─── TRUST ─── */
-  .trust { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+  /* ─── TRUST CHIPS ─── */
+  .trust { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 20px; position: relative; z-index: 2; }
   .trust-chip {
     background: var(--card2); border: 1px solid var(--line);
-    border-radius: 20px; padding: 6px 14px;
+    border-radius: 20px; padding: 5px 14px;
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
     font-weight: 700; letter-spacing: .1em; color: var(--lg);
   }
 
   /* ─── FOOTER ─── */
-  .footer { text-align: center; font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: var(--muted); letter-spacing: .12em; }
+  .footer {
+    text-align: center; padding: 32px 0 0;
+    border-top: 1px solid var(--line);
+    font-size: 12px; color: var(--muted); line-height: 1.8;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 56px 24px 44px; }
+    .hero h1 { font-size: 52px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .cta-title { font-size: 26px; }
+    .cta-block { padding: 36px 24px; }
+    .include-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- Top bar -->
-  <div class="top-bar">
-    <div class="logo">IT V3</div>
-    <div class="badge-live"><span class="badge-dot"></span>LIVE</div>
-  </div>
-
-  <!-- Hero -->
+  <!-- HERO -->
   <div class="hero">
-    <div class="hero-kicker">🎁 Тестовый доступ</div>
-    <div class="hero-title">Попробуй<br><span class="green">IT V3</span><br>бесплатно</div>
-    <div class="hero-sub">Индикатор и мини-апп — без оплаты</div>
-    <div class="hero-free-badge">⏱ 48 часов · Полный доступ · Бесплатно</div>
-  </div>
-
-  <!-- What you get -->
-  <div class="section-label">Что входит в доступ</div>
-  <div class="features">
-    <div class="feature-row">
-      <div class="feature-icon">📊</div>
-      <div>
-        <div class="feature-title">Индикатор IT V3 в TradingView</div>
-        <div class="feature-desc">Ключевые уровни, структура рынка, точки входа и фиксации прямо на графике.</div>
-      </div>
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="bk tl"></div><div class="bk tr"></div>
+    <div class="bk bl"></div><div class="bk br"></div>
+    <div class="hero-topbar">
+      <div class="hero-topbar-live"><div class="hero-topbar-dot"></div>LIVE · PRO SIGNALS</div>
     </div>
-    <div class="feature-row">
-      <div class="feature-icon">🔔</div>
-      <div>
-        <div class="feature-title">Автосигналы 24/7 в Telegram</div>
-        <div class="feature-desc">BTC, ETH, SOL — сигналы приходят сами, не нужно следить за графиком.</div>
-      </div>
+    <div class="hero-kicker">Тестовый доступ</div>
+    <h1>Попробуй<br><span class="accent">IT V3</span><br><span class="orange">бесплатно</span></h1>
+    <div class="hero-tagline">Индикатор в TradingView + Мини-апп в Telegram</div>
+    <div class="hero-sub">Автосигналы 24/7 · График BTC/ETH/SOL · Аналитика · Живые цены</div>
+    <div class="hero-badge">⏱ &nbsp;48 ЧАСОВ · ПОЛНЫЙ ДОСТУП · БЕСПЛАТНО</div>
+    <div class="hero-pills">
+      <div class="hero-pill">📊 Индикатор IT V3</div>
+      <div class="hero-pill">⚡️ Сигналы 24/7</div>
+      <div class="hero-pill">📱 Мини-апп</div>
+      <div class="hero-pill">📰 Аналитика</div>
     </div>
-    <div class="feature-row">
-      <div class="feature-icon">📱</div>
-      <div>
-        <div class="feature-title">Мини-апп с live-данными</div>
-        <div class="feature-desc">Live-график, цены, лента сигналов и аналитика — всё внутри Telegram.</div>
-      </div>
-    </div>
-    <div class="feature-row">
-      <div class="feature-icon">📰</div>
-      <div>
-        <div class="feature-title">Аналитика и сценарии</div>
-        <div class="feature-desc">Разборы рынка, сценарии по BTC/ETH/SOL — от команды IT V3.</div>
-      </div>
+    <div class="hero-footer">
+      <div>IT V3</div>
+      <div class="hero-footer-r">TRADINGVIEW</div>
     </div>
   </div>
 
-  <!-- Timer -->
-  <div class="timer-block">
-    <div class="timer-label">Бесплатный доступ на</div>
-    <div class="timer-val">48:00</div>
-    <div class="timer-sub">После — можно продолжить по подписке</div>
+  <!-- ЧТО ВХОДИТ -->
+  <div class="section">
+    <div class="sec-label">48 часов · Полный доступ</div>
+    <div class="sec-title">Что ты получаешь</div>
+    <div class="sec-desc">За 48 часов — полный доступ ко всему что есть в IT V3. Без ограничений.</div>
+
+    <div class="include-list">
+      <div class="include-row">
+        <div class="include-left">
+          <div class="include-ico">📊</div>
+          <div>
+            <div class="include-name">Индикатор IT V3 в TradingView</div>
+            <div class="include-desc">Уровни, структура рынка, точки входа и фиксации прямо на графике</div>
+          </div>
+        </div>
+        <div class="include-badge ib-green">ВКЛЮЧЕНО</div>
+      </div>
+      <div class="include-row">
+        <div class="include-left">
+          <div class="include-ico">🔔</div>
+          <div>
+            <div class="include-name">Автосигналы 24/7</div>
+            <div class="include-desc">BTC, ETH, SOL — сигналы приходят в Telegram сами</div>
+          </div>
+        </div>
+        <div class="include-badge ib-green">ВКЛЮЧЕНО</div>
+      </div>
+      <div class="include-row">
+        <div class="include-left">
+          <div class="include-ico">📱</div>
+          <div>
+            <div class="include-name">Мини-апп с live-данными</div>
+            <div class="include-desc">Цены, график, лента сигналов — всё внутри Telegram</div>
+          </div>
+        </div>
+        <div class="include-badge ib-green">ВКЛЮЧЕНО</div>
+      </div>
+      <div class="include-row">
+        <div class="include-left">
+          <div class="include-ico">📰</div>
+          <div>
+            <div class="include-name">Аналитика и сценарии</div>
+            <div class="include-desc">Разборы по BTC/ETH/SOL от команды IT V3</div>
+          </div>
+        </div>
+        <div class="include-badge ib-green">ВКЛЮЧЕНО</div>
+      </div>
+      <div class="include-row" style="border-color:rgba(245,166,35,.2);background:rgba(245,166,35,.03)">
+        <div class="include-left">
+          <div class="include-ico">⏱</div>
+          <div>
+            <div class="include-name">Длительность доступа</div>
+            <div class="include-desc">После окончания — можно продолжить по подписке</div>
+          </div>
+        </div>
+        <div class="include-badge ib-orange">48 ЧАСОВ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- КАК ЭТО РАБОТАЕТ -->
+  <div class="section">
+    <div class="sec-label">Как получить</div>
+    <div class="sec-title">Три шага — и ты внутри</div>
+    <div class="sec-desc">Никакой регистрации и карты. Просто нажми кнопку.</div>
+
+    <div class="grid2">
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#f5a623,#fbbf24)"></div>
+        <span class="fcard-icon">👆</span>
+        <div class="fcard-title" style="color:var(--orange)">1. Нажми кнопку ниже</div>
+        <div class="fcard-text">Откроется Telegram с ботом IT V3. Нажми «Старт» — доступ активируется автоматически.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#2ecc71,#6fffb2)"></div>
+        <span class="fcard-icon">✅</span>
+        <div class="fcard-title" style="color:var(--accent)">2. Получи доступ</div>
+        <div class="fcard-text">Бот активирует 48-часовой PRO-доступ. Сигналы, мини-апп и индикатор — всё сразу.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#4dc9f0,#4f8ef7)"></div>
+        <span class="fcard-icon">📊</span>
+        <div class="fcard-title" style="color:var(--cyan)">3. Установи индикатор</div>
+        <div class="fcard-text">Бот пришлёт инструкцию по установке IT V3 в TradingView. Займёт 2 минуты.</div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-accent" style="background:linear-gradient(90deg,#ff3d7f,#ff8fb3)"></div>
+        <span class="fcard-icon">🚀</span>
+        <div class="fcard-title" style="color:var(--pink)">4. Работай с рынком</div>
+        <div class="fcard-text">48 часов полного доступа. Смотри как работает индикатор, следи за сигналами.</div>
+      </div>
+    </div>
   </div>
 
   <!-- CTA -->
-  <div class="cta-wrap">
-    <a href="https://t.me/Ind_icator_Bot?start=trial48" class="cta-main">
-      🚀 Получить доступ бесплатно
+  <div class="cta-block">
+    <div class="cta-glow"></div>
+    <div class="cta-tag">🎁 БЕСПЛАТНО · БЕЗ КАРТЫ · 48 ЧАСОВ</div>
+    <div class="cta-title">Попробуй сам.<br><span class="g">Бесплатно.</span></div>
+    <div class="cta-sub">Нажми кнопку — и через 10 секунд у тебя полный доступ к IT V3.</div>
+    <a href="https://t.me/Ind_icator_Bot?start=trial48" class="cta-btn-primary">
+      🚀 Получить 48ч доступ
     </a>
     <div class="cta-note">Нажми → откроется бот → доступ активируется автоматически</div>
-  </div>
-
-  <!-- Preview grid -->
-  <div class="preview-block">
-    <div class="section-label">Что увидишь внутри</div>
-    <div class="preview-grid">
-      <div class="preview-card">
-        <div class="preview-emoji">📈</div>
-        <div class="preview-title">Уровни на графике</div>
-        <div class="preview-desc">SM1–SM5, зоны BUY/SELL, структура</div>
-      </div>
-      <div class="preview-card">
-        <div class="preview-emoji">⚡️</div>
-        <div class="preview-title">Сигналы в реальном времени</div>
-        <div class="preview-desc">HH, LL, Strong BUY/SELL, тренд</div>
-      </div>
-      <div class="preview-card">
-        <div class="preview-emoji">💹</div>
-        <div class="preview-title">Live цены</div>
-        <div class="preview-desc">BTC · ETH · SOL в мини-апп</div>
-      </div>
-      <div class="preview-card">
-        <div class="preview-emoji">📋</div>
-        <div class="preview-title">Сценарии рынка</div>
-        <div class="preview-desc">Аналитика и разборы от команды</div>
-      </div>
+    <div class="trust">
+      <div class="trust-chip">✓ Без карты</div>
+      <div class="trust-chip">✓ Без регистрации</div>
+      <div class="trust-chip">✓ Один раз на аккаунт</div>
+      <div class="trust-chip">✓ Отменить в любой момент</div>
     </div>
   </div>
 
-  <!-- Trust -->
-  <div class="trust">
-    <div class="trust-chip">✓ Без карты</div>
-    <div class="trust-chip">✓ Без регистрации</div>
-    <div class="trust-chip">✓ 48ч полный доступ</div>
-    <div class="trust-chip">✓ Отменить в любой момент</div>
+  <div class="footer">
+    <div>IT v3 · Индикатор · Автосигналы · Мини-апп</div>
+    <div style="margin-top:4px">© 2026 IT v3 — Индикатор от Товарища</div>
   </div>
-
-  <!-- Footer -->
-  <div class="footer">IT V3 · ИНДИКАТОР ОТ ТОВАРИЩА · 2026</div>
 
 </div>
 </body>
