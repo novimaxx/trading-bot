@@ -216,12 +216,43 @@
   }
 
   @media (max-width: 640px) {
-    .hero { padding: 56px 24px 44px; }
-    .hero h1 { font-size: 52px; }
-    .grid2 { grid-template-columns: 1fr; }
-    .cta-title { font-size: 26px; }
-    .cta-block { padding: 36px 24px; }
-    .include-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .page { padding: 24px 16px 60px; }
+
+    /* Hero */
+    .hero { padding: 52px 20px 44px; border-radius: 20px; margin-bottom: 28px; }
+    .hero h1 { font-size: 48px; }
+    .hero-kicker { font-size: 11px; letter-spacing: .18em; }
+    .hero-tagline { font-size: 13px; }
+    .hero-badge { font-size: 11px; padding: 8px 16px; letter-spacing: .06em; }
+    .hero-pills { gap: 7px; }
+    .hero-pill { font-size: 11px; padding: 5px 12px; }
+    .hero-footer { left: 20px; right: 20px; }
+
+    /* Sections */
+    .section { margin-bottom: 36px; }
+    .sec-title { font-size: 22px; }
+    .sec-desc { font-size: 14px; }
+
+    /* Grid */
+    .grid2 { grid-template-columns: 1fr; gap: 10px; }
+
+    /* Include list */
+    .include-row { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 16px; }
+    .include-name { font-size: 14px; }
+    .include-badge { align-self: flex-start; }
+
+    /* Feature cards */
+    .fcard { padding: 18px 16px; }
+    .fcard-icon { font-size: 26px; margin-bottom: 10px; }
+    .fcard-title { font-size: 14px; }
+
+    /* CTA */
+    .cta-block { padding: 32px 20px; border-radius: 18px; }
+    .cta-title { font-size: 24px; }
+    .cta-sub { font-size: 14px; }
+    .cta-btn-primary { width: 100%; justify-content: center; font-size: 15px; padding: 16px 24px; }
+    .trust { gap: 6px; }
+    .trust-chip { font-size: 9px; padding: 4px 10px; }
   }
 </style>
 </head>
