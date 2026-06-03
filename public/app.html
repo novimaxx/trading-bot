@@ -663,14 +663,10 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
     <!-- Trial request button (shown only without subscription) -->
     <div id="trial-request-block" style="display:none;margin-top:10px">
-      <div style="background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:14px;padding:14px">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;color:var(--orange);margin-bottom:12px">🎁 ПРОБНЫЙ ДОСТУП · ДО 9 ИЮНЯ</div>
-        <div id="trial-no-tv" style="display:none;font-size:13px;color:var(--muted);margin-bottom:10px">⚠️ Укажи TradingView username выше — он нужен для активации индикатора.</div>
-        <button id="trial-req-btn" onclick="requestTrial()" style="width:100%;padding:13px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.35);border-radius:10px;color:#f5a623;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer">
-          Запросить бесплатный доступ →
-        </button>
-        <div id="trial-req-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;color:var(--accent)"></div>
-      </div>
+      <button id="trial-req-btn" onclick="requestTrial()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(245,166,35,.12),rgba(245,166,35,.06));border:1px solid rgba(245,166,35,.35);border-radius:14px;color:#f5a623;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        🎁 ЗАПРОСИТЬ ПРОБНЫЙ ДОСТУП · ДО 9 ИЮНЯ
+      </button>
+      <div id="trial-req-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;color:var(--accent)"></div>
     </div>
 
     <div class="sub-card" id="tv-card" style="display:none;margin-top:10px;cursor:pointer" onclick="openTvModal()">
@@ -1507,20 +1503,14 @@ function closePost() {
 async function requestTrial() {
   const btn = document.getElementById('trial-req-btn');
   const res = document.getElementById('trial-req-result');
-  const tvUsername = userData.tv_username || null;
   if (!userId) { toast('Необходимо авторизоваться', true); return; }
-  if (!tvUsername) {
-    document.getElementById('trial-no-tv').style.display = 'block';
-    toast('Сначала укажи TradingView username', true);
-    return;
-  }
   btn.disabled = true;
   btn.textContent = '⏳ Отправляю...';
   try {
     const r = await fetch(`${BASE}/api/trial-request`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, username: userUsername, first_name: userFirstName, tv_username: tvUsername })
+      body: JSON.stringify({ user_id: userId, username: userUsername, first_name: userFirstName })
     });
     const j = await r.json();
     res.style.display = 'block';
@@ -1582,9 +1572,6 @@ async function boot() {
   // Show trial button if no subscription
   if (!userData.plan) {
     document.getElementById('trial-request-block').style.display = 'block';
-    if (!userData.tv_username) {
-      document.getElementById('trial-no-tv').style.display = 'block';
-    }
   }
 
   if (userData.plan) {
