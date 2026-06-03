@@ -257,28 +257,54 @@
 
   /* Countdown */
   .countdown-wrap {
-    display: flex; justify-content: center; gap: 12px; margin: 24px 0 0;
-    position: relative; z-index: 2;
+    display: flex; justify-content: center; align-items: stretch; gap: 8px;
+    margin: 28px 0 0; position: relative; z-index: 2;
   }
   .cd-block {
-    background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.25);
-    border-radius: 12px; padding: 12px 16px; text-align: center; min-width: 70px;
+    background: linear-gradient(135deg, rgba(245,166,35,.1) 0%, rgba(245,166,35,.04) 100%);
+    border: 1px solid rgba(245,166,35,.3);
+    border-radius: 14px; padding: 16px 20px; text-align: center; min-width: 76px;
+    position: relative; overflow: hidden;
+  }
+  .cd-block::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    opacity: .8;
+  }
+  .cd-block::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(245,166,35,.12) 0%, transparent 70%);
+    pointer-events: none;
   }
   .cd-val {
-    font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 800;
+    font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 800;
     color: var(--orange); line-height: 1;
+    text-shadow: 0 0 20px rgba(245,166,35,.5), 0 0 40px rgba(245,166,35,.2);
+    position: relative; z-index: 1;
   }
   .cd-label {
     font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
-    letter-spacing: .15em; color: var(--muted); text-transform: uppercase; margin-top: 4px;
+    letter-spacing: .18em; color: rgba(245,166,35,.5); text-transform: uppercase;
+    margin-top: 6px; position: relative; z-index: 1;
   }
   .cd-sep {
-    font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 800;
-    color: rgba(245,166,35,.4); align-self: center; padding-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 800;
+    color: rgba(245,166,35,.3); align-self: center; padding-bottom: 14px;
+    animation: blink-sep 1s ease-in-out infinite;
   }
+  @keyframes blink-sep { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+  .cd-expires {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    letter-spacing: .15em; color: rgba(245,166,35,.45); text-transform: uppercase;
+    text-align: center; margin-top: 12px; position: relative; z-index: 2;
+  }
+
   @media (max-width: 640px) {
-    .cd-block { min-width: 58px; padding: 10px 12px; }
-    .cd-val { font-size: 22px; }
+    .cd-block { min-width: 60px; padding: 12px 14px; }
+    .cd-val { font-size: 26px; }
+    .cd-sep { font-size: 20px; }
+    .countdown-wrap { gap: 5px; }
   }
 </style>
 </head>
@@ -422,6 +448,7 @@
       <div class="cd-sep">:</div>
       <div class="cd-block"><div class="cd-val" id="cd-s">00</div><div class="cd-label">секунд</div></div>
     </div>
+    <div class="cd-expires">⏳ Акция заканчивается во вторник, 9 июня 2026</div>
 
     <br>
     <a href="https://t.me/Ind_icator_Bot?start=trial48" class="cta-btn-primary">

@@ -93,6 +93,16 @@ async function runMigrations() {
         created_at  TIMESTAMP NOT NULL DEFAULT NOW()
       );
 
+      CREATE TABLE IF NOT EXISTS trial_requests (
+        id         SERIAL PRIMARY KEY,
+        user_id    BIGINT NOT NULL UNIQUE,
+        username   TEXT,
+        first_name TEXT,
+        status     TEXT DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW(),
+        approved_at TIMESTAMP
+      );
+
       CREATE TABLE IF NOT EXISTS support_messages (
         id         SERIAL PRIMARY KEY,
         user_id    BIGINT NOT NULL,
@@ -1342,6 +1352,88 @@ app.post('/api/admin/payments/:id/reject', adminOnly, async (req, res) => {
 })
 
 // ─── API: Support messages ────────────────────────────────
+// POST /api/trial-request — запрос пробного доступа
+app.post('/api/trial-request', async (req, res) => {
+  const { user_id, username, first_name } = req.body
+  if (!user_id) return res.status(400).json({ error: 'bad request' })
+  try {
+    // Проверяем не было ли уже запроса
+    if (pool) {
+      const existing = await pool.query(
+        `SELECT id, status FROM trial_requests WHERE user_id = $1`, [user_id]
+      )
+      if (existing.rows.length > 0) {
+        const st = existing.rows[0].status
+        if (st === 'approved') return res.json({ ok: true, status: 'already_approved' })
+        return res.json({ ok: true, status: 'already_requested' })
+      }
+      await pool.query(
+        `INSERT INTO trial_requests (user_id, username, first_name) VALUES ($1,$2,$3)`,
+        [user_id, username || null, first_name || null]
+      )
+    }
+    // Уведомление админу с кнопкой
+    const name = first_name ? `${first_name}${username ? ' (@' + username + ')' : ''}` : `ID ${user_id}`
+    const adminText = `🎁 *Запрос пробного доступа*\n\nОт: ${name}\nID: \`${user_id}\`\n\nВыдать 48ч доступ?`
+    const BASE_URL = process.env.RAILWAY_PUBLIC_DOMAIN
+      ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+      : 'https://trading-bot-production-7d20.up.railway.app'
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: ADMIN_IDS[0],
+        text: adminText,
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '✅ Выдать 48ч доступ', callback_data: `trial_approve_${user_id}` },
+            { text: '❌ Отклонить', callback_data: `trial_reject_${user_id}` }
+          ]]
+        }
+      })
+    })
+    res.json({ ok: true, status: 'requested' })
+  } catch (e) {
+    console.error('trial-request error:', e.message)
+    res.status(500).json({ error: 'server error' })
+  }
+})
+
+// POST /api/admin/trial-approve/:userId
+app.post('/api/admin/trial-approve/:userId', adminOnly, async (req, res) => {
+  const userId = req.params.userId
+  try {
+    if (pool) {
+      await pool.query(`
+        UPDATE users SET subscribed = TRUE, subscription_plan = 'PRO',
+          subscription_until = NOW() + INTERVAL '48 hours'
+        WHERE id = $1
+      `, [userId])
+      await pool.query(`
+        UPDATE trial_requests SET status = 'approved', approved_at = NOW() WHERE user_id = $1
+      `, [userId])
+    }
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: userId,
+        text: `✅ *Доступ активирован!*\n\nТебе открыт бесплатный доступ к IT V3 на 48 часов.\n\n📊 Индикатор в TradingView\n🔔 Автосигналы 24/7\n📱 Мини-апп\n\nОткрой мини-апп и начинай 👇`,
+        parse_mode: 'Markdown',
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '📱 Открыть IT V3', web_app: { url: `https://trading-bot-production-7d20.up.railway.app/app.html` } }
+          ]]
+        }
+      })
+    })
+    res.json({ ok: true })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
 // POST /api/support — пользователь отправляет сообщение
 app.post('/api/support', async (req, res) => {
   const { user_id, username, first_name, message } = req.body

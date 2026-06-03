@@ -661,6 +661,14 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       </div>
     </div>
 
+    <!-- Trial request button (shown only without subscription) -->
+    <div id="trial-request-block" style="display:none;margin-top:10px">
+      <button id="trial-req-btn" onclick="requestTrial()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(245,166,35,.12),rgba(245,166,35,.06));border:1px solid rgba(245,166,35,.35);border-radius:14px;color:#f5a623;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        🎁 ЗАПРОСИТЬ ПРОБНЫЙ ДОСТУП · 48Ч
+      </button>
+      <div id="trial-req-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;color:var(--accent)"></div>
+    </div>
+
     <div class="sub-card" id="tv-card" style="display:none;margin-top:10px;cursor:pointer" onclick="openTvModal()">
       <div style="flex:1">
         <div class="sub-label">📊 TRADINGVIEW</div>
@@ -1491,6 +1499,37 @@ function closePost() {
 }
 
 // ── load data ──
+async function requestTrial() {
+  const btn = document.getElementById('trial-req-btn');
+  const res = document.getElementById('trial-req-result');
+  if (!userId) { toast('Необходимо авторизоваться', true); return; }
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Отправляю запрос...';
+  try {
+    const r = await fetch(`${BASE}/api/trial-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, username: userUsername, first_name: userFirstName })
+    });
+    const j = await r.json();
+    res.style.display = 'block';
+    if (j.status === 'already_approved') {
+      res.textContent = '✅ Доступ уже активирован';
+    } else if (j.status === 'already_requested') {
+      res.textContent = '⏳ Запрос уже отправлен — ожидай активацию';
+      btn.innerHTML = '⏳ Запрос отправлен';
+    } else {
+      res.textContent = '✅ Запрос отправлен! Доступ активируют в ближайшее время';
+      btn.innerHTML = '✅ Запрос отправлен';
+      toast('✅ Запрос на доступ отправлен');
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = '🎁 ЗАПРОСИТЬ ПРОБНЫЙ ДОСТУП · 48Ч';
+    toast('Ошибка, попробуй ещё раз', true);
+  }
+}
+
 async function api(path) {
   try { const r = await fetch(BASE + path); if (r.ok) return r.json(); } catch(_){}
   return null;
@@ -1528,6 +1567,11 @@ async function boot() {
   document.getElementById('av-letter').textContent = userInitial;
   document.getElementById('p-name').textContent = userName;
   document.getElementById('p-handle').textContent = userUsername || (userId ? 'ID ' + userId : '—');
+
+  // Show trial button if no subscription
+  if (!userData.plan) {
+    document.getElementById('trial-request-block').style.display = 'block';
+  }
 
   if (userData.plan) {
     const sc = document.getElementById('sub-card');
