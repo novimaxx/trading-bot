@@ -665,8 +665,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     <div id="trial-request-block" style="display:none;margin-top:10px">
       <div style="background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:14px;padding:14px">
         <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;color:var(--orange);margin-bottom:12px">🎁 ПРОБНЫЙ ДОСТУП · ДО 9 ИЮНЯ</div>
-        <input id="trial-tv-input" type="text" placeholder="Твой TradingView username"
-          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px 14px;color:var(--white);font-size:14px;font-family:'JetBrains Mono',monospace;outline:none;margin-bottom:10px">
+        <div id="trial-no-tv" style="display:none;font-size:13px;color:var(--muted);margin-bottom:10px">⚠️ Укажи TradingView username выше — он нужен для активации индикатора.</div>
         <button id="trial-req-btn" onclick="requestTrial()" style="width:100%;padding:13px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.35);border-radius:10px;color:#f5a623;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer">
           Запросить бесплатный доступ →
         </button>
@@ -1508,10 +1507,13 @@ function closePost() {
 async function requestTrial() {
   const btn = document.getElementById('trial-req-btn');
   const res = document.getElementById('trial-req-result');
-  const tvInput = document.getElementById('trial-tv-input');
-  const tvUsername = tvInput ? tvInput.value.trim().replace(/^@/, '') : '';
+  const tvUsername = userData.tv_username || null;
   if (!userId) { toast('Необходимо авторизоваться', true); return; }
-  if (!tvUsername) { toast('Укажи TradingView username', true); tvInput?.focus(); return; }
+  if (!tvUsername) {
+    document.getElementById('trial-no-tv').style.display = 'block';
+    toast('Сначала укажи TradingView username', true);
+    return;
+  }
   btn.disabled = true;
   btn.textContent = '⏳ Отправляю...';
   try {
@@ -1580,6 +1582,9 @@ async function boot() {
   // Show trial button if no subscription
   if (!userData.plan) {
     document.getElementById('trial-request-block').style.display = 'block';
+    if (!userData.tv_username) {
+      document.getElementById('trial-no-tv').style.display = 'block';
+    }
   }
 
   if (userData.plan) {
