@@ -1427,7 +1427,7 @@ app.post('/api/admin/trial-approve/:userId', adminOnly, async (req, res) => {
     if (pool) {
       await pool.query(`
         UPDATE users SET subscribed = TRUE, subscription_plan = 'PRO',
-          subscription_until = NOW() + INTERVAL '48 hours'
+          subscription_until = '2026-06-09 23:59:59+03'
         WHERE id = $1
       `, [userId])
       await pool.query(`
@@ -1439,7 +1439,7 @@ app.post('/api/admin/trial-approve/:userId', adminOnly, async (req, res) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: userId,
-        text: `✅ *Доступ активирован!*\n\nТебе открыт бесплатный доступ к IT V3 на 48 часов.\n\n📊 Индикатор в TradingView\n🔔 Автосигналы 24/7\n📱 Мини-апп\n\nОткрой мини-апп и начинай 👇`,
+        text: `✅ *Доступ активирован!*\n\nТебе открыт бесплатный доступ к IT V3 до 9 июня.\n\n📊 Индикатор в TradingView\n🔔 Автосигналы 24/7\n📱 Мини-апп\n\nОткрой мини-апп и начинай 👇`,
         parse_mode: 'Markdown',
         reply_markup: {
           inline_keyboard: [[
