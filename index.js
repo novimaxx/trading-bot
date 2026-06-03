@@ -1435,7 +1435,7 @@ app.post('/api/admin/trial-approve/:userId', adminOnly, async (req, res) => {
     if (pool) {
       await pool.query(`
         UPDATE users SET subscribed = TRUE, subscription_plan = 'PRO',
-          subscription_until = '2026-06-09 23:59:59+03'
+          subscription_until = '2026-06-09 23:59:59+02'
         WHERE id = $1
       `, [userId])
       await pool.query(`
