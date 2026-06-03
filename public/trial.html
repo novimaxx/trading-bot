@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IT v3 — Попробовать бесплатно 48ч</title>
+<title>IT v3 — Бесплатный доступ до вторника</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
 
@@ -253,6 +253,32 @@
     .cta-btn-primary { width: 100%; justify-content: center; font-size: 15px; padding: 16px 24px; }
     .trust { gap: 6px; }
     .trust-chip { font-size: 9px; padding: 4px 10px; }
+
+  /* Countdown */
+  .countdown-wrap {
+    display: flex; justify-content: center; gap: 12px; margin: 24px 0 0;
+    position: relative; z-index: 2;
+  }
+  .cd-block {
+    background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.25);
+    border-radius: 12px; padding: 12px 16px; text-align: center; min-width: 70px;
+  }
+  .cd-val {
+    font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 800;
+    color: var(--orange); line-height: 1;
+  }
+  .cd-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
+    letter-spacing: .15em; color: var(--muted); text-transform: uppercase; margin-top: 4px;
+  }
+  .cd-sep {
+    font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 800;
+    color: rgba(245,166,35,.4); align-self: center; padding-bottom: 8px;
+  }
+  @media (max-width: 640px) {
+    .cd-block { min-width: 58px; padding: 10px 12px; }
+    .cd-val { font-size: 22px; }
+  }
   }
 </style>
 </head>
@@ -269,11 +295,11 @@
     <div class="hero-topbar">
       <div class="hero-topbar-live"><div class="hero-topbar-dot"></div>LIVE · PRO SIGNALS</div>
     </div>
-    <div class="hero-kicker">Тестовый доступ</div>
+    <div class="hero-kicker">Только до вторника</div>
     <h1>Попробуй<br><span class="accent">IT V3</span><br><span class="orange">бесплатно</span></h1>
     <div class="hero-tagline">Индикатор в TradingView + Мини-апп в Telegram</div>
     <div class="hero-sub">Автосигналы 24/7 · График BTC/ETH/SOL · Аналитика · Живые цены</div>
-    <div class="hero-badge">⏱ &nbsp;48 ЧАСОВ · ПОЛНЫЙ ДОСТУП · БЕСПЛАТНО</div>
+    <div class="hero-badge">🎁 &nbsp;БЕСПЛАТНЫЙ ДОСТУП · ДО 9 ИЮНЯ</div>
     <div class="hero-pills">
       <div class="hero-pill">📊 Индикатор IT V3</div>
       <div class="hero-pill">⚡️ Сигналы 24/7</div>
@@ -383,11 +409,23 @@
   <!-- CTA -->
   <div class="cta-block">
     <div class="cta-glow"></div>
-    <div class="cta-tag">🎁 БЕСПЛАТНО · БЕЗ КАРТЫ · 48 ЧАСОВ</div>
+    <div class="cta-tag">🎁 БЕСПЛАТНО · БЕЗ КАРТЫ · ДО 9 ИЮНЯ</div>
     <div class="cta-title">Попробуй сам.<br><span class="g">Бесплатно.</span></div>
-    <div class="cta-sub">Нажми кнопку — и через 10 секунд у тебя полный доступ к IT V3.</div>
+    <div class="cta-sub">Доступ открыт до вторника 9 июня. Нажми кнопку — и через 10 секунд ты внутри.</div>
+
+    <div class="countdown-wrap">
+      <div class="cd-block"><div class="cd-val" id="cd-d">00</div><div class="cd-label">дней</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block"><div class="cd-val" id="cd-h">00</div><div class="cd-label">часов</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block"><div class="cd-val" id="cd-m">00</div><div class="cd-label">минут</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block"><div class="cd-val" id="cd-s">00</div><div class="cd-label">секунд</div></div>
+    </div>
+
+    <br>
     <a href="https://t.me/Ind_icator_Bot?start=trial48" class="cta-btn-primary">
-      🚀 Получить 48ч доступ
+      🚀 Получить бесплатный доступ
     </a>
     <div class="cta-note">Нажми → откроется бот → доступ активируется автоматически</div>
     <div class="trust">
@@ -404,5 +442,38 @@
   </div>
 
 </div>
+
+<script>
+  (function() {
+    // Дедлайн: вторник 9 июня 2026 23:59:59 МСК (UTC+3)
+    var deadline = new Date('2026-06-09T23:59:59+03:00');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      var now = new Date();
+      var diff = deadline - now;
+      if (diff <= 0) {
+        document.getElementById('cd-d').textContent = '00';
+        document.getElementById('cd-h').textContent = '00';
+        document.getElementById('cd-m').textContent = '00';
+        document.getElementById('cd-s').textContent = '00';
+        return;
+      }
+      var days    = Math.floor(diff / 86400000);
+      var hours   = Math.floor((diff % 86400000) / 3600000);
+      var minutes = Math.floor((diff % 3600000) / 60000);
+      var seconds = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-d').textContent = pad(days);
+      document.getElementById('cd-h').textContent = pad(hours);
+      document.getElementById('cd-m').textContent = pad(minutes);
+      document.getElementById('cd-s').textContent = pad(seconds);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>
+
 </body>
 </html>
