@@ -1447,7 +1447,7 @@ app.post('/api/admin/trial-approve/:userId', adminOnly, async (req, res) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: userId,
-        text: `✅ *Доступ активирован!*\n\nТебе открыт бесплатный доступ к IT V3 до 9 июня.\n\n📊 Индикатор в TradingView\n🔔 Автосигналы 24/7\n📱 Мини-апп\n\nОткрой мини-апп и начинай 👇`,
+        text: `✅ *Доступ активирован!*\n\nТебе открыт бесплатный доступ к IT V3 до 9 июня.\n\n📊 Индикатор в TradingView\n🔔 Автосигналы 24/7\n📱 Мини-апп\n\n⚠️ *Важно:* зайди в Профиль и укажи свой TradingView username — без этого мы не сможем открыть тебе доступ к индикатору.`,
         parse_mode: 'Markdown',
         reply_markup: {
           inline_keyboard: [[
