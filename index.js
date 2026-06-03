@@ -1354,7 +1354,7 @@ app.post('/api/admin/payments/:id/reject', adminOnly, async (req, res) => {
 // ─── API: Support messages ────────────────────────────────
 // POST /api/trial-request — запрос пробного доступа
 app.post('/api/trial-request', async (req, res) => {
-  const { user_id, username, first_name } = req.body
+  const { user_id, username, first_name, tv_username } = req.body
   if (!user_id) return res.status(400).json({ error: 'bad request' })
   try {
     // Проверяем не было ли уже запроса
@@ -1371,10 +1371,18 @@ app.post('/api/trial-request', async (req, res) => {
         `INSERT INTO trial_requests (user_id, username, first_name) VALUES ($1,$2,$3)`,
         [user_id, username || null, first_name || null]
       )
+      // Сохраняем TV username сразу
+      if (tv_username) {
+        await pool.query(
+          `UPDATE users SET tv_username = $1 WHERE id = $2`,
+          [tv_username, user_id]
+        ).catch(() => {})
+      }
     }
     // Уведомление админу с кнопкой
     const name = first_name ? `${first_name}${username ? ' (@' + username + ')' : ''}` : `ID ${user_id}`
-    const adminText = `🎁 *Запрос пробного доступа*\n\nОт: ${name}\nID: \`${user_id}\`\n\nВыдать 48ч доступ?`
+    const tvLine = tv_username ? `\nTradingView: \`${tv_username}\`` : '\nTradingView: не указан'
+    const adminText = `🎁 *Запрос пробного доступа*\n\nОт: ${name}\nID: \`${user_id}\`${tvLine}\n\nВыдать доступ до 9 июня?`
     const BASE_URL = process.env.RAILWAY_PUBLIC_DOMAIN
       ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
       : 'https://trading-bot-production-7d20.up.railway.app'
@@ -1403,7 +1411,7 @@ app.post('/api/trial-request', async (req, res) => {
 // GET /api/admin/trial-requests
 app.get('/api/admin/trial-requests', adminOnly, async (req, res) => {
   if (!pool) return res.json([])
-  const { rows } = await pool.query(`SELECT * FROM trial_requests ORDER BY created_at DESC LIMIT 50`)
+  const { rows } = await pool.query(`SELECT tr.*, u.tv_username FROM trial_requests tr LEFT JOIN users u ON u.id = tr.user_id ORDER BY tr.created_at DESC LIMIT 50`)
   res.json(rows)
 })
 

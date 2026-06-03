@@ -663,10 +663,15 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
     <!-- Trial request button (shown only without subscription) -->
     <div id="trial-request-block" style="display:none;margin-top:10px">
-      <button id="trial-req-btn" onclick="requestTrial()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(245,166,35,.12),rgba(245,166,35,.06));border:1px solid rgba(245,166,35,.35);border-radius:14px;color:#f5a623;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-        🎁 ЗАПРОСИТЬ ПРОБНЫЙ ДОСТУП · 48Ч
-      </button>
-      <div id="trial-req-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;color:var(--accent)"></div>
+      <div style="background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:14px;padding:14px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;color:var(--orange);margin-bottom:12px">🎁 ПРОБНЫЙ ДОСТУП · ДО 9 ИЮНЯ</div>
+        <input id="trial-tv-input" type="text" placeholder="Твой TradingView username"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px 14px;color:var(--white);font-size:14px;font-family:'JetBrains Mono',monospace;outline:none;margin-bottom:10px">
+        <button id="trial-req-btn" onclick="requestTrial()" style="width:100%;padding:13px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.35);border-radius:10px;color:#f5a623;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer">
+          Запросить бесплатный доступ →
+        </button>
+        <div id="trial-req-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;color:var(--accent)"></div>
+      </div>
     </div>
 
     <div class="sub-card" id="tv-card" style="display:none;margin-top:10px;cursor:pointer" onclick="openTvModal()">
@@ -1503,14 +1508,17 @@ function closePost() {
 async function requestTrial() {
   const btn = document.getElementById('trial-req-btn');
   const res = document.getElementById('trial-req-result');
+  const tvInput = document.getElementById('trial-tv-input');
+  const tvUsername = tvInput ? tvInput.value.trim().replace(/^@/, '') : '';
   if (!userId) { toast('Необходимо авторизоваться', true); return; }
+  if (!tvUsername) { toast('Укажи TradingView username', true); tvInput?.focus(); return; }
   btn.disabled = true;
-  btn.innerHTML = '⏳ Отправляю запрос...';
+  btn.textContent = '⏳ Отправляю...';
   try {
     const r = await fetch(`${BASE}/api/trial-request`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, username: userUsername, first_name: userFirstName })
+      body: JSON.stringify({ user_id: userId, username: userUsername, first_name: userFirstName, tv_username: tvUsername })
     });
     const j = await r.json();
     res.style.display = 'block';
@@ -1804,6 +1812,7 @@ function renderTrialRequests(trials) {
           <div>
             <div style="font-size:14px;font-weight:700">${name}</div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px">${date}</div>
+            ${t.tv_username ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);margin-top:3px">TV: @${t.tv_username}</div>` : '<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--accent2);margin-top:3px">TV: не указан</div>'}
           </div>
           <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--orange);border:1px solid rgba(245,166,35,.3);padding:3px 10px;border-radius:20px">48Ч</div>
         </div>
