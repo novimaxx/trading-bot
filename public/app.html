@@ -773,7 +773,8 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
   <!-- Payments tab -->
   <div class="atab-content" id="acontent-payments">
-    <div id="payments-list" style="padding:12px 0 8px"></div>
+    <div id="trial-list" style="padding:12px 0 0"></div>
+    <div id="payments-list" style="padding:4px 0 8px"></div>
   </div>
 
   <!-- Send tab -->
@@ -1781,10 +1782,51 @@ function searchUsers(val) {
 }
 
 async function loadAdminPayments() {
-  const payments = await adminApi('/api/admin/payments');
-  if (!payments) return;
-  adminData.payments = payments;
-  renderPayments(payments);
+  const [payments, trials] = await Promise.all([
+    adminApi('/api/admin/payments'),
+    adminApi('/api/admin/trial-requests'),
+  ]);
+  if (payments) { adminData.payments = payments; renderPayments(payments); }
+  if (trials)   renderTrialRequests(trials);
+}
+
+function renderTrialRequests(trials) {
+  const el = document.getElementById('trial-list');
+  const pending = trials.filter(t => t.status === 'pending');
+  if (!pending.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--orange);margin-bottom:10px">🎁 ПРОБНЫЙ ДОСТУП (${pending.length})</div>
+    ${pending.map(t => {
+      const name = t.first_name ? `${t.first_name}${t.username ? ' @'+t.username : ''}` : `ID ${t.user_id}`;
+      const date = new Date(t.created_at).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+      return `<div style="background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:12px;padding:14px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div style="font-size:14px;font-weight:700">${name}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px">${date}</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--orange);border:1px solid rgba(245,166,35,.3);padding:3px 10px;border-radius:20px">48Ч</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="approveTrialRequest(${t.user_id},this)" style="flex:2;padding:10px;background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.3);color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-radius:10px;cursor:pointer">✅ Выдать доступ</button>
+          <button onclick="rejectTrialRequest(${t.user_id},this)" style="flex:1;padding:10px;background:rgba(255,61,127,.08);border:1px solid rgba(255,61,127,.2);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-radius:10px;cursor:pointer">❌</button>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+async function approveTrialRequest(userId, btn) {
+  btn.disabled = true; btn.textContent = '⏳';
+  const r = await adminApi(`/api/admin/trial-approve/${userId}`, 'POST');
+  if (r?.ok) { toast('✅ Доступ выдан'); loadAdminPayments(); }
+  else { btn.disabled = false; btn.textContent = '✅ Выдать доступ'; toast('Ошибка', true); }
+}
+
+async function rejectTrialRequest(userId, btn) {
+  btn.disabled = true;
+  const r = await adminApi(`/api/admin/trial-reject/${userId}`, 'POST');
+  if (r?.ok) { toast('Запрос отклонён'); loadAdminPayments(); }
+  else { btn.disabled = false; toast('Ошибка', true); }
 }
 
 function renderPayments(payments) {

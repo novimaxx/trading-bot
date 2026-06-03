@@ -1400,6 +1400,26 @@ app.post('/api/trial-request', async (req, res) => {
   }
 })
 
+// GET /api/admin/trial-requests
+app.get('/api/admin/trial-requests', adminOnly, async (req, res) => {
+  if (!pool) return res.json([])
+  const { rows } = await pool.query(`SELECT * FROM trial_requests ORDER BY created_at DESC LIMIT 50`)
+  res.json(rows)
+})
+
+// POST /api/admin/trial-reject/:userId
+app.post('/api/admin/trial-reject/:userId', adminOnly, async (req, res) => {
+  const userId = req.params.userId
+  try {
+    if (pool) await pool.query(`UPDATE trial_requests SET status='rejected' WHERE user_id=$1`, [userId])
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: userId, text: `К сожалению, в этот раз пробный доступ недоступен. Если хочешь попробовать IT V3 — ознакомься с тарифами.` })
+    })
+    res.json({ ok: true })
+  } catch (e) { res.status(500).json({ error: e.message }) }
+})
+
 // POST /api/admin/trial-approve/:userId
 app.post('/api/admin/trial-approve/:userId', adminOnly, async (req, res) => {
   const userId = req.params.userId
