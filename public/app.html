@@ -1510,7 +1510,7 @@ async function requestTrial() {
     const r = await fetch(`${BASE}/api/trial-request`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, username: userUsername, first_name: userFirstName })
+      body: JSON.stringify({ user_id: userId, username: tgUser.username, first_name: tgUser.first_name })
     });
     const j = await r.json();
     res.style.display = 'block';
