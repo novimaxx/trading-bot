@@ -460,16 +460,15 @@
     <div class="hero-topbar">
       <div class="hero-topbar-live"><div class="hero-topbar-dot"></div>LIVE · PRO SIGNALS</div>
     </div>
-    <div class="hero-kicker">IT V3 · LIVE</div>
-    <h1><span class="accent">Запущено.</span></h1>
-    <div class="hero-tagline">Система активна. Сигналы идут. Апп растёт.</div>
-    <div class="hero-sub">Автосигналы 24/7 · Мини-апп в Telegram · График BTC/ETH/SOL · Живые цены</div>
-    <div class="hero-date" style="background:rgba(46,204,113,.1);border-color:rgba(46,204,113,.3);color:var(--accent)">✅ &nbsp;ЗАПУЩЕНО 08 МАЯ 2026 · УЖЕ РАБОТАЕТ</div>
+    <div class="hero-kicker">IT V3 · ОБНОВЛЕНИЕ</div>
+    <h1><span class="accent">Что нового</span></h1>
+    <div class="hero-tagline">Мини-апп, автосигналы, аналитика и новый PRO-бонус.</div>
+    <div class="hero-sub">Собрали всё важное по обновлению в одном месте — коротко и по делу.</div>
+    <div class="hero-date" style="background:rgba(46,204,113,.1);border-color:rgba(46,204,113,.3);color:var(--accent)">✅ &nbsp;IT V3 УЖЕ РАБОТАЕТ</div>
     <div class="hero-pills">
-      <div class="hero-pill">📊 Индикатор активен</div>
       <div class="hero-pill">⚡️ Сигналы 24/7</div>
-      <div class="hero-pill">📱 Мини-апп</div>
-      <div class="hero-pill">📈 Live график</div>
+      <div class="hero-pill">📊 Аналитика</div>
+      <div class="hero-pill">🎁 PRO-бонус</div>
     </div>
     <div class="hero-footer">
       <div>IT V3</div>
@@ -477,50 +476,16 @@
     </div>
   </div>
 
-  <!-- HOOK: LIVE STATS -->
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:48px">
-    <div style="background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:20px 16px;text-align:center;position:relative;overflow:hidden">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(46,204,113,.08),transparent 70%);pointer-events:none"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--accent);line-height:1" id="days-counter">4</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase">дня<br>работаем</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:20px 16px;text-align:center;position:relative;overflow:hidden">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,61,127,.07),transparent 70%);pointer-events:none"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--pink);line-height:1">4K+</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase">активных<br>подписчиков</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:20px 16px;text-align:center;position:relative;overflow:hidden">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(79,142,247,.07),transparent 70%);pointer-events:none"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--blue);line-height:1">24/7</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase">сервер<br>онлайн</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--line2);border-radius:16px;padding:20px 16px;text-align:center;position:relative;overflow:hidden">
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(251,191,36,.07),transparent 70%);pointer-events:none"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;color:var(--yellow);line-height:1">92%</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase">точность<br>индикатора</div>
-    </div>
-  </div>
-  <script>
-    (function(){
-      var launch = new Date('2026-05-08T00:00:00+02:00');
-      var days = Math.floor((new Date() - launch) / 86400000);
-      var el = document.getElementById('days-counter');
-      if(el && days > 0) el.textContent = days;
-    })();
-  </script>
-
   <!-- PRO DISCOUNT BANNER -->
-  <div style="background:linear-gradient(135deg,rgba(255,61,127,.1) 0%,rgba(46,204,113,.06) 100%);border:1px solid rgba(255,61,127,.3);border-radius:24px;padding:36px 32px;text-align:center;margin-bottom:48px;position:relative;overflow:hidden">
+  <div style="background:linear-gradient(135deg,rgba(255,61,127,.1) 0%,rgba(46,204,113,.06) 100%);border:1px solid rgba(255,61,127,.3);border-radius:24px;padding:34px 30px;text-align:center;margin-bottom:48px;position:relative;overflow:hidden">
     <div style="position:absolute;width:60%;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,61,127,.12) 0%,transparent 70%);left:50%;bottom:-100px;transform:translateX(-50%);filter:blur(40px);pointer-events:none"></div>
     <div style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.25em;color:var(--pink);text-transform:uppercase;margin-bottom:14px;position:relative;z-index:2">🎁 Добавляем бонус для PRO</div>
-    <div style="font-size:30px;font-weight:900;color:var(--white);margin-bottom:14px;line-height:1.15;position:relative;z-index:2">PRO дешевле<br>+ сигналы топ-трейдеров</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;position:relative;z-index:2">
-      <span style="font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--muted);text-decoration:line-through">50 USDT</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:900;background:linear-gradient(180deg,#6FFFB2,#2ecc71);-webkit-background-clip:text;background-clip:text;color:transparent">40 USDT</span>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--pink);border:1px solid rgba(255,61,127,.4);border-radius:20px;padding:4px 10px">−20%</span>
+    <div style="font-size:30px;font-weight:900;color:var(--white);margin-bottom:12px;line-height:1.15;position:relative;z-index:2">PRO за 40 USDT<br>+ сигналы топ-трейдеров</div>
+    <div style="font-size:15px;color:var(--lg);margin-bottom:24px;position:relative;z-index:2">Автосигналы, аналитика, сценарии, order-flow и торговые идеи из платных приватных сообществ.</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;position:relative;z-index:2">
+      <a href="https://t.me/Ind_icator_Bot?start=buy" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#000;font-weight:800;font-size:15px;padding:15px 28px;border-radius:14px;text-decoration:none">💎 Оформить PRO</a>
+      <a href="/howto.html#trader-signals" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid var(--line2);color:var(--white);font-weight:800;font-size:15px;padding:15px 24px;border-radius:14px;text-decoration:none">🎁 Подробнее</a>
     </div>
-    <div style="font-size:15px;color:var(--lg);margin-bottom:24px;position:relative;z-index:2">Полный PRO-доступ: автосигналы, аналитика, сценарии, order-flow и новый бонус — торговые идеи из платных приватных сообществ. Цена вернётся к 50 USDT после выходных.</div>
-    <a href="https://t.me/Ind_icator_Bot?start=buy" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#000;font-weight:800;font-size:15px;padding:15px 36px;border-radius:14px;text-decoration:none;position:relative;z-index:2">💎 Оформить PRO со скидкой</a>
   </div>
 
   <!-- PRO BONUS: ТОП-ТРЕЙДЕРЫ -->
