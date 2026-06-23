@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT v3 — все обновления</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg:#0a0a0c; --card:#0e0e12; --card2:#121216; --line:#1c1c22; --line2:#252530;
+    --muted:#6b6b78; --lg:#a0a0b0; --white:#e8e8f0; --accent:#2ecc71; --pink:#ff3d7f;
+    --cyan:#4dc9f0; --blue:#4f8ef7; --orange:#f5a623; --yellow:#fbbf24;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--white); font-family: Inter, sans-serif; line-height: 1.6; }
+  .page { max-width: 880px; margin: 0 auto; padding: 46px 24px 70px; }
+  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:34px; gap:14px; }
+  .brand { font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:800; letter-spacing:.18em; color:var(--accent); }
+  .back { color:var(--lg); text-decoration:none; border:1px solid var(--line2); background:var(--card); border-radius:12px; padding:10px 14px; font-size:13px; font-weight:700; }
+  .hero { border:1px solid var(--line2); background:radial-gradient(ellipse at 50% 0%,rgba(46,204,113,.12),transparent 65%), var(--card); border-radius:26px; padding:50px 36px; text-align:center; margin-bottom:44px; }
+  .kicker { font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:800; letter-spacing:.25em; text-transform:uppercase; color:var(--pink); margin-bottom:14px; }
+  h1 { font-size:52px; line-height:1; letter-spacing:-.03em; margin-bottom:14px; font-weight:900; }
+  .sub { color:var(--lg); font-size:16px; max-width:620px; margin:0 auto; }
+  .section { margin-bottom:42px; }
+  .sec-label { font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:14px; }
+  .sec-label::after { content:''; flex:1; height:1px; background:var(--line); }
+  .sec-title { font-size:28px; font-weight:900; margin-bottom:8px; line-height:1.15; }
+  .sec-desc { color:var(--lg); font-size:15px; margin-bottom:20px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .card { background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:22px 20px; position:relative; overflow:hidden; }
+  .bar { position:absolute; top:0; left:0; right:0; height:3px; }
+  .icon { font-size:28px; display:block; margin-bottom:12px; }
+  .title { font-size:15px; font-weight:800; margin-bottom:6px; }
+  .text { font-size:13px; color:var(--lg); line-height:1.6; }
+  .cta { background:linear-gradient(135deg,rgba(46,204,113,.08),rgba(255,61,127,.06)); border:1px solid rgba(46,204,113,.22); border-radius:22px; padding:34px 28px; text-align:center; }
+  .btns { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:22px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:14px 24px; border-radius:14px; text-decoration:none; font-weight:800; font-size:15px; }
+  .primary { background:var(--accent); color:#000; }
+  .secondary { background:rgba(255,255,255,.05); border:1px solid var(--line2); color:var(--white); }
+  .footer { text-align:center; border-top:1px solid var(--line); padding-top:26px; margin-top:44px; color:var(--muted); font-size:12px; }
+  @media (max-width: 700px) {
+    .page { padding:32px 18px 56px; }
+    h1 { font-size:38px; }
+    .grid2, .grid3 { grid-template-columns:1fr; }
+    .hero { padding:38px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div class="brand">IT V3</div>
+    <a class="back" href="/whatsnew.html">← Главное обновление</a>
+  </div>
+
+  <div class="hero">
+    <div class="kicker">История обновлений</div>
+    <h1>Что добавили<br>после запуска</h1>
+    <div class="sub">Собрали все изменения IT v3 отдельно, чтобы главная страница не перегружалась и фокус оставался на новом PRO-бонусе.</div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">v3.1 · 12 МАЯ 2026</div>
+    <div class="sec-title">Первые обновления после запуска</div>
+    <div class="sec-desc">Базовые функции мини-аппа и уведомлений, которые сделали систему удобнее для ежедневной работы.</div>
+    <div class="grid2">
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#4dc9f0,#4f8ef7)"></div><span class="icon">📈</span><div class="title" style="color:var(--cyan)">Live график в мини-апп</div><div class="text">Вкладка «График» с TradingView прямо внутри приложения. BTC, ETH, SOL — переключение в один тап.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#2ecc71,#6fffb2)"></div><span class="icon">💰</span><div class="title" style="color:var(--accent)">Цены BTC/ETH/SOL</div><div class="text">Актуальные цены трёх главных активов на главном экране. Обновление через Binance API.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#ff3d7f,#ff8fb3)"></div><span class="icon">📰</span><div class="title" style="color:var(--pink)">Лента новостей</div><div class="text">Анонсы и аналитика от команды прямо в ленте. Уведомление приходит в Telegram.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#f5a623,#fbbf24)"></div><span class="icon">🔔</span><div class="title" style="color:var(--yellow)">Уведомления с кнопкой</div><div class="text">Каждое уведомление о сигнале или новости открывает мини-апп в один тап.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">v3.2 · Аналитика</div>
+    <div class="sec-title">Теперь это не только индикатор</div>
+    <div class="sec-desc">Добавили аналитику, сценарии и рыночный контекст, чтобы работать от уровней, а не от эмоций.</div>
+    <div class="grid2">
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#2ecc71,#6fffb2)"></div><span class="icon">📋</span><div class="title" style="color:var(--accent)">Сценарии по рынку</div><div class="text">Разборы BTC, ETH, SOL с уровнями, сценариями вверх/вниз и зонами реакции.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#f5a623,#fbbf24)"></div><span class="icon">📰</span><div class="title" style="color:var(--orange)">Макро и новости</div><div class="text">Ставки ФРС, BoJ, отчёты и события, которые могут усиливать волатильность крипторынка.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#4dc9f0,#4f8ef7)"></div><span class="icon">🌊</span><div class="title" style="color:var(--cyan)">Order-flow контекст</div><div class="text">Зоны ликвидаций, крупные лимитные стены и реакция цены рядом с уровнями IT v3.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#ff3d7f,#ff8fb3)"></div><span class="icon">🎁</span><div class="title" style="color:var(--pink)">Пробный доступ</div><div class="text">Возможность попробовать систему перед оформлением подписки — запрос прямо из мини-аппа.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Система</div>
+    <div class="sec-title">Три главных направления IT v3</div>
+    <div class="grid3">
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#2ecc71,#6fffb2)"></div><span class="icon">📊</span><div class="title" style="color:var(--accent)">Индикатор</div><div class="text">Автоуровни, структура HH / HL / LH / LL, зоны ликвидности и контекст прямо на графике.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#ff3d7f,#ff8fb3)"></div><span class="icon">⚡️</span><div class="title" style="color:var(--pink)">Автосигналы 24/7</div><div class="text">Сервер отслеживает условия и отправляет важные сигналы в Telegram.</div></div>
+      <div class="card"><div class="bar" style="background:linear-gradient(90deg,#4dc9f0,#4f8ef7)"></div><span class="icon">📱</span><div class="title" style="color:var(--cyan)">Мини-апп</div><div class="text">График, цены, сигналы, аналитика и подписка внутри Telegram.</div></div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <div class="kicker">Главное сейчас</div>
+    <div class="sec-title">Новый PRO-бонус</div>
+    <div class="sec-desc">Сигналы топ-трейдеров вынесены на главную страницу обновления.</div>
+    <div class="btns">
+      <a class="btn primary" href="https://t.me/Ind_icator_Bot?start=buy">💎 Оформить PRO</a>
+      <a class="btn secondary" href="/whatsnew.html">🎁 Вернуться к PRO-бонусу</a>
+    </div>
+  </div>
+
+  <div class="footer">IT v3 · История обновлений · 2026</div>
+</div>
+</body>
+</html>
