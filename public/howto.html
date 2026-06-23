@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Как пользоваться IT v3 — гайд</title>
+<title>Как пользоваться IT V3 — гайд</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap');
 
@@ -52,6 +52,7 @@
   .step-list li { display: flex; gap: 10px; font-size: 13px; color: var(--lg); line-height: 1.5; align-items: flex-start; }
   .step-list li::before { content: '—'; color: var(--muted); flex-shrink: 0; }
   .step-list li b { color: var(--white); font-weight: 600; }
+  .nowrap { white-space: nowrap; }
 
   .pill { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px;
     font-weight: 700; padding: 3px 9px; border-radius: 6px; margin: 0 2px; }
@@ -113,8 +114,8 @@
 
   <div class="hero">
     <div class="hero-kicker">Короткий гайд</div>
-    <div class="hero-title">Как пользоваться <span class="g">IT v3</span></div>
-    <div class="hero-sub">Индикатор, обзоры и сигналы — за 3 минуты разберёшься.</div>
+    <div class="hero-title">Как пользоваться <span class="g">IT V3</span></div>
+    <div class="hero-sub">Индикатор, обзоры и сигналы — коротко и по делу.</div>
   </div>
 
   <!-- ИНДИКАТОР -->
@@ -123,11 +124,11 @@
     <div class="step-num" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);color:var(--accent)">📊</div>
     <div class="step-body">
       <div class="step-title">Читай уровни на графике</div>
-      <div class="step-text">Индикатор сам размечает ключевые зоны прямо на графике в TradingView. Тебе не нужно ничего считать — смотри на цветные уровни.</div>
+      <div class="step-text">Индикатор сам размечает ключевые зоны прямо на графике в TradingView. Не нужно ничего считать вручную — смотри на цветные уровни и реакцию цены.</div>
       <ul class="step-list">
-        <li><b>SM1–SM5</b> — зоны покупок и продаж. Зелёные снизу (BUY 25/50/100%), красные сверху (SELL).</li>
-        <li><b>HH / LL</b> — локальные хаи и лои, показывают структуру рынка.</li>
-        <li><b>Зоны входа и фиксации</b> — где набирать позицию, а где фиксировать.</li>
+        <li><b class="nowrap">SM1–SM5</b> — зоны набора и фиксации. Зелёные снизу (BUY 25/50/100%), красные сверху (SELL).</li>
+        <li><b class="nowrap">HH / LL</b> — локальные максимумы и минимумы, которые показывают структуру рынка.</li>
+        <li><b>Зоны набора и фиксации</b> — где можно работать частями, а где разумно фиксировать прибыль.</li>
       </ul>
     </div>
   </div>
@@ -137,12 +138,12 @@
   <div class="step">
     <div class="step-num" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.25);color:var(--pink)">🔔</div>
     <div class="step-body">
-      <div class="step-title">Сигналы приходят сами</div>
-      <div class="step-text">Не нужно сидеть у графика. Индикатор работает 24/7 и присылает сигнал в момент, когда срабатывает условие — в мини-апп и бот.</div>
+      <div class="step-title">Сигналы приходят автоматически</div>
+      <div class="step-text">Не нужно постоянно сидеть у графика. Индикатор работает 24/7 и присылает уведомление, когда срабатывают условия — в мини-апп и бот.</div>
       <ul class="step-list">
         <li>Метки <span class="pill pill-buy">BUY</span> и <span class="pill pill-sell">SELL</span> по <b>BTC · ETH · SOL</b>.</li>
         <li>Таймфреймы <b>1H · 4H · 1D</b> — от краткосрока до глобального.</li>
-        <li>Нажми на сигнал в мини-апп → откроются детали: уровень, контекст, комментарий.</li>
+        <li>Нажми на сигнал в мини-апп → откроются детали: уровень, контекст и комментарий.</li>
       </ul>
     </div>
   </div>
@@ -155,7 +156,7 @@
       <div class="step-title">Следи за разборами от команды</div>
       <div class="step-text">Мы ведём рынок вместе с тобой — публикуем сценарии и разборы прямо в ленте мини-аппа.</div>
       <ul class="step-list">
-        <li><b>Сценарии по рынку</b> — куда может пойти цена, с уровнями вверх и вниз.</li>
+        <li><b>Сценарии по рынку</b> — ключевые зоны, варианты движения и условия отмены.</li>
         <li><b>Макро и новости</b> — как важные события влияют на крипту.</li>
         <li>Главный принцип: <b>работай от уровней, а не от эмоций.</b></li>
       </ul>
@@ -167,10 +168,10 @@
     <div class="new-glow"></div>
     <div class="new-tag">🎁 PRO-бонус · новый раздел</div>
     <div class="new-title">Сигналы <span class="g">лонг и шорт</span><br>от топ-трейдеров</div>
-    <div class="new-desc">Для PRO-подписчиков добавляем торговые идеи из платных приватных сообществ. Собираем вход, стоп, цели и контекст в одном месте — прямо в IT v3.</div>
+    <div class="new-desc">Для PRO-подписчиков добавляем торговые идеи из платных приватных сообществ. Собираем зону входа, стоп, цели и контекст в одном месте — прямо в IT V3.</div>
     <div class="new-feats">
-      <div class="new-feat">📈 <span><b>Лонг и шорт сигналы</b> — вход, стоп, цели и логика сделки</span></div>
-      <div class="new-feat">🔒 <span><b>Из платных приваток</b> — отбираем главное для PRO-подписчиков</span></div>
+      <div class="new-feat">📈 <span><b>Лонг и шорт сигналы</b> — зона входа, стоп, цели и логика сделки</span></div>
+      <div class="new-feat">🔒 <span><b>Из платных приватных сообществ</b> — отбираем главное для PRO-подписчиков</span></div>
       <div class="new-feat">🧭 <span><b>Контекст по рынку</b> — почему рассматривается именно эта зона</span></div>
       <div class="new-feat">⚡️ <span><b>Прямо в мини-апп</b> — вместе с нашими сигналами и аналитикой</span></div>
     </div>
@@ -210,7 +211,7 @@
         <li>Стиль: <b>преимущественно интрадей</b></li>
         <li>Плечо <b>5–10x</b>, риск/прибыль минимум <b>1:3</b></li>
         <li>Входы лимиткой и по рынку, риск при стопе ~<b>1%</b></li>
-        <li>Частичная фиксация несколькими тейками (смотри в сигнале)</li>
+        <li>Частичная фиксация несколькими тейками — детали смотри в конкретном сигнале</li>
       </ul>
     </div>
   </div>
@@ -233,21 +234,21 @@
     <div class="step-num" style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.25);color:var(--accent)">1</div>
     <div class="step-body">
       <div class="step-title">Смотри на план сделки</div>
-      <div class="step-text">В идее указаны вход, стоп, тейки и логика. Используй это как готовый сценарий, но размер позиции выбирай под свой риск.</div>
+      <div class="step-text">В идее указаны зона входа, стоп, тейки и логика. Используй это как готовый сценарий, но размер позиции выбирай под свой риск.</div>
     </div>
   </div>
   <div class="step">
     <div class="step-num" style="background:rgba(255,61,127,.1);border:1px solid rgba(255,61,127,.25);color:var(--pink)">2</div>
     <div class="step-body">
       <div class="step-title">Не догоняй</div>
-      <div class="step-text">Если цена уже ушла от точки входа — пропусти сделку. Нет входа лучше плохого входа.</div>
+      <div class="step-text">Если цена уже ушла от зоны входа — пропусти сделку. Нет входа лучше плохого входа.</div>
     </div>
   </div>
   <div class="step">
     <div class="step-num" style="background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.25);color:var(--orange)">3</div>
     <div class="step-body">
       <div class="step-title">Стоп ставь сразу</div>
-      <div class="step-text">Открыл позицию — сразу выстави стоп-лосс. Без стопа в рынок не заходим.</div>
+      <div class="step-text">Открыл позицию — сразу выстави стоп-лосс. Без стопа в сделку не заходим.</div>
     </div>
   </div>
   <div class="step">
@@ -261,17 +262,17 @@
     <div class="step-num" style="background:rgba(77,201,240,.1);border:1px solid rgba(77,201,240,.25);color:var(--cyan)">5</div>
     <div class="step-body">
       <div class="step-title">Следи за тегом трейдера</div>
-      <div class="step-text">У каждого свой стиль и свои сделки (#A, #B, #C, #D...). Не путай сигналы и апдейты между трейдерами.</div>
+      <div class="step-text">У каждого трейдера свой стиль и свои сделки (#A, #B, #C, #D). Не путай сигналы и обновления между трейдерами.</div>
     </div>
   </div>
-  <div style="background:rgba(255,61,127,.05);border:1px solid rgba(255,61,127,.15);border-radius:14px;padding:16px;margin-top:8px;text-align:center;font-size:13px;color:var(--lg)">⚠️ Идеи и сигналы — не финансовый совет. Решение всегда за тобой. Управляй риском.</div>
+  <div style="background:rgba(255,61,127,.05);border:1px solid rgba(255,61,127,.15);border-radius:14px;padding:16px;margin-top:8px;text-align:center;font-size:13px;color:var(--lg)">⚠️ Идеи и сигналы — не финансовая рекомендация. Решение всегда за тобой. Управляй риском.</div>
 
   <!-- CTA -->
   <div class="cta">
-    <a href="https://t.me/Ind_icator_Bot" class="cta-btn">📱 Открыть IT v3</a>
+    <a href="https://t.me/Ind_icator_Bot" class="cta-btn">📱 Открыть IT V3</a>
   </div>
 
-  <div class="footer">IT v3 · ИНДИКАТОР ОТ ТОВАРИЩА · 2026</div>
+  <div class="footer">IT V3 · ИНДИКАТОР ОТ ТОВАРИЩА · 2026</div>
 
 </div>
 </body>
