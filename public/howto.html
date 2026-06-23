@@ -16,7 +16,7 @@
     --cyan: #4dc9f0; --blue: #4f8ef7; --orange: #f5a623; --yellow: #fbbf24; --pink: #ff3d7f;
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
   .page { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
 
@@ -35,7 +35,7 @@
   .hero { text-align: center; margin-bottom: 48px; }
   .hero-kicker { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
     letter-spacing: .24em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-  .hero-title { font-size: 44px; font-weight: 900; line-height: 1.05; margin-bottom: 14px; letter-spacing: -.02em; }
+  .hero-title { font-size: clamp(34px, 6vw, 44px); font-weight: 900; line-height: 1.05; margin-bottom: 14px; letter-spacing: 0; }
   .hero-title .g { background: linear-gradient(180deg,#6FFFB2,#2ecc71); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero-sub { font-size: 16px; color: var(--lg); }
 
@@ -45,11 +45,11 @@
   .step-num { flex-shrink: 0; width: 44px; height: 44px; border-radius: 13px;
     display: flex; align-items: center; justify-content: center;
     font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 800; }
-  .step-body { flex: 1; }
+  .step-body { flex: 1; min-width: 0; }
   .step-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
   .step-text { font-size: 14px; color: var(--lg); line-height: 1.7; }
   .step-list { list-style: none; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .step-list li { display: flex; gap: 10px; font-size: 13px; color: var(--lg); line-height: 1.5; align-items: flex-start; }
+  .step-list li { display: flex; gap: 10px; font-size: 13px; color: var(--lg); line-height: 1.5; align-items: flex-start; min-width: 0; overflow-wrap: break-word; }
   .step-list li::before { content: '—'; color: var(--muted); flex-shrink: 0; }
   .step-list li b { color: var(--white); font-weight: 600; }
   .nowrap { white-space: nowrap; }
@@ -82,6 +82,7 @@
   .new-feats { display: flex; flex-direction: column; gap: 8px; max-width: 440px; margin: 0 auto 24px; position: relative; z-index: 2; text-align: left; }
   .new-feat { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--lg);
     background: rgba(255,255,255,.03); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .new-feat span { min-width: 0; }
   .new-feat b { color: var(--white); }
   .new-date { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace;
     font-size: 13px; font-weight: 700; color: var(--pink); background: rgba(255,61,127,.08);
@@ -97,10 +98,13 @@
     font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: .1em; }
 
   @media (max-width: 640px) {
-    .hero-title { font-size: 34px; }
-    .step { padding: 18px; gap: 14px; }
+    .page { padding: 32px 16px 64px; }
+    .hero { margin-bottom: 38px; }
+    .step { padding: 18px; gap: 14px; border-radius: 16px; }
+    .step-list li { font-size: 12.5px; }
     .new-block { padding: 28px 20px; }
     .new-title { font-size: 23px; }
+    .cta-btn { width: 100%; justify-content: center; padding-left: 18px; padding-right: 18px; }
   }
 </style>
 </head>
@@ -126,9 +130,9 @@
       <div class="step-title">Читай уровни на графике</div>
       <div class="step-text">Индикатор сам размечает ключевые зоны прямо на графике в TradingView. Не нужно ничего считать вручную — смотри на цветные уровни и реакцию цены.</div>
       <ul class="step-list">
-        <li><b class="nowrap">SM1–SM5</b> — зоны набора и фиксации. Зелёные снизу (BUY 25/50/100%), красные сверху (SELL).</li>
+        <li><b class="nowrap">SM1–SM5</b> — ключевые уровни: зелёные снизу для набора, красные сверху для фиксации.</li>
         <li><b class="nowrap">HH / LL</b> — локальные максимумы и минимумы, которые показывают структуру рынка.</li>
-        <li><b>Зоны набора и фиксации</b> — где можно работать частями, а где разумно фиксировать прибыль.</li>
+        <li><b class="nowrap">Набор / фиксация</b> — работаем частями, прибыль фиксируем по зонам.</li>
       </ul>
     </div>
   </div>
@@ -199,7 +203,7 @@
       <ul class="step-list">
         <li>Формат: <b>спотовая торговля</b>, риск 1% на сделку</li>
         <li>Результат месяца: <b>23 сделки → +14.6%</b></li>
-        <li>Сильные сделки: SOL <b>+4%/+5%</b>, ADA <b>+5%</b>, XRP <b>+5.5%</b></li>
+        <li>Примеры сделок: SOL, ADA, XRP — фиксация прибыли по сигналу</li>
       </ul>
     </div>
   </div>

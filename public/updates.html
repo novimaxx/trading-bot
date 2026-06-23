@@ -12,24 +12,24 @@
     --muted:#6b6b78; --lg:#a0a0b0; --white:#e8e8f0; --accent:#2ecc71; --pink:#ff3d7f;
     --cyan:#4dc9f0; --blue:#4f8ef7; --orange:#f5a623; --yellow:#fbbf24;
   }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body { background: var(--bg); color: var(--white); font-family: Inter, sans-serif; line-height: 1.6; }
   .page { max-width: 880px; margin: 0 auto; padding: 46px 24px 70px; }
-  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:34px; gap:14px; }
+  .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:34px; gap:14px; flex-wrap:wrap; }
   .brand { font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:800; letter-spacing:.18em; color:var(--accent); }
   .back { color:var(--lg); text-decoration:none; border:1px solid var(--line2); background:var(--card); border-radius:12px; padding:10px 14px; font-size:13px; font-weight:700; }
   .hero { border:1px solid var(--line2); background:radial-gradient(ellipse at 50% 0%,rgba(46,204,113,.12),transparent 65%), var(--card); border-radius:26px; padding:50px 36px; text-align:center; margin-bottom:44px; }
   .kicker { font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:800; letter-spacing:.25em; text-transform:uppercase; color:var(--pink); margin-bottom:14px; }
-  h1 { font-size:52px; line-height:1; letter-spacing:-.03em; margin-bottom:14px; font-weight:900; }
+  h1 { font-size:clamp(38px, 7vw, 52px); line-height:1; letter-spacing:0; margin-bottom:14px; font-weight:900; }
   .sub { color:var(--lg); font-size:16px; max-width:620px; margin:0 auto; }
   .section { margin-bottom:42px; }
   .sec-label { font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; display:flex; align-items:center; gap:14px; }
   .sec-label::after { content:''; flex:1; height:1px; background:var(--line); }
-  .sec-title { font-size:28px; font-weight:900; margin-bottom:8px; line-height:1.15; }
+  .sec-title { font-size:clamp(24px, 4vw, 28px); font-weight:900; margin-bottom:8px; line-height:1.15; }
   .sec-desc { color:var(--lg); font-size:15px; margin-bottom:20px; }
   .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
-  .card { background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:22px 20px; position:relative; overflow:hidden; }
+  .card { background:var(--card); border:1px solid var(--line2); border-radius:16px; padding:22px 20px; position:relative; overflow:hidden; min-width:0; }
   .bar { position:absolute; top:0; left:0; right:0; height:3px; }
   .icon { font-size:28px; display:block; margin-bottom:12px; }
   .title { font-size:15px; font-weight:800; margin-bottom:6px; }
@@ -42,9 +42,11 @@
   .footer { text-align:center; border-top:1px solid var(--line); padding-top:26px; margin-top:44px; color:var(--muted); font-size:12px; }
   @media (max-width: 700px) {
     .page { padding:32px 18px 56px; }
-    h1 { font-size:38px; }
     .grid2, .grid3 { grid-template-columns:1fr; }
     .hero { padding:38px 22px; }
+    .top { align-items:flex-start; }
+    .back { width:100%; text-align:center; }
+    .btn { width:100%; justify-content:center; }
   }
 </style>
 </head>

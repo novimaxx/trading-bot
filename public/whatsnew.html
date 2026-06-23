@@ -17,7 +17,7 @@
     --yellow: #fbbf24; --green: #2ecc71; --green2: #6fffb2; --pink: #ff3d7f;
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body { background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif; line-height: 1.6; }
   .page { max-width: 880px; margin: 0 auto; padding: 56px 28px 80px; }
 
@@ -92,7 +92,7 @@
   .hero-kicker::before, .hero-kicker::after { content: ''; width: 22px; height: 2px; background: var(--accent2); }
 
   .hero h1 {
-    font-size: 80px; font-weight: 900; letter-spacing: -.04em; line-height: .95;
+    font-size: clamp(46px, 9vw, 80px); font-weight: 900; letter-spacing: 0; line-height: .95;
     color: var(--white); margin-bottom: 24px; position: relative; z-index: 5; text-transform: uppercase;
   }
   .hero h1 .accent {
@@ -124,6 +124,7 @@
     border: 1px solid var(--line2); background: var(--card2);
     font-size: 12px; font-weight: 600; color: var(--lg);
     font-family: 'JetBrains Mono', monospace; letter-spacing: .1em;
+    max-width: 100%; white-space: normal; justify-content: center;
   }
   .hero-footer {
     position: absolute; bottom: 28px; left: 40px; right: 40px;
@@ -142,7 +143,7 @@
     letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
   }
   .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-  .sec-title { font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 8px; line-height: 1.2; }
+  .sec-title { font-size: clamp(24px, 4vw, 28px); font-weight: 800; color: var(--white); margin-bottom: 8px; line-height: 1.2; }
   .sec-desc { font-size: 15px; color: var(--lg); margin-bottom: 24px; }
 
   /* ─── GRIDS ─── */
@@ -153,7 +154,7 @@
   .fcard {
     background: var(--card); border: 1px solid var(--line2);
     border-radius: 16px; padding: 22px 20px 18px; position: relative; overflow: hidden;
-    display: flex; flex-direction: column;
+    display: flex; flex-direction: column; min-width: 0;
   }
   .fcard-accent { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0; }
   .fcard-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
@@ -395,7 +396,7 @@
     font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
     letter-spacing: .3em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px;
   }
-  .cta-title { font-size: 36px; font-weight: 900; color: var(--white); margin-bottom: 10px; line-height: 1.1; }
+  .cta-title { font-size: clamp(28px, 5vw, 36px); font-weight: 900; color: var(--white); margin-bottom: 10px; line-height: 1.1; }
   .cta-title .g {
     background: linear-gradient(180deg, #6FFFB2, #2ecc71);
     -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -433,8 +434,8 @@
   }
 
   @media (max-width: 640px) {
-    .hero { padding: 56px 24px 44px; }
-    .hero h1 { font-size: 52px; }
+    .page { padding: 36px 18px 64px; }
+    .hero { padding: 56px 22px 44px; border-radius: 22px; }
     .grid2, .grid3 { grid-template-columns: 1fr; }
     .arch { grid-template-columns: 1fr; }
     .arch-arr { display: none; }
@@ -444,6 +445,7 @@
     .phone { display: none; }
     .cta-title { font-size: 26px; }
     .cta-block { padding: 36px 24px; }
+    .hero-date, .cta-btn-primary, .cta-btn-secondary { width: 100%; justify-content: center; }
   }
 </style>
 </head>
