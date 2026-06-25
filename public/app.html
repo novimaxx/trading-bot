@@ -667,14 +667,6 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       </div>
     </div>
 
-    <!-- Trial request button (shown only without subscription) -->
-    <div id="trial-request-block" style="display:none;margin-top:10px">
-      <button id="trial-req-btn" onclick="requestTrial(event)" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(245,166,35,.12),rgba(245,166,35,.06));border:1px solid rgba(245,166,35,.35);border-radius:14px;color:#f5a623;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.1em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-        🎁 ЗАПРОСИТЬ ПРОБНЫЙ ДОСТУП · ДО 9 ИЮНЯ
-      </button>
-      <div id="trial-req-result" style="display:none;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:8px;color:var(--accent)"></div>
-    </div>
-
     <div class="sub-card" id="tv-card" style="display:none;margin-top:10px;cursor:pointer" onclick="openTvModal()">
       <div style="flex:1">
         <div class="sub-label">📊 TRADINGVIEW</div>
@@ -779,7 +771,6 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
   <!-- Payments tab -->
   <div class="atab-content" id="acontent-payments">
-    <div id="trial-list" style="padding:12px 0 0"></div>
     <div id="payments-list" style="padding:4px 0 8px"></div>
   </div>
 
@@ -1506,34 +1497,6 @@ function closePost() {
 }
 
 // ── load data ──
-async function requestTrial(ev) {
-  const btn = ev && ev.currentTarget ? ev.currentTarget : (window.event && window.event.currentTarget) || null;
-  const origLabel = btn ? btn.innerHTML : '';
-  if (!userId) { toast('Необходимо авторизоваться', true); return; }
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Отправляю...'; }
-  try {
-    const r = await fetch(`${BASE}/api/trial-request`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id: userId, username: tgUser.username, first_name: tgUser.first_name })
-    });
-    const j = await r.json();
-    if (j.status === 'already_approved') {
-      if (btn) btn.innerHTML = '✅ Доступ уже активирован';
-      toast('✅ Доступ уже активирован');
-    } else if (j.status === 'already_requested') {
-      if (btn) btn.innerHTML = '⏳ Запрос уже отправлен';
-      toast('⏳ Запрос уже отправлен — ожидай');
-    } else {
-      if (btn) btn.innerHTML = '✅ Запрос отправлен';
-      toast('✅ Запрос на доступ отправлен');
-    }
-  } catch (e) {
-    if (btn) { btn.disabled = false; btn.innerHTML = origLabel; }
-    toast('Ошибка, попробуй ещё раз', true);
-  }
-}
-
 async function api(path) {
   try { const r = await fetch(BASE + path); if (r.ok) return r.json(); } catch(_){}
   return null;
@@ -1571,11 +1534,6 @@ async function boot() {
   document.getElementById('av-letter').textContent = userInitial;
   document.getElementById('p-name').textContent = userName;
   document.getElementById('p-handle').textContent = userUsername || (userId ? 'ID ' + userId : '—');
-
-  // Show trial button if no subscription
-  if (!userData.plan) {
-    document.getElementById('trial-request-block').style.display = 'block';
-  }
 
   if (userData.plan) {
     const sc = document.getElementById('sub-card');
@@ -1654,10 +1612,8 @@ async function boot() {
       <div class="empty-text">Сигналы — это PRO-фича</div>
       <div class="empty-sub" style="margin-bottom:14px">BUY/SELL по BTC · ETH · SOL · 1D/4H/1H</div>
       <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
-        <button onclick="requestTrial(event)" id="trial-req-btn" style="background:linear-gradient(135deg,rgba(245,166,35,.15),rgba(245,166,35,.07));color:#f5a623;border:1px solid rgba(245,166,35,.4);border-radius:10px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">🎁 Попробовать бесплатно · до 9 июня</button>
         <button onclick="navigate('buy')" style="background:var(--accent);color:#000;border:none;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">💎 Купить PRO</button>
       </div>
-      <div id="trial-req-result" style="display:none;font-family:'JetBrains Mono',monospace;font-size:11px;margin-top:10px;color:var(--accent)"></div>
     </div>`;
     lastWrap.innerHTML = noSubHtml;
     sigList.innerHTML = noSubHtml;
@@ -1789,52 +1745,8 @@ function searchUsers(val) {
 }
 
 async function loadAdminPayments() {
-  const [payments, trials] = await Promise.all([
-    adminApi('/api/admin/payments'),
-    adminApi('/api/admin/trial-requests'),
-  ]);
+  const payments = await adminApi('/api/admin/payments');
   if (payments) { adminData.payments = payments; renderPayments(payments); }
-  if (trials)   renderTrialRequests(trials);
-}
-
-function renderTrialRequests(trials) {
-  const el = document.getElementById('trial-list');
-  const pending = trials.filter(t => t.status === 'pending');
-  if (!pending.length) { el.innerHTML = ''; return; }
-  el.innerHTML = `
-    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--orange);margin-bottom:10px">🎁 ПРОБНЫЙ ДОСТУП (${pending.length})</div>
-    ${pending.map(t => {
-      const name = t.first_name ? `${t.first_name}${t.username ? ' @'+t.username : ''}` : `ID ${t.user_id}`;
-      const date = new Date(t.created_at).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
-      return `<div style="background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:12px;padding:14px;margin-bottom:8px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div>
-            <div style="font-size:14px;font-weight:700">${name}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px">${date}</div>
-            ${t.tv_username ? `<div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);margin-top:3px">TV: @${t.tv_username}</div>` : '<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--accent2);margin-top:3px">TV: не указан</div>'}
-          </div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--orange);border:1px solid rgba(245,166,35,.3);padding:3px 10px;border-radius:20px">48Ч</div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="approveTrialRequest(${t.user_id},this)" style="flex:2;padding:10px;background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.3);color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-radius:10px;cursor:pointer">✅ Выдать доступ</button>
-          <button onclick="rejectTrialRequest(${t.user_id},this)" style="flex:1;padding:10px;background:rgba(255,61,127,.08);border:1px solid rgba(255,61,127,.2);color:var(--accent2);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-radius:10px;cursor:pointer">❌</button>
-        </div>
-      </div>`;
-    }).join('')}`;
-}
-
-async function approveTrialRequest(userId, btn) {
-  btn.disabled = true; btn.textContent = '⏳';
-  const r = await adminApi(`/api/admin/trial-approve/${userId}`, 'POST');
-  if (r?.ok) { toast('✅ Доступ выдан'); loadAdminPayments(); }
-  else { btn.disabled = false; btn.textContent = '✅ Выдать доступ'; toast('Ошибка', true); }
-}
-
-async function rejectTrialRequest(userId, btn) {
-  btn.disabled = true;
-  const r = await adminApi(`/api/admin/trial-reject/${userId}`, 'POST');
-  if (r?.ok) { toast('Запрос отклонён'); loadAdminPayments(); }
-  else { btn.disabled = false; toast('Ошибка', true); }
 }
 
 function renderPayments(payments) {

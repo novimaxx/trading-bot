@@ -1354,112 +1354,22 @@ app.post('/api/admin/payments/:id/reject', adminOnly, async (req, res) => {
 // ─── API: Support messages ────────────────────────────────
 // POST /api/trial-request — запрос пробного доступа
 app.post('/api/trial-request', async (req, res) => {
-  const { user_id, username, first_name, tv_username } = req.body
-  if (!user_id) return res.status(400).json({ error: 'bad request' })
-  try {
-    // Проверяем не было ли уже запроса
-    if (pool) {
-      const existing = await pool.query(
-        `SELECT id, status FROM trial_requests WHERE user_id = $1`, [user_id]
-      )
-      if (existing.rows.length > 0) {
-        const st = existing.rows[0].status
-        if (st === 'approved') return res.json({ ok: true, status: 'already_approved' })
-        return res.json({ ok: true, status: 'already_requested' })
-      }
-      await pool.query(
-        `INSERT INTO trial_requests (user_id, username, first_name) VALUES ($1,$2,$3)`,
-        [user_id, username || null, first_name || null]
-      )
-      // Сохраняем TV username сразу
-      if (tv_username) {
-        await pool.query(
-          `UPDATE users SET tv_username = $1 WHERE id = $2`,
-          [tv_username, user_id]
-        ).catch(() => {})
-      }
-    }
-    // Уведомление админу с кнопкой
-    const name = first_name ? `${first_name}${username ? ' (@' + username + ')' : ''}` : `ID ${user_id}`
-    const tvLine = tv_username ? `\nTradingView: \`${tv_username}\`` : '\nTradingView: не указан'
-    const adminText = `🎁 *Запрос пробного доступа*\n\nОт: ${name}\nID: \`${user_id}\`${tvLine}\n\nВыдать доступ до 9 июня?`
-    const BASE_URL = process.env.RAILWAY_PUBLIC_DOMAIN
-      ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-      : 'https://trading-bot-production-7d20.up.railway.app'
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: ADMIN_IDS[0],
-        text: adminText,
-        parse_mode: 'Markdown',
-        reply_markup: {
-          inline_keyboard: [[
-            { text: '✅ Выдать 48ч доступ', callback_data: `trial_approve_${user_id}` },
-            { text: '❌ Отклонить', callback_data: `trial_reject_${user_id}` }
-          ]]
-        }
-      })
-    })
-    res.json({ ok: true, status: 'requested' })
-  } catch (e) {
-    console.error('trial-request error:', e.message)
-    res.status(500).json({ error: 'server error' })
-  }
+  res.json({ ok: false, status: 'paused', message: 'Пробный доступ сейчас на паузе' })
 })
 
 // GET /api/admin/trial-requests
 app.get('/api/admin/trial-requests', adminOnly, async (req, res) => {
-  if (!pool) return res.json([])
-  const { rows } = await pool.query(`SELECT tr.*, u.tv_username FROM trial_requests tr LEFT JOIN users u ON u.id = tr.user_id ORDER BY tr.created_at DESC LIMIT 50`)
-  res.json(rows)
+  res.json([])
 })
 
 // POST /api/admin/trial-reject/:userId
 app.post('/api/admin/trial-reject/:userId', adminOnly, async (req, res) => {
-  const userId = req.params.userId
-  try {
-    if (pool) await pool.query(`UPDATE trial_requests SET status='rejected' WHERE user_id=$1`, [userId])
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: userId, text: `К сожалению, в этот раз пробный доступ недоступен. Если хочешь попробовать IT V3 — ознакомься с тарифами.` })
-    })
-    res.json({ ok: true })
-  } catch (e) { res.status(500).json({ error: e.message }) }
+  res.json({ ok: false, status: 'paused' })
 })
 
 // POST /api/admin/trial-approve/:userId
 app.post('/api/admin/trial-approve/:userId', adminOnly, async (req, res) => {
-  const userId = req.params.userId
-  try {
-    if (pool) {
-      await pool.query(`
-        UPDATE users SET subscribed = TRUE, subscription_plan = 'PRO',
-          subscription_until = '2026-06-09 23:59:59+02'
-        WHERE id = $1
-      `, [userId])
-      await pool.query(`
-        UPDATE trial_requests SET status = 'approved', approved_at = NOW() WHERE user_id = $1
-      `, [userId])
-    }
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: userId,
-        text: `✅ *Доступ активирован!*\n\nТебе открыт бесплатный доступ к IT V3 до 9 июня.\n\n📊 Индикатор в TradingView\n🔔 Автосигналы 24/7\n📱 Мини-апп\n\n⚠️ *Важно:* зайди в Профиль и укажи свой TradingView username — без этого мы не сможем открыть тебе доступ к индикатору.`,
-        parse_mode: 'Markdown',
-        reply_markup: {
-          inline_keyboard: [[
-            { text: '📱 Открыть IT V3', web_app: { url: `https://trading-bot-production-7d20.up.railway.app/app.html` } }
-          ]]
-        }
-      })
-    })
-    res.json({ ok: true })
-  } catch (e) {
-    res.status(500).json({ error: e.message })
-  }
+  res.json({ ok: false, status: 'paused' })
 })
 
 // POST /api/support — пользователь отправляет сообщение
