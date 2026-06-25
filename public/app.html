@@ -140,11 +140,14 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 .plan-card.plan-pro.selected{border-color:rgba(46,204,113,.6)}
 .plan-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 0%,var(--pc-glow,transparent) 0%,transparent 65%);pointer-events:none}
 .plan-card.plan-pro{--pc-glow:rgba(46,204,113,.07)}
+.plan-card.plan-pro .plan-top{padding-top:14px}
 .plan-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .plan-name{font-size:19px;font-weight:900}
 .plan-name-pro{color:var(--accent)}
 .plan-price{font-size:24px;font-weight:900;font-family:'JetBrains Mono',monospace;text-align:right}
+.plan-old-price{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:right;text-decoration:line-through;margin-bottom:2px}
 .plan-period{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:right}
+.plan-sale-note{font-size:10px;color:var(--gold);font-family:'JetBrains Mono',monospace;text-align:right;font-weight:800;letter-spacing:.04em;margin-top:2px}
 .plan-divider{height:1px;background:var(--line);margin-bottom:12px}
 .plan-features{display:flex;flex-direction:column;gap:7px}
 .plan-feat{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:rgba(255,255,255,.8);line-height:1.3}
@@ -597,13 +600,15 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
     </div>
 
     <div class="plan-card plan-pro" id="plan-pro" onclick="selectPlan('PRO')">
-      <div class="plan-badge">POPULAR</div>
+      <div class="plan-badge">SALE до 1 июля</div>
       <div class="plan-select-indicator">✓ ВЫБРАН</div>
       <div class="plan-top">
         <div class="plan-name plan-name-pro">💎 PRO</div>
         <div>
-          <div class="plan-price">50 <span style="font-size:14px;color:var(--muted)">USDT</span></div>
+          <div class="plan-old-price">50 USDT</div>
+          <div class="plan-price">40 <span style="font-size:14px;color:var(--muted)">USDT</span></div>
           <div class="plan-period">/ месяц</div>
+          <div class="plan-sale-note">до 1 июля</div>
         </div>
       </div>
       <div class="plan-divider"></div>
@@ -613,6 +618,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
         <div class="plan-feat"><span class="feat-ico">✅</span><span>Глубокая аналитика по крипто</span></div>
         <div class="plan-feat"><span class="feat-ico">✅</span><span>Обучающие материалы</span></div>
         <div class="plan-feat"><span class="feat-ico">✅</span><span>Крипто-дайджест + Поддержка</span></div>
+        <div class="plan-feat" style="color:var(--gold)"><span class="feat-ico">🔥</span><span><b>Скидка до 1 июля:</b> 40 USDT вместо 50 USDT</span></div>
         <div class="plan-feat" style="color:var(--accent)"><span class="feat-ico">🔔</span>
           <span><b>Сигналы BTC · ETH · SOL</b><br>
           <span style="color:var(--muted);font-size:12px">BUY/SELL · STRONG · 1D/4H/1H</span></span>
@@ -622,7 +628,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   </div>
 
   <div id="pay-section" style="display:none">
-    <div class="slabel" id="pay-section-label">РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ PRO — 50 USDT</div>
+    <div class="slabel" id="pay-section-label">РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ PRO — 40 USDT ДО 1 ИЮЛЯ</div>
     <div class="pay-block">
       <div class="pay-addr" onclick="copyText('usdt-addr')">
         <div class="pay-addr-net">USDT TRC20 (Tron)<span class="pay-copy-hint">нажми чтобы скопировать</span></div>
@@ -632,7 +638,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
         <div class="pay-addr-net">USDC BEP20 (BSC)<span class="pay-copy-hint">нажми чтобы скопировать</span></div>
         <div class="pay-addr-val" id="usdc-addr">0x1D01B8bF333270903AD23b5F08334dBF11E52441</div>
       </div>
-      <div class="pay-note">После оплаты отправь боту <b style="color:var(--white)">тариф, ссылку на транзакцию и username TradingView</b></div>
+      <div class="pay-note">🔥 PRO по акции — <b style="color:var(--white)">40 USDT до 1 июля</b>. После оплаты отправь боту <b style="color:var(--white)">тариф, ссылку на транзакцию и username TradingView</b></div>
       <button class="pay-btn" onclick="paidConfirm()">✅ Я оплатил</button>
     </div>
   </div>
@@ -1287,8 +1293,8 @@ function selectPlan(plan) {
   document.getElementById('plan-pro').classList.toggle('selected', plan === 'PRO');
   const payBlock = document.getElementById('pay-section');
   const payLabel = document.getElementById('pay-section-label');
-  const price = plan === 'PRO' ? '50' : '30';
-  payLabel.textContent = `РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ ${plan} — ${price} USDT`;
+  const price = plan === 'PRO' ? '40 USDT ДО 1 ИЮЛЯ' : '30 USDT';
+  payLabel.textContent = `РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ ${plan} — ${price}`;
   payBlock.style.display = 'block';
   setTimeout(() => payBlock.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
 }
