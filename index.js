@@ -65,6 +65,8 @@ async function runMigrations() {
       );
       ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'ALL';
       ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS post_type TEXT DEFAULT 'analytics';
+      ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS image_data TEXT;
+      ALTER TABLE app_posts ADD COLUMN IF NOT EXISTS link_url TEXT;
       UPDATE app_posts SET visibility = 'STANDARD' WHERE visibility = 'ALL' OR visibility IS NULL;
 
       CREATE TABLE IF NOT EXISTS users (
@@ -1037,7 +1039,7 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
 
 // ─── API: Admin broadcast с фото ─────────────────────────
 app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
-  const { title, body, tag, audience, image_b64 } = req.body
+  const { title, body, tag, audience, image_b64, post_type } = req.body
   if (!image_b64) return res.sendStatus(400)
 
   const caption = [
@@ -1087,8 +1089,8 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   if (pool && (sent > 0 || subscribers.length === 0)) {
     try {
       const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, tag, file_id, visibility) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
-        [title||null, body||null, tag||'АНАЛИТИКА', fileId, visibilityPhoto]
+        `INSERT INTO app_posts (title, body, tag, file_id, visibility, post_type) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
+        [title||null, body||null, tag||'АНАЛИТИКА', fileId, visibilityPhoto, post_type || 'analytics']
       )
       savedId = rows[0].id
     } catch (e) { console.error('Save post error:', e.message) }
@@ -1099,7 +1101,7 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
 
 // ─── API: Admin test-send (to admin only + save to feed) ──
 app.post('/api/admin/test-send', adminOnly, async (req, res) => {
-  const { title, body, tag, image_b64 } = req.body
+  const { title, body, tag, image_b64, post_type } = req.body
   if (!image_b64) return res.sendStatus(400)
 
   const adminChatId = String(req.query.tg_id || req.body?.tg_id || '562914492')
@@ -1137,8 +1139,8 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
     // 2. Сохраняем пост в ленту с file_id (не base64!)
     if (pool) {
       const { rows } = await pool.query(
-        `INSERT INTO app_posts (title, body, tag, file_id) VALUES ($1,$2,$3,$4) RETURNING id`,
-        [title||null, body||null, tag||'ТЕСТ', fileId]
+        `INSERT INTO app_posts (title, body, tag, file_id, visibility, post_type) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
+        [title||null, body||null, tag||'ТЕСТ', fileId, post_type === 'trader_signal' ? 'PRO' : 'ALL', post_type || 'analytics']
       ).catch(e => { console.error('Save test post error:', e.message); return { rows: [] } })
       savedId = rows[0]?.id || null
     }

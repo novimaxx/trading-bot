@@ -778,6 +778,15 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   <div class="atab-content" id="acontent-send">
     <div class="bm-wrap">
 
+      <!-- Post mode -->
+      <div class="bm-ctrl">
+        <label>Тип отправки</label>
+        <div style="display:flex;gap:8px">
+          <button class="aud-btn active" id="bc-type-analytics" onclick="setPostType('analytics',this)">📊 Обзор</button>
+          <button class="aud-btn" id="bc-type-signal" onclick="setPostType('trader_signal',this)">📡 Сигнал трейдера</button>
+        </div>
+      </div>
+
       <!-- Controls: title, tag, sub, coins -->
       <div class="bm-ctrl">
         <label>Заголовок</label>
@@ -1839,6 +1848,30 @@ async function deactivateUser(uid) {
 }
 
 let bcAudience = 'all';
+let bcPostType = 'analytics';
+
+function setPostType(val, el) {
+  bcPostType = val;
+  ['bc-type-analytics','bc-type-signal'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+  el.classList.add('active');
+
+  if (val === 'trader_signal') {
+    bcAudience = 'PRO';
+    ['aud-all','aud-std','aud-pro'].forEach(id => document.getElementById(id)?.classList.remove('active'));
+    document.getElementById('aud-pro')?.classList.add('active');
+    if (!document.getElementById('bc-title').value.trim()) document.getElementById('bc-title').value = '📡 Сигнал трейдера';
+    if (!document.getElementById('bc-tag').value.trim() || document.getElementById('bc-tag').value === 'SOL · 1D') document.getElementById('bc-tag').value = 'PRO · СИГНАЛ';
+    if (!document.getElementById('bc-coins').value.trim()) document.getElementById('bc-coins').value = 'BTC · ETH · SOL';
+    if (!document.getElementById('bc-sub').value.trim()) document.getElementById('bc-sub').value = 'Торговая идея из закрытого источника';
+    document.getElementById('bc-send-btn').textContent = '📡 Отправить PRO';
+    document.getElementById('bc-admin-btn').textContent = '📣 Сигнал админу';
+  } else {
+    document.getElementById('bc-send-btn').textContent = '📤 Отправить подписчикам';
+    document.getElementById('bc-admin-btn').textContent = '📣 Анонс админу';
+  }
+  bcUpdate();
+}
+
 function setAudience(val, el) {
   bcAudience = val;
   ['aud-all','aud-std','aud-pro'].forEach(id => document.getElementById(id)?.classList.remove('active'));
@@ -2135,14 +2168,15 @@ async function bcSend() {
   const res = document.getElementById('bc-result');
   res.style.display='block'; res.style.color='rgba(255,255,255,.4)'; res.textContent='⏳ Отправка...';
 
-  const r = await adminApi('/api/admin/broadcast-photo','POST',{title,body,tag,image_b64,audience:bcAudience});
+  const r = await adminApi('/api/admin/broadcast-photo','POST',{title,body,tag,image_b64,audience:bcAudience,post_type:bcPostType});
 
-  btn.disabled=false; btn.innerHTML='📤 Отправить подписчикам';
+  btn.disabled=false;
+  btn.innerHTML = bcPostType === 'trader_signal' ? '📡 Отправить PRO' : '📤 Отправить подписчикам';
 
   if (r?.ok) {
     res.textContent=`✅ Отправлено: ${r.sent} · Ошибок: ${r.failed} · Всего: ${r.total}`;
     res.style.color='#2ecc71';
-    toast('✅ Пост с баннером отправлен!');
+    toast(bcPostType === 'trader_signal' ? '✅ Сигнал отправлен PRO!' : '✅ Пост с баннером отправлен!');
     document.getElementById('bc-title').value='';
     document.getElementById('bc-sub').value='';
     document.getElementById('bc-body').value='';
@@ -2181,11 +2215,13 @@ async function bcTestSend() {
     res.textContent='❌ Ошибка рендера'; res.style.color='#ff3d7f'; return;
   }
 
-  const r = await adminApi('/api/admin/test-send','POST',{title,body,tag,image_b64});
+  const r = await adminApi('/api/admin/test-send','POST',{title,body,tag,image_b64,post_type:bcPostType});
   btn.disabled=false; btn.innerHTML='🧪 Тест → мне';
 
   if (r?.ok) {
-    res.textContent=`✅ Тест отправлен в Telegram + сохранён в ленту`;
+    res.textContent=bcPostType === 'trader_signal'
+      ? `✅ Тест-сигнал отправлен в Telegram + сохранён в PRO-ленту`
+      : `✅ Тест отправлен в Telegram + сохранён в ленту`;
     res.style.color='#2ecc71';
     await refreshFeed();
   } else {
