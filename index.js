@@ -1037,13 +1037,67 @@ app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
   res.json({ ok: true, savedId, sent, failed, total: subscribers.length })
 })
 
+function getTraderMeta(tag, body = '') {
+  const source = `${tag || ''} ${body || ''}`.toLowerCase()
+  if (source.includes('#alpha')) return { code: 'A', leverage: 'до 5–10x' }
+  if (source.includes('#sigma')) return { code: 'S', leverage: null }
+  if (source.includes('#delta')) return { code: 'D', leverage: 'до 1–5x' }
+  if (source.includes('#spot')) return { code: 'SP', leverage: 'без плеча / spot' }
+  if (source.includes('#quant')) return { code: 'Q', leverage: null }
+  if (source.includes('#nova')) return { code: 'N', leverage: null }
+  return { code: 'T', leverage: null }
+}
+
+async function makeTraderSignalId(tag, body) {
+  const { code } = getTraderMeta(tag, body)
+  const now = new Date()
+  const day = `${String(now.getDate()).padStart(2, '0')}${String(now.getMonth() + 1).padStart(2, '0')}`
+  let count = 0
+
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `SELECT COUNT(*)::int AS count
+           FROM app_posts
+          WHERE post_type = 'trader_signal'
+            AND tag ILIKE $1
+            AND sent_at::date = CURRENT_DATE`,
+        [`%#${tag?.match(/#([A-Za-z]+)/)?.[1] || code}%`]
+      )
+      count = rows[0]?.count || 0
+    } catch (e) {
+      console.error('Signal ID count error:', e.message)
+    }
+  }
+
+  return `#${code}${day}-${String(count + 1).padStart(2, '0')}`
+}
+
+async function prepareTraderSignalBody(body, tag, postType) {
+  let text = body || ''
+  if (postType !== 'trader_signal') return text
+  const { leverage } = getTraderMeta(tag, text)
+
+  if (!/(^|\n)\s*ID\s*:/i.test(text)) {
+    const signalId = await makeTraderSignalId(tag, text)
+    text = text.trim() ? `ID: ${signalId}\n\n${text.trim()}` : `ID: ${signalId}`
+  }
+
+  if (leverage && !/Плечо\s*:/i.test(text)) {
+    text = `${text.trim()}\n\nПлечо:\n→ ${leverage}`
+  }
+
+  return text
+}
+
 // ─── API: Admin broadcast с фото ─────────────────────────
 app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
   const { title, body, tag, audience, image_b64, post_type } = req.body
   if (!image_b64) return res.sendStatus(400)
+  const bodyText = await prepareTraderSignalBody(body, tag, post_type)
 
   const caption = [
-    body || null,
+    bodyText || null,
     tag ? `🏷 ${tag}` : null,
   ].filter(Boolean).join('\n\n')
 
@@ -1090,7 +1144,7 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
     try {
       const { rows } = await pool.query(
         `INSERT INTO app_posts (title, body, tag, file_id, visibility, post_type) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
-        [title||null, body||null, tag||'АНАЛИТИКА', fileId, visibilityPhoto, post_type || 'analytics']
+        [title||null, bodyText||null, tag||'АНАЛИТИКА', fileId, visibilityPhoto, post_type || 'analytics']
       )
       savedId = rows[0].id
     } catch (e) { console.error('Save post error:', e.message) }
@@ -1103,11 +1157,12 @@ app.post('/api/admin/broadcast-photo', adminOnly, async (req, res) => {
 app.post('/api/admin/test-send', adminOnly, async (req, res) => {
   const { title, body, tag, image_b64, post_type } = req.body
   if (!image_b64) return res.sendStatus(400)
+  const bodyText = await prepareTraderSignalBody(body, tag, post_type)
 
   const adminChatId = String(req.query.tg_id || req.body?.tg_id || '562914492')
 
   const caption = [
-    body || null,
+    bodyText || null,
     tag ? `🏷 ${tag}` : null,
   ].filter(Boolean).join('\n\n')
 
@@ -1140,7 +1195,7 @@ app.post('/api/admin/test-send', adminOnly, async (req, res) => {
     if (pool) {
       const { rows } = await pool.query(
         `INSERT INTO app_posts (title, body, tag, file_id, visibility, post_type) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
-        [title||null, body||null, tag||'ТЕСТ', fileId, post_type === 'trader_signal' ? 'PRO' : 'ALL', post_type || 'analytics']
+        [title||null, bodyText||null, tag||'ТЕСТ', fileId, post_type === 'trader_signal' ? 'PRO' : 'ALL', post_type || 'analytics']
       ).catch(e => { console.error('Save test post error:', e.message); return { rows: [] } })
       savedId = rows[0]?.id || null
     }
