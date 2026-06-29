@@ -360,10 +360,10 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 .bm-ctrl{display:flex;flex-direction:column;gap:6px}
 .bm-ctrl label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.18em;
   text-transform:uppercase;color:rgba(255,255,255,.35)}
-.bm-ctrl input,.bm-ctrl textarea{background:#13131a;border:1px solid rgba(255,255,255,.1);color:#fff;
+.bm-ctrl input,.bm-ctrl textarea,.bm-ctrl select{background:#13131a;border:1px solid rgba(255,255,255,.1);color:#fff;
   padding:9px 12px;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;
   outline:none;transition:border-color .2s;width:100%}
-.bm-ctrl input:focus,.bm-ctrl textarea:focus{border-color:rgba(46,204,113,.4)}
+.bm-ctrl input:focus,.bm-ctrl textarea:focus,.bm-ctrl select:focus{border-color:rgba(46,204,113,.4)}
 .bm-ctrl textarea{resize:vertical;min-height:120px;line-height:1.6}
 .bm-upload{display:block;text-align:center;padding:12px;background:#13131a;
   border:1.5px dashed rgba(46,204,113,.4);color:#2ecc71;border-radius:10px;
@@ -785,6 +785,18 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
           <button class="aud-btn active" id="bc-type-analytics" onclick="setPostType('analytics',this)">📊 Обзор</button>
           <button class="aud-btn" id="bc-type-signal" onclick="setPostType('trader_signal',this)">📡 Сигнал трейдера</button>
         </div>
+      </div>
+
+      <div class="bm-ctrl" id="bc-trader-wrap" style="display:none">
+        <label>Трейдер</label>
+        <select id="bc-trader" onchange="setTrader(this.value)">
+          <option value="a">🤿 Трейдер #A · интрадей + позиционка</option>
+          <option value="b">🅱️ Трейдер #B · спот</option>
+          <option value="c">🥷 Трейдер #C · интрадей 5–10x</option>
+          <option value="d">🧛 Трейдер #D · интрадей 30м</option>
+          <option value="fx">🤖 Трейдер #FX</option>
+          <option value="t3">3️⃣ Трейдер #3</option>
+        </select>
       </div>
 
       <!-- Controls: title, tag, sub, coins -->
@@ -1849,20 +1861,38 @@ async function deactivateUser(uid) {
 
 let bcAudience = 'all';
 let bcPostType = 'analytics';
+let bcTraderKey = 'a';
+
+const BC_TRADERS = {
+  a:  { label: 'Трейдер #A',  emoji: '🤿', tag: '🤿 Трейдер #A' },
+  b:  { label: 'Трейдер #B',  emoji: '🅱️', tag: '🅱️ Трейдер #B' },
+  c:  { label: 'Трейдер #C',  emoji: '🥷', tag: '🥷 Трейдер #C' },
+  d:  { label: 'Трейдер #D',  emoji: '🧛', tag: '🧛 Трейдер #D' },
+  fx: { label: 'Трейдер #FX', emoji: '🤖', tag: '🤖 Трейдер #FX' },
+  t3: { label: 'Трейдер #3',  emoji: '3️⃣', tag: '3️⃣ Трейдер #3' },
+};
+
+function setTrader(key) {
+  bcTraderKey = key;
+  const trader = BC_TRADERS[key] || BC_TRADERS.a;
+  document.getElementById('bc-title').value = `📡 Сигнал ${trader.label}`;
+  document.getElementById('bc-tag').value = trader.tag;
+  document.getElementById('bc-sub').value = 'Торговая идея из закрытого источника';
+  bcUpdate();
+}
 
 function setPostType(val, el) {
   bcPostType = val;
   ['bc-type-analytics','bc-type-signal'].forEach(id => document.getElementById(id)?.classList.remove('active'));
   el.classList.add('active');
+  document.getElementById('bc-trader-wrap').style.display = val === 'trader_signal' ? 'flex' : 'none';
 
   if (val === 'trader_signal') {
     bcAudience = 'PRO';
     ['aud-all','aud-std','aud-pro'].forEach(id => document.getElementById(id)?.classList.remove('active'));
     document.getElementById('aud-pro')?.classList.add('active');
-    if (!document.getElementById('bc-title').value.trim()) document.getElementById('bc-title').value = '📡 Сигнал трейдера';
-    if (!document.getElementById('bc-tag').value.trim() || document.getElementById('bc-tag').value === 'SOL · 1D') document.getElementById('bc-tag').value = 'PRO · СИГНАЛ';
+    setTrader(document.getElementById('bc-trader').value || bcTraderKey);
     if (!document.getElementById('bc-coins').value.trim()) document.getElementById('bc-coins').value = 'BTC · ETH · SOL';
-    if (!document.getElementById('bc-sub').value.trim()) document.getElementById('bc-sub').value = 'Торговая идея из закрытого источника';
     document.getElementById('bc-send-btn').textContent = '📡 Отправить PRO';
     document.getElementById('bc-admin-btn').textContent = '📣 Сигнал админу';
   } else {
