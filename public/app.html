@@ -790,12 +790,12 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div class="bm-ctrl" id="bc-trader-wrap" style="display:none">
         <label>Трейдер</label>
         <select id="bc-trader" onchange="setTrader(this.value)">
-          <option value="a">🤿 Трейдер #A · интрадей + позиционка</option>
-          <option value="b">🅱️ Трейдер #B · спот</option>
-          <option value="c">🥷 Трейдер #C · интрадей 5–10x</option>
-          <option value="d">🧛 Трейдер #D · интрадей 30м</option>
-          <option value="fx">🤖 Трейдер #FX</option>
-          <option value="t3">3️⃣ Трейдер #3</option>
+          <option value="c">🥷 #Alpha · интрадей 5–10x</option>
+          <option value="a">🤿 #Sigma · интрадей + позиционка</option>
+          <option value="d">🧛 #Delta · интрадей 30м</option>
+          <option value="b">🅱️ #Spot · спот</option>
+          <option value="fx">🤖 #Quant</option>
+          <option value="t3">3️⃣ #Nova</option>
         </select>
       </div>
 
@@ -1864,12 +1864,12 @@ let bcPostType = 'analytics';
 let bcTraderKey = 'a';
 
 const BC_TRADERS = {
-  a:  { label: 'Трейдер #A',  emoji: '🤿', tag: '🤿 Трейдер #A' },
-  b:  { label: 'Трейдер #B',  emoji: '🅱️', tag: '🅱️ Трейдер #B' },
-  c:  { label: 'Трейдер #C',  emoji: '🥷', tag: '🥷 Трейдер #C' },
-  d:  { label: 'Трейдер #D',  emoji: '🧛', tag: '🧛 Трейдер #D' },
-  fx: { label: 'Трейдер #FX', emoji: '🤖', tag: '🤖 Трейдер #FX' },
-  t3: { label: 'Трейдер #3',  emoji: '3️⃣', tag: '3️⃣ Трейдер #3' },
+  a:  { label: '#Sigma', emoji: '🤿', tag: '🤿 #Sigma' },
+  b:  { label: '#Spot',  emoji: '🅱️', tag: '🅱️ #Spot' },
+  c:  { label: '#Alpha', emoji: '🥷', tag: '🥷 #Alpha' },
+  d:  { label: '#Delta', emoji: '🧛', tag: '🧛 #Delta' },
+  fx: { label: '#Quant', emoji: '🤖', tag: '🤖 #Quant' },
+  t3: { label: '#Nova',  emoji: '3️⃣', tag: '3️⃣ #Nova' },
 };
 
 function setTrader(key) {
