@@ -222,6 +222,38 @@ function normalize(tf) {
   return map[tf] || tf
 }
 
+const DEFAULT_BOT_IMPORTANT_SIGNALS = new Set([
+  'buy50',
+  'buy100',
+  'sell50',
+  'sell100',
+  'strong_buy50',
+  'strong_buy100',
+  'strong_sell100',
+  'trend_up',
+  'trend_down',
+  'holding_sm4',
+  'holding_sm5',
+  'structure_lh',
+  'structure_hl',
+  'liq_buy_breach',
+  'liq_sell_breach',
+])
+
+function shouldSendSignalToTelegram(signal) {
+  const mode = (process.env.BOT_SIGNAL_MODE || 'important').toLowerCase()
+  if (mode === 'all') return true
+  if (mode === 'off' || mode === 'none') return false
+
+  const customList = (process.env.BOT_IMPORTANT_SIGNALS || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+
+  if (customList.length) return customList.includes(signal)
+  return DEFAULT_BOT_IMPORTANT_SIGNALS.has(signal)
+}
+
 // ─── Строим сообщение ─────────────────────────────────────
 function buildMsg(data) {
   const signal   = data.signal
@@ -433,8 +465,6 @@ app.post('/webhook', async (req, res) => {
     const msg = buildMsg(data)
     if (!msg) return res.sendStatus(400)
 
-    await sendSignal(msg)
-
     // Сохранить сигнал в БД для мини-апп
     if (pool) {
       const isBuy    = signal.includes('buy')
@@ -499,6 +529,12 @@ app.post('/webhook', async (req, res) => {
         `INSERT INTO app_signals (pair, action, tag, timeframe, price, comment, direction) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
         [pair, actionLabel, actionLabel, normalize(data.interval || ''), fmtPrice(data.price), comment, direction]
       ).catch(e => console.error('Signal save error:', e.message))
+    }
+
+    if (shouldSendSignalToTelegram(signal)) {
+      await sendSignal(msg)
+    } else {
+      console.log(`${signal} saved to mini app only — skipped Telegram`)
     }
 
     res.sendStatus(200)
