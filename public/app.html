@@ -630,9 +630,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
   <div id="pay-section" style="display:none">
     <div class="slabel" id="pay-section-label">РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ PRO — 40 USDT ДО 7 ИЮЛЯ</div>
     <div class="pay-block">
-      <div class="pay-addr">
-        <div class="pay-addr-net">USDT TRC20 (Tron)</div>
-        <div class="pay-addr-val">Скоро появится</div>
+      <div class="pay-addr" onclick="copyText('usdt-addr')">
+        <div class="pay-addr-net">USDT TRC20 (Tron)<span class="pay-copy-hint">нажми чтобы скопировать</span></div>
+        <div class="pay-addr-val" id="usdt-addr">TR7cca7HcNizBTB2GEwW53y2jkbYgXYcSv</div>
       </div>
       <div class="pay-addr">
         <div class="pay-addr-net">USDC BEP20 (BSC)</div>
