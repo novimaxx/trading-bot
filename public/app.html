@@ -518,7 +518,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
       <div class="tile-desc">Анонсы, обзоры,<br><span class="tc">аналитика</span></div>
     </div>
 
-    <div class="tile tile-pink" onclick="navigate('buy')">
+    <div class="tile tile-pink" onclick="navigate('buy')" style="display:none">
       <span class="tile-icon">💳</span>
       <div class="tile-label">Тарифы</div>
       <div class="tile-desc">STANDARD · <span class="tc">PRO</span></div>
@@ -576,71 +576,12 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 <div class="screen" id="screen-buy">
   <div class="screen-header">
     <div class="kicker">Тарифы</div>
-    <div class="screen-h1">Выбери план</div>
+    <div class="screen-h1">Оформление недоступно</div>
   </div>
-
-  <div class="plans">
-    <div class="plan-card" id="plan-std" onclick="selectPlan('STANDARD')">
-      <div class="plan-select-indicator">✓ ВЫБРАН</div>
-      <div class="plan-top">
-        <div class="plan-name">STANDARD</div>
-        <div>
-          <div class="plan-price">30 <span style="font-size:14px;color:var(--muted)">USDT</span></div>
-          <div class="plan-period">/ месяц</div>
-        </div>
-      </div>
-      <div class="plan-divider"></div>
-      <div class="plan-features">
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Индикатор IT v3 для TradingView</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Пошаговая инструкция</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>2+ обзора в неделю</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Крипто-дайджест</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Поддержка</span></div>
-      </div>
-    </div>
-
-    <div class="plan-card plan-pro" id="plan-pro" onclick="selectPlan('PRO')">
-      <div class="plan-badge">SALE последний день</div>
-      <div class="plan-select-indicator">✓ ВЫБРАН</div>
-      <div class="plan-top">
-        <div class="plan-name plan-name-pro">💎 PRO</div>
-        <div>
-          <div class="plan-old-price">50 USDT</div>
-          <div class="plan-price">40 <span style="font-size:14px;color:var(--muted)">USDT</span></div>
-          <div class="plan-period">/ месяц</div>
-          <div class="plan-sale-note">только сегодня</div>
-        </div>
-      </div>
-      <div class="plan-divider"></div>
-      <div class="plan-features">
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Индикатор IT v3 для TradingView</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>4+ обзора в неделю</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Глубокая аналитика по крипто</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Обучающие материалы</span></div>
-        <div class="plan-feat"><span class="feat-ico">✅</span><span>Крипто-дайджест + Поддержка</span></div>
-        <div class="plan-feat" style="color:var(--gold)"><span class="feat-ico">🔥</span><span><b>Сегодня последний день:</b> 40 USDT вместо 50 USDT</span></div>
-        <div class="plan-feat" style="color:var(--accent)"><span class="feat-ico">🔔</span>
-          <span><b>Сигналы BTC · ETH · SOL</b><br>
-          <span style="color:var(--muted);font-size:12px">BUY/SELL · STRONG · 1D/4H/1H</span></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="pay-section" style="display:none">
-    <div class="slabel" id="pay-section-label">РЕКВИЗИТЫ ДЛЯ ОПЛАТЫ PRO — 40 USDT ТОЛЬКО СЕГОДНЯ</div>
-    <div class="pay-block">
-      <div class="pay-addr" onclick="copyText('usdt-addr')">
-        <div class="pay-addr-net">USDT TRC20 (Tron)<span class="pay-copy-hint">нажми чтобы скопировать</span></div>
-        <div class="pay-addr-val" id="usdt-addr">TR7cca7HcNizBTB2GEwW53y2jkbYgXYcSv</div>
-      </div>
-      <div class="pay-addr">
-        <div class="pay-addr-net">USDC BEP20 (BSC)</div>
-        <div class="pay-addr-val">Скоро появится</div>
-      </div>
-      <div class="pay-note">🔥 PRO по акции — <b style="color:var(--white)">40 USDT только сегодня</b>. После оплаты отправь боту <b style="color:var(--white)">тариф, ссылку на транзакцию и username TradingView</b></div>
-      <button class="pay-btn" onclick="paidConfirm()">✅ Я оплатил</button>
-    </div>
+  <div class="empty" style="padding-top:36px">
+    <div class="empty-icon">⏸</div>
+    <div class="empty-text">Новые подписки временно недоступны</div>
+    <div class="empty-sub">Действующие подписки продолжают работать.</div>
   </div>
   <div style="height:8px"></div>
 </div>
@@ -684,7 +625,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
   <div class="slabel">УПРАВЛЕНИЕ</div>
   <div class="menu">
-    <div class="menu-row" onclick="navigate('buy')">
+    <div class="menu-row" onclick="navigate('buy')" style="display:none">
       <span class="menu-row-icon">💳</span>
       <div class="menu-row-text" id="menu-sub-lbl">Купить подписку</div>
       <span class="menu-row-r">›</span>
@@ -1622,7 +1563,7 @@ async function boot() {
       <div class="empty-icon">🔒</div>
       <div class="empty-text">Сигналы доступны только в PRO</div>
       <div class="empty-sub" style="margin-bottom:14px">Обнови подписку — получай BUY/SELL по BTC · ETH · SOL</div>
-      <button onclick="navigate('buy')" style="background:var(--accent);color:#000;border:none;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">💎 Апгрейд до PRO</button>
+      <div class="empty-sub">Новые подписки сейчас недоступны</div>
     </div>`;
     lastWrap.innerHTML = upgradeHtml;
     sigList.innerHTML = upgradeHtml;
@@ -1632,9 +1573,7 @@ async function boot() {
       <div class="empty-icon">📡</div>
       <div class="empty-text">Сигналы — это PRO-фича</div>
       <div class="empty-sub" style="margin-bottom:14px">BUY/SELL по BTC · ETH · SOL · 1D/4H/1H</div>
-      <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
-        <button onclick="navigate('buy')" style="background:var(--accent);color:#000;border:none;border-radius:10px;padding:11px 22px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif">💎 Купить PRO</button>
-      </div>
+      <div class="empty-sub">Новые подписки сейчас недоступны</div>
     </div>`;
     lastWrap.innerHTML = noSubHtml;
     sigList.innerHTML = noSubHtml;
