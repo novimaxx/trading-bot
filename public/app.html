@@ -575,13 +575,14 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 <!-- ════════════ BUY ════════════ -->
 <div class="screen" id="screen-buy">
   <div class="screen-header">
-    <div class="kicker">Тарифы</div>
-    <div class="screen-h1">Оформление недоступно</div>
+    <div class="kicker">IT V3</div>
+    <div class="screen-h1">Получить доступ</div>
   </div>
   <div class="empty" style="padding-top:36px">
-    <div class="empty-icon">⏸</div>
-    <div class="empty-text">Новые подписки временно недоступны</div>
-    <div class="empty-sub">Действующие подписки продолжают работать.</div>
+    <div class="empty-icon">✉️</div>
+    <div class="empty-text">Оставь заявку на доступ</div>
+    <div class="empty-sub" style="max-width:300px;margin:7px auto 20px">Напиши свой вопрос или уточни условия подключения. Мы ответим лично.</div>
+    <button class="act-do" style="max-width:320px" onclick="openAccessRequest()">💬 Написать нам</button>
   </div>
   <div style="height:8px"></div>
 </div>
@@ -625,9 +626,9 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 
   <div class="slabel">УПРАВЛЕНИЕ</div>
   <div class="menu">
-    <div class="menu-row" onclick="navigate('buy')" style="display:none">
-      <span class="menu-row-icon">💳</span>
-      <div class="menu-row-text" id="menu-sub-lbl">Купить подписку</div>
+    <div class="menu-row" onclick="navigate('buy')">
+      <span class="menu-row-icon">✉️</span>
+      <div class="menu-row-text" id="menu-sub-lbl">Запросить доступ</div>
       <span class="menu-row-r">›</span>
     </div>
     <div class="menu-row" onclick="copyRefLink()">
@@ -986,7 +987,7 @@ html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif
 <div id="support-overlay">
   <div class="po-header">
     <div class="po-back" onclick="closeSupport()">‹</div>
-    <div class="po-header-title">💬 Поддержка</div>
+    <div class="po-header-title" id="support-title">💬 Поддержка</div>
   </div>
   <div class="sup-body" id="sup-body">
     <div class="sup-empty" id="sup-empty">
@@ -1134,11 +1135,18 @@ function openExt(type) {
   if (tg && map[type]) tg.openLink(map[type]);
   else if (map[type]) window.open(map[type], '_blank');
 }
-function openSupport() {
+function openSupport(prefill = '', title = '💬 Поддержка') {
   document.getElementById('support-overlay').classList.add('open');
-  document.getElementById('support-msg').value = '';
+  document.getElementById('support-title').textContent = title;
+  const input = document.getElementById('support-msg');
+  input.value = prefill;
+  input.placeholder = prefill ? 'Допиши свой вопрос...' : 'Написать сообщение...';
+  input.focus();
   if (tg?.BackButton) { tg.BackButton.show(); tg.BackButton.onClick(closeSupport); }
   loadSupportHistory();
+}
+function openAccessRequest() {
+  openSupport('Хочу получить доступ к IT V3. Подскажите, пожалуйста, условия подключения.', '✉️ Запросить доступ');
 }
 function closeSupport() {
   document.getElementById('support-overlay').classList.remove('open');
@@ -1506,7 +1514,7 @@ async function boot() {
       document.getElementById('sub-days-block').style.display = 'block';
       document.getElementById('sub-days-num').textContent = userData.daysLeft;
     }
-    document.getElementById('menu-sub-lbl').textContent = 'Продлить подписку';
+    document.getElementById('menu-sub-lbl').textContent = 'Продлить доступ';
     document.getElementById('hero-plan-badge').style.display = 'inline-flex';
     document.getElementById('hero-plan-badge').textContent = userData.plan;
 
@@ -1563,7 +1571,7 @@ async function boot() {
       <div class="empty-icon">🔒</div>
       <div class="empty-text">Сигналы доступны только в PRO</div>
       <div class="empty-sub" style="margin-bottom:14px">Обнови подписку — получай BUY/SELL по BTC · ETH · SOL</div>
-      <div class="empty-sub">Новые подписки сейчас недоступны</div>
+      <button class="act-do" style="max-width:320px;margin:18px auto 0" onclick="openAccessRequest()">💬 Запросить PRO-доступ</button>
     </div>`;
     lastWrap.innerHTML = upgradeHtml;
     sigList.innerHTML = upgradeHtml;
@@ -1573,7 +1581,7 @@ async function boot() {
       <div class="empty-icon">📡</div>
       <div class="empty-text">Сигналы — это PRO-фича</div>
       <div class="empty-sub" style="margin-bottom:14px">BUY/SELL по BTC · ETH · SOL · 1D/4H/1H</div>
-      <div class="empty-sub">Новые подписки сейчас недоступны</div>
+      <button class="act-do" style="max-width:320px;margin:18px auto 0" onclick="openAccessRequest()">💬 Запросить доступ</button>
     </div>`;
     lastWrap.innerHTML = noSubHtml;
     sigList.innerHTML = noSubHtml;
