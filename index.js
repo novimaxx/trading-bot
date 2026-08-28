@@ -6,9 +6,15 @@ require('dotenv').config()
 const express = require('express')
 const path    = require('path')
 const { Pool } = require('pg')
+const { router: chartRouter } = require('./lib/chart-router')
+const chartAlerts = require('./lib/alerts')
+const { signUserId } = require('./lib/chart-auth')
 const app = express()
 app.use(express.json({ limit: '10mb' }))
 app.use(express.static(path.join(__dirname, 'public')))
+
+// Свечи + уровни SM считаются на своём бэкенде по данным Binance
+app.use('/api', chartRouter)
 
 // BOT_TOKEN       — токен сигнального бота (отправляет DM)
 // INDICATOR_BOT_TOKEN — токен основного бота (если нужен отдельный)
@@ -374,11 +380,11 @@ function buildMsg(data) {
 }
 
 // ─── Telegram ─────────────────────────────────────────────
-async function sendTgTo(chatId, text) {
+async function sendTgTo(chatId, text, extra = {}) {
   const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown' })
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'Markdown', ...extra })
   })
   const j = await r.json()
   if (!j.ok) console.error(`TG error → ${chatId}:`, j.description)
@@ -403,6 +409,31 @@ async function getProSubscribers() {
   }
 }
 
+// ─── Кнопка «Открыть индикатор» ───────────────────────────
+// Только для PRO: ведёт на график с уровнями SM. uid нужен,
+// чтобы на странице работали алерты по уровням.
+// Telegram не принимает localhost в inline-кнопках, да и подписчику
+// такая ссылка бесполезна — подставляем публичный адрес.
+const PUBLIC_URL = /localhost|127\.0\.0\.1|0\.0\.0\.0/.test(BASE_URL)
+  ? 'https://trading-bot-production-7d20.up.railway.app'
+  : BASE_URL.replace(/\/+$/, '')
+
+if (PUBLIC_URL !== BASE_URL.replace(/\/+$/, '')) {
+  console.log(`⚠️  BASE_URL локальный — кнопки ведут на ${PUBLIC_URL}`)
+}
+
+function chartButton(userId) {
+  const token = userId ? signUserId(userId) : null
+  const url = `${PUBLIC_URL}/chart.html` + (userId && token
+    ? `?uid=${encodeURIComponent(userId)}&token=${encodeURIComponent(token)}`
+    : '')
+  return {
+    reply_markup: {
+      inline_keyboard: [[{ text: '📈 Открыть индикатор', url }]],
+    },
+  }
+}
+
 // Главная функция отправки — PRO-подписчики или CHAT_ID fallback
 async function sendSignal(text) {
   if (pool) {
@@ -412,7 +443,7 @@ async function sendSignal(text) {
 
     // Пауза между отправками чтобы не словить 429 от Telegram
     for (const id of ids) {
-      await sendTgTo(id, text)
+      await sendTgTo(id, text, chartButton(id))
       await new Promise(res => setTimeout(res, 50))
     }
   } else {
@@ -1025,6 +1056,46 @@ async function getRecipients(audience) {
   }
 }
 
+// ─── API: анонс обновления графика PRO-подписчикам ───────
+// Текст фиксированный, чтобы рассылку нельзя было использовать
+// как произвольный спам. dry_run показывает получателей без отправки.
+const CHART_ANNOUNCE = [
+  '📈 *Индикатор теперь открывается в браузере*',
+  '',
+  'Больше не нужен TradingView — график с уровнями SM работает прямо у нас.',
+  '',
+  '• *Любая монета* — 200+ пар, поиск по названию',
+  '• *Таймфреймы* 15M · 1H · 4H · 1D',
+  '• *Уровни SM1–SM5* с расстоянием до цены',
+  '• *Сигналы* BUY/SELL прямо на графике, 🔥 у STRONG',
+  '• *Структура рынка* HH / LH / HL / LL',
+  '• *Зоны Фибоначчи* и *ликвидность* BSL / SSL',
+  '• *Объём* и тренд по SMA 50',
+  '• *Алерты* — нажмите 🔕 напротив уровня, уведомим в этот чат',
+  '',
+  'Открывается с телефона и с компьютера, есть полноэкранный режим.',
+  '',
+  '_Доступно по вашей подписке PRO._',
+].join('\n')
+
+app.post('/api/admin/announce-chart', adminOnly, async (req, res) => {
+  const ids = await getProSubscribers()
+  if (req.body?.dry_run) {
+    return res.json({ dry_run: true, recipients: ids.length, text: CHART_ANNOUNCE })
+  }
+
+  let sent = 0, failed = 0
+  for (const id of ids) {
+    try {
+      const r = await sendTgTo(id, CHART_ANNOUNCE, chartButton(id))
+      r?.ok ? sent++ : failed++
+    } catch { failed++ }
+    await new Promise(res => setTimeout(res, 50))
+  }
+  console.log(`📣 Анонс графика: отправлено ${sent}, не дошло ${failed}`)
+  res.json({ ok: true, recipients: ids.length, sent, failed })
+})
+
 // ─── API: Admin broadcast post ───────────────────────────
 app.post('/api/admin/broadcast', adminOnly, async (req, res) => {
   const { title, body, tag, image_url } = req.body
@@ -1591,4 +1662,10 @@ app.listen(PORT, async () => {
   console.log(`📬 Webhook: POST /webhook`)
   console.log(`🧪 Test:    GET  /test/buy100\n`)
   await runMigrations()
+  // Алерты по уровням SM — своя таблица и воркер раз в минуту
+  try {
+    await chartAlerts.init(pool, sendTgTo)
+  } catch (err) {
+    console.error('Alerts init error:', err.message)
+  }
 })

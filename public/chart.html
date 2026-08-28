@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IT v3 — График</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+<style>
+:root {
+  --bg:#0a0a0c; --bg2:#111116; --card:#13131a; --card2:#18181f;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+  --accent:#2ecc71; --accent2:#ff3d7f; --gold:#ffcc00;
+  --white:#fff; --muted:rgba(255,255,255,.4); --muted2:rgba(255,255,255,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden}
+.wrap{max-width:1360px;margin:0 auto;padding:14px 14px 32px}
+/* страница встроена в мини-апп через iframe — свои отступы не нужны */
+body.embed .wrap{padding:10px 10px 16px}
+.pos{color:var(--accent)} .neg{color:var(--accent2)}
+
+/* ═══ шапка ═══ */
+.head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.pick{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line2);
+  border-radius:12px;padding:9px 14px;cursor:pointer;font-weight:800;font-size:16px;transition:.15s}
+.pick:hover{background:var(--card2)}
+.pick .car{font-size:10px;color:var(--muted)}
+.px{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700}
+.chg{font-size:13px;font-weight:700;padding:3px 8px;border-radius:7px}
+.chg.pos{background:rgba(46,204,113,.12)} .chg.neg{background:rgba(255,61,127,.12)}
+.spacer{flex:1}
+.tfs{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:4px}
+.tf{border:none;background:none;color:var(--muted);font-family:'JetBrains Mono',monospace;
+  font-size:12px;font-weight:700;padding:8px 13px;border-radius:8px;cursor:pointer;transition:.15s}
+.tf:hover{color:var(--white)}
+.tf.on{background:var(--card2);color:var(--white);box-shadow:0 0 0 1px var(--line2) inset}
+.icon-btn{background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:11px;
+  width:40px;height:40px;cursor:pointer;font-size:15px;display:flex;align-items:center;
+  justify-content:center;transition:.15s;flex-shrink:0}
+.icon-btn:hover{color:var(--white);border-color:var(--line2)}
+
+/* ═══ раскладка: ПК — график + колонка справа, мобила — стопкой ═══ */
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}
+@media(min-width:1000px){ .layout{grid-template-columns:minmax(0,1fr) 330px} }
+.side{display:flex;flex-direction:column;gap:10px}
+@media(max-width:999px){ .side{display:grid;grid-template-columns:1fr 1fr;gap:10px} }
+@media(max-width:640px){ .side{grid-template-columns:1fr} }
+
+/* ═══ график ═══ */
+.chart-box{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+#chart{height:62vh;min-height:320px}
+.ovl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,10,12,.75);font-size:13px;color:var(--muted);z-index:6}
+.ovl.err{color:var(--accent2)}
+.ovl.hide{display:none}
+.readout{position:absolute;top:10px;left:12px;right:12px;z-index:5;display:flex;gap:11px;flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);pointer-events:none}
+.readout b{color:var(--white);font-weight:600}
+.fs-btn{position:absolute;top:8px;right:8px;z-index:7;width:34px;height:34px;border-radius:9px;
+  background:rgba(19,19,26,.85);border:1px solid var(--line2);color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:14px}
+.fs-btn:hover{color:var(--white)}
+
+/* ═══ фулскрин ═══ */
+body.fs{overflow:hidden}
+body.fs .wrap{max-width:none;padding:0}
+body.fs .head,body.fs .side,body.fs .note,body.fs .toggles{display:none}
+body.fs .layout{grid-template-columns:1fr;gap:0}
+/* снизу оставляем полосу под панель, иначе она закрывает шкалу времени */
+body.fs .chart-box{position:fixed;inset:0 0 56px 0;border:none;border-radius:0;z-index:60}
+body.fs #chart{height:100%}
+.fs-bar{display:none;position:fixed;left:0;right:0;bottom:0;height:56px;z-index:61;padding:0 12px;
+  gap:8px;align-items:center;background:var(--bg2);border-top:1px solid var(--line)}
+body.fs .fs-bar{display:flex}
+
+/* ═══ тумблеры ═══ */
+.toggles{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}
+.tg{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);
+  border-radius:9px;padding:7px 11px;font-size:12px;font-weight:600;cursor:pointer;
+  color:var(--muted);transition:.15s;user-select:none}
+.tg:hover{border-color:var(--line2)}
+.tg.on{color:var(--white);border-color:var(--line2)}
+.tg i{width:12px;height:3px;border-radius:2px;display:block;opacity:.3;transition:.15s}
+.tg.on i{opacity:1}
+
+/* ═══ панели ═══ */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.panel-h{padding:11px 14px;font-size:10px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+table{width:100%;border-collapse:collapse}
+td{padding:10px 13px;font-size:13px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+tr.near{background:rgba(255,204,0,.06)}
+.lv{display:flex;align-items:center;gap:8px;font-weight:700}
+.lv i{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.lbl{color:var(--muted);font-size:12px}
+.num{font-family:'JetBrains Mono',monospace;text-align:right}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line)}
+.st{background:var(--card);padding:13px}
+.st b{display:block;font-size:9px;letter-spacing:1.3px;color:var(--muted);font-weight:700;margin-bottom:5px}
+.st span{font-size:14px;font-weight:700}
+.note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px}
+
+/* ═══ выбор монеты ═══ */
+.modal{position:fixed;inset:0;background:rgba(5,5,7,.82);z-index:100;display:none;
+  align-items:flex-start;justify-content:center;padding:60px 14px 20px}
+.modal.open{display:flex}
+.sheet{background:var(--bg2);border:1px solid var(--line2);border-radius:16px;width:100%;
+  max-width:460px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden}
+/* на мобиле — шторка снизу, до неё дотягивается большой палец */
+@media(max-width:640px){
+  .modal{align-items:flex-end;padding:0}
+  .sheet{max-width:none;max-height:88vh;border-radius:18px 18px 0 0;border-bottom:none}
+}
+.sheet-h{padding:12px;border-bottom:1px solid var(--line);display:flex;gap:8px}
+.sheet-h input{flex:1;background:var(--card);border:1px solid var(--line2);border-radius:10px;
+  padding:12px 13px;color:var(--white);font-size:15px;font-family:inherit;outline:none}
+.sheet-h input:focus{border-color:var(--muted2)}
+.sheet-h button{background:var(--card);border:1px solid var(--line2);color:var(--muted);
+  border-radius:10px;padding:0 15px;cursor:pointer;font-size:16px}
+.list{overflow-y:auto;padding:6px;-webkit-overflow-scrolling:touch}
+.row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;cursor:pointer}
+.row:hover{background:var(--card)}
+.row.on{background:var(--card2)}
+.row .b{font-weight:700;font-size:14px;min-width:76px}
+.row .p{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);flex:1;text-align:right}
+.row .c{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:68px;text-align:right}
+.row .star{background:none;border:none;cursor:pointer;font-size:15px;line-height:1;padding:2px 4px;
+  color:var(--muted2);transition:.15s}
+.row .star:hover{color:var(--gold)}
+.row .star.on{color:var(--gold)}
+.empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+.sep{padding:8px 12px 4px;font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted2);font-weight:700}
+
+/* ═══ алерты ═══ */
+.bell{background:none;border:none;cursor:pointer;font-size:14px;padding:2px 4px;color:var(--muted2);transition:.15s}
+.bell:hover{color:var(--gold)}
+.bell.on{color:var(--gold)}
+.al-row{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--line);font-size:13px}
+.al-row:last-child{border-bottom:none}
+.al-row .x{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 5px}
+.al-row .x:hover{color:var(--accent2)}
+.al-fired{font-size:10px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:200;
+  background:var(--card2);border:1px solid var(--line2);border-radius:11px;padding:11px 18px;
+  font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.2s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div class="pick" id="pick"><span id="pick-name">BTC</span><span class="car">▼</span></div>
+    <span class="px" id="price">—</span>
+    <span class="chg" id="chg"></span>
+    <div class="spacer"></div>
+    <div class="tfs" id="tfs"></div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="chart-box">
+        <div id="chart"></div>
+        <div class="readout" id="readout"></div>
+        <button class="fs-btn" id="fs" title="Во весь экран (F)">⛶</button>
+        <div class="ovl" id="ovl">Загрузка…</div>
+      </div>
+      <div class="toggles" id="toggles"></div>
+    </div>
+
+    <div class="side">
+      <div class="panel">
+        <div class="panel-h">Уровни SM</div>
+        <table><tbody id="rows"></tbody></table>
+      </div>
+      <div class="panel">
+        <div class="panel-h">Состояние</div>
+        <div class="stats" id="stats"></div>
+      </div>
+      <div class="panel" id="alerts-panel" style="display:none">
+        <div class="panel-h">Мои алерты</div>
+        <div id="alerts-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Уровни и сигналы рассчитываются по свечам Binance. SM3 — база (дневная SMA&nbsp;12),
+    остальные уровни — фиксированный процент от неё. ★ — STRONG-сигнал: касание уровня плюс
+    подтверждение по RSI и объёму.</p>
+</div>
+
+<!-- панель управления в фулскрине -->
+<div class="fs-bar" id="fs-bar">
+  <div class="pick" id="pick2" style="padding:7px 12px;font-size:14px"><span id="pick-name2">BTC</span><span class="car">▼</span></div>
+  <span class="px" id="price2" style="font-size:15px">—</span>
+  <div class="spacer"></div>
+  <div class="tfs" id="tfs2"></div>
+  <button class="icon-btn" id="fs-exit" title="Выйти (Esc)">✕</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- выбор монеты -->
+<div class="modal" id="modal">
+  <div class="sheet">
+    <div class="sheet-h">
+      <input id="search" placeholder="Поиск монеты — BTC, SOL, PEPE…" autocomplete="off">
+      <button id="close">✕</button>
+    </div>
+    <div class="list" id="list"></div>
+  </div>
+</div>
+
+<script>
+const INTERVALS = [['15m','15M'],['1h','1H'],['4h','4H'],['1d','1D']]
+const LEVELS = [
+  { key:'sm5', label:'BUY 100%',  color:'#11a611', width:2 },
+  { key:'sm4', label:'BUY 50%',   color:'#76cd76', width:1 },
+  { key:'sm3', label:'BUY 25%',   color:'#ffcc00', width:1 },
+  { key:'sm2', label:'SELL 50%',  color:'#ff7373', width:1 },
+  { key:'sm1', label:'SELL 100%', color:'#f23645', width:2 },
+]
+const LV_COLOR = {}; LEVELS.forEach(l => LV_COLOR[l.key] = l.color)
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('itv3.' + k); return v === null ? d : JSON.parse(v) } catch { return d } },
+  set(k, v) { try { localStorage.setItem('itv3.' + k, JSON.stringify(v)) } catch {} },
+}
+let symbol   = store.get('symbol', 'BTCUSDT')
+let interval = store.get('interval', '1d')
+let visible  = Object.assign({
+  sm1:true, sm2:true, sm3:true, sm4:true, sm5:true,
+  trend:true, vol:true, piv:true, fib:true, liq:true,
+}, store.get('visible', {}))
+let favs     = store.get('favs', [])
+
+// Прямая ссылка содержит uid + серверную подпись. Mini App передаёт
+// подписанный Telegram initData. Без проверяемых данных алерты скрыты.
+const query = new URLSearchParams(location.search)
+const uid = query.get('uid') || null
+const token = query.get('token') || null
+const tgData = query.get('tg_data') || null
+const hasAlertAuth = Boolean(tgData || (uid && token))
+
+function alertQuery() {
+  const p = new URLSearchParams()
+  if (tgData) p.set('tg_data', tgData)
+  else { p.set('uid', uid); p.set('token', token) }
+  return p.toString()
+}
+
+function alertAuthBody() {
+  return tgData ? { tg_data: tgData } : { uid, token }
+}
+
+let chart, candleSeries, volSeries, lines = {}, data = null, digits = 2, timer = null
+let myAlerts = []
+
+const fmt = (n, d) => n == null ? '—'
+  : n.toLocaleString('ru-RU', { minimumFractionDigits: d ?? digits, maximumFractionDigits: d ?? digits })
+const pctStr = n => (n >= 0 ? '+' : '') + n.toFixed(2) + '%'
+
+// ═══ таймфреймы (две панели: обычная и фулскрин) ═══
+function buildTfs() {
+  for (const id of ['tfs', 'tfs2']) {
+    const el = document.getElementById(id)
+    el.innerHTML = ''
+    for (const [v, label] of INTERVALS) {
+      const b = document.createElement('button')
+      b.className = 'tf' + (interval === v ? ' on' : '')
+      b.textContent = label
+      b.onclick = () => { interval = v; store.set('interval', v); buildTfs(); load() }
+      el.appendChild(b)
+    }
+  }
+}
+
+function buildToggles() {
+  const el = document.getElementById('toggles')
+  el.innerHTML = ''
+  const items = [...LEVELS,
+    { key:'trend', label:'Тренд SMA 50',  color:'#ff9800' },
+    { key:'vol',   label:'Объём',         color:'#4dc9f0' },
+    { key:'piv',   label:'Структура',     color:'#00e676' },
+    { key:'fib',   label:'Фибоначчи',     color:'#9c7bff' },
+    { key:'liq',   label:'Ликвидность',   color:'#4caf50' }]
+  for (const it of items) {
+    const d = document.createElement('div')
+    d.className = 'tg' + (visible[it.key] ? ' on' : '')
+    d.innerHTML = `<i style="background:${it.color}"></i>${it.label}`
+    d.onclick = () => {
+      visible[it.key] = !visible[it.key]
+      store.set('visible', visible)
+      buildToggles(); applyVisibility()
+    }
+    el.appendChild(d)
+  }
+}
+
+// ═══ фулскрин ═══
+// Нативный Fullscreen API там, где он есть; CSS-режим — везде,
+// включая iOS Safari, где нативного фулскрина для div нет.
+function isFs() { return document.body.classList.contains('fs') }
+function toggleFs() { isFs() ? exitFs() : enterFs() }
+
+function enterFs() {
+  document.body.classList.add('fs')
+  if (document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen().catch(() => {})
+  }
+  setTimeout(fitLater, 60)
+}
+function exitFs() {
+  document.body.classList.remove('fs')
+  if (document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {})
+  }
+  setTimeout(fitLater, 60)
+}
+// выход через системную кнопку/Esc браузера — синхронизируем своё состояние
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement && isFs()) {
+    document.body.classList.remove('fs')
+    setTimeout(fitLater, 60)
+  }
+})
+
+// ═══ график ═══
+function initChart() {
+  chart = LightweightCharts.createChart(document.getElementById('chart'), {
+    layout: { background:{ color:'#13131a' }, textColor:'rgba(255,255,255,.45)', fontFamily:'Inter' },
+    grid:   { vertLines:{ color:'rgba(255,255,255,.035)' }, horzLines:{ color:'rgba(255,255,255,.035)' } },
+    rightPriceScale:{ borderColor:'rgba(255,255,255,.08)' },
+    timeScale:{ borderColor:'rgba(255,255,255,.08)' },
+    crosshair:{ mode: LightweightCharts.CrosshairMode.Normal },
+    localization:{ locale:'ru-RU', priceFormatter: p => fmt(p) },
+    autoSize:true,
+  })
+
+  candleSeries = chart.addCandlestickSeries({
+    upColor:'#2ecc71', downColor:'#ff3d7f',
+    borderUpColor:'#2ecc71', borderDownColor:'#ff3d7f',
+    wickUpColor:'rgba(46,204,113,.6)', wickDownColor:'rgba(255,61,127,.6)',
+  })
+
+  for (const l of LEVELS) {
+    lines[l.key] = chart.addLineSeries({
+      color:l.color, lineWidth:l.width, priceLineVisible:false,
+      lastValueVisible:false, crosshairMarkerVisible:false,
+    })
+  }
+  lines.trend = chart.addLineSeries({
+    color:'#ff9800', lineWidth:2, priceLineVisible:false,
+    lastValueVisible:false, crosshairMarkerVisible:false,
+  })
+
+  // Объём — своя шкала внизу, чтобы не давить свечи
+  volSeries = chart.addHistogramSeries({
+    priceScaleId:'vol', priceFormat:{ type:'volume' }, lastValueVisible:false,
+  })
+  chart.priceScale('vol').applyOptions({ scaleMargins:{ top:0.84, bottom:0 } })
+  lines.vol = volSeries
+
+  chart.subscribeCrosshairMove(p => showReadout(p))
+
+  // fitContent, вызванный до того, как контейнер получил ширину, зажимает
+  // barSpacing в минимум и оставляет пустое поле слева. Ширина приезжает
+  // не сразу (шрифты, layout, фулскрин), поэтому подгоняем и на ресайз.
+  new ResizeObserver(() => { if (data) chart.timeScale().fitContent() })
+    .observe(document.getElementById('chart'))
+}
+
+function fitLater() {
+  requestAnimationFrame(() => requestAnimationFrame(() => chart.timeScale().fitContent()))
+}
+
+function applyVisibility() {
+  for (const k in lines) lines[k].applyOptions({ visible: !!visible[k] })
+  drawExtras()
+}
+
+// ═══ структура, Фибо, ликвидность ═══
+// В lightweight-charts v4 нет боксов, поэтому зона ликвидности —
+// это три линии: уровень сплошной, границы пунктиром.
+let fibLines = [], liqSeries = []
+
+const PIV_COLOR = { HH:'#00e676', LH:'#ff5252', HL:'#69f0ae', LL:'#ff1744' }
+
+const SIG_LABEL = {
+  buy25:'BUY 25%', buy50:'BUY 50%', buy100:'BUY 100%',
+  sell50:'SELL 50%', sell100:'SELL 100%',
+}
+
+function clearExtras() {
+  fibLines.forEach(s => { try { chart.removeSeries(s) } catch {} })
+  fibLines = []
+  liqSeries.forEach(s => { try { chart.removeSeries(s) } catch {} })
+  liqSeries = []
+}
+
+function drawExtras() {
+  if (!data) return
+  clearExtras()
+
+  // ── маркеры: сигналы + пивоты структуры ──
+  const marks = data.signals.map(s => {
+    const buy = s.type.startsWith('buy')
+    return {
+      time:s.t, position: buy ? 'belowBar' : 'aboveBar',
+      shape: buy ? 'arrowUp' : 'arrowDown',
+      color: buy ? '#2ecc71' : '#ff3d7f',
+      // подпись уровня, как в Pine: 🔥 у STRONG-сигнала
+      text: (s.strong ? '🔥 ' : '') + (SIG_LABEL[s.type] || s.type),
+    }
+  })
+  if (visible.piv) {
+    for (const p of data.pivots || []) {
+      marks.push({
+        time:p.t,
+        position: p.side === 'high' ? 'aboveBar' : 'belowBar',
+        shape:'circle', color: PIV_COLOR[p.type] || '#888', text: p.type,
+      })
+    }
+  }
+  marks.sort((a, b) => a.time - b.time)
+  candleSeries.setMarkers(marks)
+
+  // ── Фибо: зона у правого края, как в оригинале ──
+  // Раньше рисовалось линиями через весь график — получалась каша.
+  // Теперь короткие отрезки от последнего свинга к правому краю.
+  if (visible.fib && data.fib) {
+    const times = data.candles.map(c => c.t)
+    const anchor = data.fib.bull ? data.fib.hhTime : data.fib.ll2Time
+    // от опорной точки, но не длиннее 60 баров — иначе снова каша
+    const anchorT = anchor ? Math.floor(anchor / 1000) : null
+    let from = anchorT && times.includes(anchorT) ? times.indexOf(anchorT) : times.length - 60
+    from = Math.max(from, times.length - 60, 0)
+    const span = times.slice(from)
+    if (span.length > 1) {
+      const add = (val, title, color, width) => {
+        const s = chart.addLineSeries({
+          color, lineWidth: width,
+          lineStyle: LightweightCharts.LineStyle.Dashed,
+          priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: false,
+          title,
+        })
+        s.setData(span.map(t => ({ time: t, value: val })))
+        fibLines.push(s)
+      }
+      const set = data.fib.bull || data.fib.bear
+      const col = data.fib.bull ? 'rgba(76,175,80,.85)' : 'rgba(242,54,69,.85)'
+      if (set) for (const k of ['0.382', '0.5', '0.618']) {
+        if (set[k] != null) add(set[k], k === '0.618' ? '0.618 ★' : k, col, k === '0.618' ? 2 : 1)
+      }
+    }
+  }
+
+  // ── зоны ликвидности ──
+  if (visible.liq) {
+    for (const z of data.liquidity || []) {
+      const color = z.side === 'buy' ? '#4caf50' : '#f23645'
+      const span = data.candles.filter(c => c.t >= z.from && c.t <= z.to).map(c => c.t)
+      if (span.length < 2) continue
+
+      const mk = (value, width, style) => {
+        const s = chart.addLineSeries({
+          color, lineWidth: width, lineStyle: style,
+          priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false,
+        })
+        s.setData(span.map(t => ({ time: t, value })))
+        liqSeries.push(s)
+      }
+      mk(z.level,  2, LightweightCharts.LineStyle.Solid)
+      mk(z.top,    1, LightweightCharts.LineStyle.Dotted)
+      mk(z.bottom, 1, LightweightCharts.LineStyle.Dotted)
+    }
+  }
+}
+
+function showReadout(p) {
+  const el = document.getElementById('readout')
+  if (!p || !p.time || !data) { el.innerHTML = defaultReadout(); return }
+  const bar = data.candles.find(c => c.t === p.time)
+  if (!bar) { el.innerHTML = defaultReadout(); return }
+  const up = bar.c >= bar.o
+  el.innerHTML =
+    `<span>O <b>${fmt(bar.o)}</b></span><span>H <b>${fmt(bar.h)}</b></span>` +
+    `<span>L <b>${fmt(bar.l)}</b></span>` +
+    `<span>C <b class="${up ? 'pos' : 'neg'}">${fmt(bar.c)}</b></span>` +
+    (bar.sm ? `<span>SM3 <b style="color:#ffcc00">${fmt(bar.sm.sm3)}</b></span>` : '')
+}
+function defaultReadout() {
+  if (!data || !data.state) return ''
+  return `<span>${data.symbol.replace('USDT','')} · ${interval.toUpperCase()}</span>` +
+         `<span>C <b>${fmt(data.state.price)}</b></span>`
+}
+
+let lastKey = null
+
+function render(d) {
+  data = d
+  digits = d.digits
+
+  // При смене монеты или таймфрейма диапазон цен другой — BTC под 80 000,
+  // ETH под 2 500. Без сброса шкала остаётся на старой отметке и график
+  // уезжает за экран. Автообновление той же пары шкалу не трогает,
+  // чтобы не сбивать зум под руками.
+  const key = d.symbol + '|' + d.interval
+  const switched = key !== lastKey
+  lastKey = key
+
+  candleSeries.setData(d.candles.map(c => ({ time:c.t, open:c.o, high:c.h, low:c.l, close:c.c })))
+  candleSeries.applyOptions({ priceFormat:{ type:'price', precision:digits, minMove:Math.pow(10, -digits) } })
+
+  for (const l of LEVELS) {
+    lines[l.key].setData(d.candles.filter(c => c.sm).map(c => ({ time:c.t, value:c.sm[l.key] })))
+  }
+  lines.trend.setData(d.candles.filter(c => c.tr != null).map(c => ({ time:c.t, value:c.tr })))
+  volSeries.setData(d.candles.map(c => ({
+    time:c.t, value:c.v,
+    color: c.c >= c.o ? 'rgba(46,204,113,.4)' : 'rgba(255,61,127,.4)',
+  })))
+
+  chart.timeScale().applyOptions({ timeVisible: d.interval !== '1d' })
+  if (switched) {
+    chart.priceScale('right').applyOptions({ autoScale: true })
+    chart.priceScale('vol').applyOptions({ autoScale: true })
+    fitLater()
+  }
+  applyVisibility()
+  renderPanels(d)
+  document.getElementById('readout').innerHTML = defaultReadout()
+}
+
+function renderPanels(d) {
+  const s = d.state
+  const name = d.symbol.replace('USDT', '')
+  document.getElementById('pick-name').textContent  = name
+  document.getElementById('pick-name2').textContent = name
+  document.getElementById('price').textContent  = s ? fmt(s.price) : '—'
+  document.getElementById('price2').textContent = s ? fmt(s.price) : '—'
+
+  const bars = d.candles
+  const chgEl = document.getElementById('chg')
+  if (bars.length > 1) {
+    const prev = bars[bars.length - 2].c, cur = bars[bars.length - 1].c
+    const pct = (cur - prev) / prev * 100
+    chgEl.textContent = pctStr(pct)
+    chgEl.className = 'chg ' + (pct >= 0 ? 'pos' : 'neg')
+  } else chgEl.textContent = ''
+
+  const tbody = document.getElementById('rows')
+  tbody.innerHTML = ''
+  if (!s) return
+  for (const r of s.rows) {
+    const tr = document.createElement('tr')
+    if (r.key === s.nearest) tr.className = 'near'
+    tr.innerHTML = `
+      <td><div class="lv"><i style="background:${LV_COLOR[r.key]}"></i>${r.key.toUpperCase()}</div></td>
+      <td class="lbl">${r.label}</td>
+      <td class="num">${fmt(r.price)}</td>
+      <td class="num ${r.distPct >= 0 ? 'pos' : 'neg'}" style="font-size:12px">${pctStr(r.distPct)}</td>`
+    if (hasAlertAuth) {
+      const td = document.createElement('td')
+      td.style.width = '1%'
+      const on = hasAlert(r.key)
+      const b = document.createElement('button')
+      b.className = 'bell' + (on ? ' on' : '')
+      b.textContent = on ? '🔔' : '🔕'
+      b.title = on ? 'Убрать алерт' : 'Уведомить при достижении уровня'
+      b.onclick = () => toggleAlert(r.key)
+      td.appendChild(b)
+      tr.appendChild(td)
+    }
+    tbody.appendChild(tr)
+  }
+
+  const zone = { oversold:['перепродан','pos'], overbought:['перекуплен','neg'], neutral:['нейтрально',''] }[s.rsiZone] || ['—','']
+  const items = [
+    ['ТРЕНД', s.trend === 'up' ? '▲ вверх' : s.trend === 'down' ? '▼ вниз' : '—',
+              s.trend === 'up' ? 'pos' : s.trend === 'down' ? 'neg' : ''],
+    ['RSI 14', s.rsi == null ? '—' : s.rsi.toFixed(0) + ' · ' + zone[0], zone[1]],
+    ['ОБЪЁМ', s.volOk ? 'выше средней' : 'ниже средней', s.volOk ? 'pos' : ''],
+    ['СИГНАЛ', s.signal ? (s.signal.strong ? '★ ' : '') + s.signal.type.toUpperCase() : 'нет',
+               s.signal ? (s.signal.type.startsWith('buy') ? 'pos' : 'neg') : ''],
+  ]
+  if (s.pattern) items.push(['ПАТТЕРН', s.pattern.name, s.pattern.dir === 'bull' ? 'pos' : 'neg'])
+  // от какого свинга построено Фибо — всегда последний
+  const f = d.fib
+  if (f && f.bull && f.hh != null && f.ll1 != null) {
+    items.push(['ФИБО ОТ', `${fmt(f.ll1)} → ${fmt(f.hh)}`, ''])
+  } else if (f && f.bear && f.hh != null && f.ll2 != null) {
+    items.push(['ФИБО ОТ', `${fmt(f.hh)} → ${fmt(f.ll2)}`, ''])
+  }
+  document.getElementById('stats').innerHTML = items
+    .map(([b, v, c]) => `<div class="st"><b>${b}</b><span class="${c}">${v}</span></div>`).join('')
+}
+
+// ═══ загрузка ═══
+function overlay(text, isErr) {
+  const el = document.getElementById('ovl')
+  el.className = 'ovl' + (text ? '' : ' hide') + (isErr ? ' err' : '')
+  if (text) el.textContent = text
+}
+
+async function load() {
+  overlay('Загрузка…')
+  try {
+    const r = await fetch(`/api/chart?symbol=${symbol}&interval=${interval}&limit=300`)
+    if (r.status === 404) { overlay('Нет данных по этой паре', true); return }
+    if (!r.ok) throw new Error('HTTP ' + r.status)
+    render(await r.json())
+    overlay(null)
+  } catch (e) {
+    console.error(e)
+    overlay('Не удалось загрузить данные', true)
+  }
+}
+
+// ═══ алерты ═══
+function toast(text) {
+  const el = document.getElementById('toast')
+  el.textContent = text
+  el.classList.add('show')
+  clearTimeout(toast._t)
+  toast._t = setTimeout(() => el.classList.remove('show'), 2200)
+}
+
+const hasAlert = level =>
+  myAlerts.some(a => a.symbol === symbol && a.interval === interval && a.level === level)
+
+async function loadAlerts() {
+  if (!hasAlertAuth) return
+  try {
+    const r = await fetch(`/api/alerts?${alertQuery()}`)
+    if (!r.ok) throw new Error('HTTP ' + r.status)
+    myAlerts = (await r.json()).alerts || []
+  } catch (e) {
+    // база недоступна — панель всё равно показываем, иначе непонятно,
+    // куда делись алерты
+    console.error('alerts:', e)
+    myAlerts = []
+  }
+  renderAlerts()
+  if (data) renderPanels(data)
+}
+
+async function toggleAlert(level) {
+  const existing = myAlerts.find(a =>
+    a.symbol === symbol && a.interval === interval && a.level === level)
+  try {
+    if (existing) {
+      const r = await fetch(`/api/alerts/${existing.id}?${alertQuery()}`, { method:'DELETE' })
+      if (!r.ok) throw new Error('HTTP ' + r.status)
+      toast('Алерт убран')
+    } else {
+      const r = await fetch('/api/alerts', {
+        method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ ...alertAuthBody(), symbol, interval, level }),
+      })
+      if (r.status === 429) { toast('Достигнут лимит алертов'); return }
+      if (!r.ok) throw new Error('HTTP ' + r.status)
+      toast('Уведомим при достижении уровня')
+    }
+    await loadAlerts()
+  } catch (e) {
+    console.error(e)
+    toast('Не получилось — попробуйте позже')
+  }
+}
+
+function renderAlerts() {
+  const panel = document.getElementById('alerts-panel')
+  const el = document.getElementById('alerts-list')
+  if (!hasAlertAuth) { panel.style.display = 'none'; return }
+  panel.style.display = ''
+
+  if (!myAlerts.length) {
+    el.innerHTML = '<div class="empty">Пока нет. Нажмите 🔕 напротив уровня.</div>'
+    return
+  }
+  el.innerHTML = ''
+  for (const a of myAlerts) {
+    const row = document.createElement('div')
+    row.className = 'al-row'
+    row.innerHTML =
+      `<i style="width:8px;height:8px;border-radius:50%;background:${LV_COLOR[a.level] || '#888'}"></i>` +
+      `<b>${a.symbol.replace('USDT','')}</b>` +
+      `<span class="lbl">${a.label} · ${a.interval.toUpperCase()}</span>` +
+      (a.last_fired_at ? '<span class="al-fired">сработал</span>' : '')
+    const x = document.createElement('button')
+    x.className = 'x'; x.textContent = '✕'; x.title = 'Удалить'
+    x.onclick = async () => {
+      try {
+        await fetch(`/api/alerts/${a.id}?${alertQuery()}`, { method:'DELETE' })
+        await loadAlerts()
+        toast('Алерт убран')
+      } catch { toast('Не получилось') }
+    }
+    row.appendChild(x)
+    el.appendChild(row)
+  }
+}
+
+// ═══ выбор монеты ═══
+const modal  = document.getElementById('modal')
+const search = document.getElementById('search')
+let symbols = [], searchTimer = null, pinned = []
+
+async function fetchSymbols(q) {
+  const r = await fetch('/api/symbols?limit=80' + (q ? '&q=' + encodeURIComponent(q) : ''))
+  if (!r.ok) throw new Error('HTTP ' + r.status)
+  const j = await r.json()
+  symbols = j.symbols
+  pinned  = j.pinned || []
+  renderList()
+}
+
+function toggleFav(sym) {
+  favs = favs.includes(sym) ? favs.filter(f => f !== sym) : [...favs, sym]
+  store.set('favs', favs)
+  renderList()
+}
+
+function makeRow(s) {
+  const row = document.createElement('div')
+  row.className = 'row' + (s.symbol === symbol ? ' on' : '')
+
+  const star = document.createElement('button')
+  star.className = 'star' + (favs.includes(s.symbol) ? ' on' : '')
+  star.textContent = favs.includes(s.symbol) ? '★' : '☆'
+  star.title = 'В избранное'
+  // клик по звезде не должен открывать монету
+  star.onclick = e => { e.stopPropagation(); toggleFav(s.symbol) }
+
+  const body = document.createElement('span')
+  body.style.cssText = 'display:flex;align-items:center;gap:10px;flex:1'
+  body.innerHTML =
+    `<span class="b">${s.base}</span>` +
+    `<span class="p">${s.price == null ? '' : s.price.toLocaleString('ru-RU', { maximumFractionDigits:8 })}</span>` +
+    `<span class="c ${s.change >= 0 ? 'pos' : 'neg'}">${s.change == null ? '' : pctStr(s.change)}</span>`
+
+  row.appendChild(star)
+  row.appendChild(body)
+  row.onclick = () => { symbol = s.symbol; store.set('symbol', symbol); closeModal(); load() }
+  return row
+}
+
+function renderList() {
+  const el = document.getElementById('list')
+  if (!symbols.length) { el.innerHTML = '<div class="empty">Ничего не найдено</div>'; return }
+  el.innerHTML = ''
+
+  const fav  = symbols.filter(s => favs.includes(s.symbol))
+  const rest = symbols.filter(s => !favs.includes(s.symbol))
+
+  if (fav.length) {
+    const h = document.createElement('div')
+    h.className = 'sep'; h.textContent = 'Избранное'
+    el.appendChild(h)
+    fav.forEach(s => el.appendChild(makeRow(s)))
+    const h2 = document.createElement('div')
+    h2.className = 'sep'; h2.textContent = 'Все пары'
+    el.appendChild(h2)
+  }
+  rest.forEach(s => el.appendChild(makeRow(s)))
+}
+
+function openModal() {
+  modal.classList.add('open')
+  search.value = ''
+  // на мобиле автофокус выкидывает клавиатуру поверх списка — только на ПК
+  if (window.innerWidth > 640) search.focus()
+  fetchSymbols('').catch(() => {
+    document.getElementById('list').innerHTML = '<div class="empty">Не удалось загрузить список</div>'
+  })
+}
+function closeModal() { modal.classList.remove('open') }
+
+document.getElementById('pick').onclick  = openModal
+document.getElementById('pick2').onclick = openModal
+document.getElementById('close').onclick = closeModal
+document.getElementById('fs').onclick      = toggleFs
+document.getElementById('fs-exit').onclick = exitFs
+modal.onclick = e => { if (e.target === modal) closeModal() }
+
+search.oninput = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => fetchSymbols(search.value.trim()).catch(() => {}), 220)
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { modal.classList.contains('open') ? closeModal() : exitFs(); return }
+  if (modal.classList.contains('open')) return
+  const k = e.key.toLowerCase()
+  if (k === 'f') toggleFs()
+  if (k === 'c') openModal()
+  // 1..4 — переключение таймфрейма
+  const idx = parseInt(e.key) - 1
+  if (idx >= 0 && idx < INTERVALS.length) {
+    interval = INTERVALS[idx][0]; store.set('interval', interval); buildTfs(); load()
+  }
+})
+
+// ═══ старт ═══
+if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed')
+buildTfs()
+buildToggles()
+initChart()
+load()
+loadAlerts()
+timer = setInterval(load, 60_000)
+document.addEventListener('visibilitychange', () => {
+  clearInterval(timer)
+  if (!document.hidden) { load(); timer = setInterval(load, 60_000) }
+})
+</script>
+</body>
+</html>
